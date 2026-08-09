@@ -78,6 +78,19 @@ the two images lining up as the divider moves. A tripod and one press job is
 all it takes: photograph the blank, print it, photograph it again without
 moving anything.
 
+## The logo files
+
+`assets/img/logo-mark.png` and `assets/img/logo-mark-white.png` are your fist
+logo, lifted out of the photo of your business card and cleaned up — dark for
+light backgrounds, white for the black header. They are what the shirt in the
+slider is printed with.
+
+**If you have the original artwork, send it.** These were recovered from a
+photograph, so the edges carry a little of the camera with them. A vector file
+(`.ai`, `.eps`, `.svg`) or a high-resolution transparent PNG would be sharper
+at large sizes, and swapping it in means replacing those two files — no code
+changes.
+
 ## A note on what not to use
 
 Do not use photos of garments carrying another company's logo — a Nike swoosh

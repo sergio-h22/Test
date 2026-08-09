@@ -11,6 +11,7 @@ product.html        product detail, driven by ?id=
 assets/css/site.css design system, shared by all pages
 assets/js/products.js  ← the catalog. Edit this to change products.
 assets/js/illustrations.js  product drawings, used until photos arrive
+assets/img/         the fist logo, dark and white versions
 assets/js/site.js   config, search, forms
 photos/             product and hero images (optional)
 video/hero.mp4      the hero video
@@ -77,6 +78,10 @@ when you want them shown.
 **A 9:16 video cut.** The hero video is installed and playing. Phones get the
 same 16:9 file cropped to portrait, which works but isn't ideal. Details in
 [`docs/hero-video-brief.md`](docs/hero-video-brief.md).
+
+**The original logo artwork.** The fist logo on the site was recovered from a
+photograph of your business card. It came out clean, but vector artwork would
+be sharper at large sizes — see [`photos/README.md`](photos/README.md).
 
 ---
 
