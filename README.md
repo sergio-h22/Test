@@ -10,8 +10,10 @@ products.html       catalog — search + category filters
 product.html        product detail, driven by ?id=
 assets/css/site.css design system, shared by all pages
 assets/js/products.js  ← the catalog. Edit this to change products.
+assets/js/illustrations.js  product drawings, used until photos arrive
 assets/js/site.js   config, search, forms
 photos/             product and hero images (optional)
+video/hero.mp4      the hero video
 docs/               hero video brief
 ```
 
@@ -64,16 +66,34 @@ delete its block. Nothing else needs touching.
 
 ## Still to do
 
-**Photos.** Every image is a labelled slot right now. They look deliberate
-rather than broken, but real photos are what make this design work. See
+**Photos.** Every product currently shows a drawing, not a photograph — see
+"Illustrations" below. Real photos are what make this design work. See
 [`photos/README.md`](photos/README.md) — start with the six on the home page.
 
 **Pricing.** Every product says "Quote on request". Nothing on this site
 quotes a number you haven't given me. Add real figures to the `specs` array
 when you want them shown.
 
-**Hero video.** Optional. The slot is wired and off by default; the prompt and
-export settings are in [`docs/hero-video-brief.md`](docs/hero-video-brief.md).
+**A 9:16 video cut.** The hero video is installed and playing. Phones get the
+same 16:9 file cropped to portrait, which works but isn't ideal. Details in
+[`docs/hero-video-brief.md`](docs/hero-video-brief.md).
+
+---
+
+## Illustrations
+
+`assets/js/illustrations.js` holds a drawing for each of the 22 products,
+built from the brand palette. They exist so the catalog looks finished before
+photography arrives — they are a bridge, not a substitute.
+
+The order of preference for any product image is:
+
+1. a real photo, once `photo` is set in `products.js`
+2. that product's illustration
+3. a labelled placeholder
+
+So adding a photo needs no other change: set `photo` and the drawing simply
+stops being used for that product. Nothing needs deleting.
 
 ---
 

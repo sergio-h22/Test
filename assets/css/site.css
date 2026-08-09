@@ -104,6 +104,9 @@ a{color:inherit}
 /* ------------------------------------------------------------------ nav */
 .nav{background:var(--ink-2);border-top:1px solid #24272C;position:relative;z-index:55}
 .nav-in{display:flex;align-items:center;gap:4px;min-height:var(--nav-h)}
+/* Base state lives here, not inline on the element — an inline display
+   would outrank the media query below and pin the mobile menu open. */
+.nav-links{display:flex;align-items:center;gap:4px}
 .nav-in a{
   font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;
   text-transform:uppercase;text-decoration:none;color:#B6BBC1;
@@ -168,16 +171,40 @@ a{color:inherit}
 .hero{position:relative;background:var(--mist);overflow:hidden}
 .hero-media{position:absolute;inset:0;z-index:0}
 .hero-media img,.hero-media video{width:100%;height:100%;object-fit:cover}
+/* The headline sits over the left third, so that end of the scrim stays
+   near-opaque whatever the footage is doing. The right end clears so the
+   video is actually visible. */
 .hero-media::after{
   content:"";position:absolute;inset:0;
   background:linear-gradient(90deg,
     rgba(255,255,255,.97) 0%,
-    rgba(255,255,255,.92) 30%,
-    rgba(255,255,255,.55) 62%,
-    rgba(255,255,255,.35) 100%);
+    rgba(255,255,255,.94) 44%,
+    rgba(255,255,255,.45) 70%,
+    rgba(255,255,255,.22) 100%);
 }
+/* On phones a scrim heavy enough to keep text legible also buries the
+   footage. So the video stops being a background and becomes its own band
+   above the copy — fully visible, with the type on clean white beneath.
+   Only when a video actually loaded; otherwise the empty box would show. */
 @media (max-width:860px){
+  .hero.has-video{display:flex;flex-direction:column}
+  .hero.has-video .hero-media{
+    position:relative;inset:auto;width:100%;aspect-ratio:16/9;
+  }
+  .hero.has-video .hero-media::after{
+    background:linear-gradient(0deg,rgba(255,255,255,.9) 0%,rgba(255,255,255,0) 34%);
+  }
+  .hero.has-video .hero-in{padding-top:24px}
   .hero-media::after{background:rgba(255,255,255,.9)}
+}
+
+/* With footage running, the collage would sit on top of it as a wall of
+   opaque tiles. Drop the tiles and let the video hold that column — the
+   grid track stays, so the copy keeps its width. */
+.hero.has-video .collage{display:none}
+.hero.has-video .hero-in{min-height:min(68vh,540px)}
+@media (max-width:960px){
+  .hero.has-video .hero-in{min-height:0}
 }
 
 .hero-in{
@@ -214,6 +241,12 @@ a{color:inherit}
 }
 .slot-label b{display:block;color:#6E747C;font-weight:700}
 .slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+
+/* Illustration variant: drop the checkerboard, let the drawing carry it. */
+.slot-art{background:var(--mist)}
+.slot-art::before{display:none}
+.slot-art svg{position:relative;z-index:1;width:82%;height:82%}
+.card:hover .slot-art{background:#EFF1F3}
 .slot-ratio{aspect-ratio:1/1}
 .slot-wide{aspect-ratio:4/3}
 

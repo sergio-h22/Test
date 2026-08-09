@@ -15,11 +15,13 @@ const CONFIG = {
   hours:     ""
 };
 
-/* Hero video. Off until you have footage — see docs/hero-video-brief.md.
-   Fill these in and the hero plays video behind the headline.             */
+/* Hero video. 1280×720, 10s, 2.6 MB — H.264 MP4, which every current browser
+   plays natively. Phones get the same file; object-fit crops it to portrait.
+   Add a 9:16 cut as video/hero-mobile.mp4 and point `mobile` at it whenever
+   you have one. See docs/hero-video-brief.md.                             */
 const HERO_VIDEO = {
-  desktop: "",
-  mobile:  "",
+  desktop: "video/hero.mp4",
+  mobile:  "video/hero.mp4",
   poster:  ""
 };
 
@@ -41,13 +43,28 @@ function productById(id) {
   return PRODUCTS.find(function (p) { return p.id === id; });
 }
 
-/* An image slot: a real photo if one is set, a labelled placeholder if not.
+/* An image slot, in order of preference:
+     1. the real photo, once products.js has one
+     2. the product's illustration
+     3. a labelled placeholder
    Keeping this in one place means adding photography never touches layout. */
-function slot(photo, label, classes) {
+function slot(photo, label, classes, id, cat) {
   const cls = "slot " + (classes || "");
+
   if (photo) {
     return '<div class="' + cls + '"><img src="' + esc(photo) + '" alt="' + esc(label) + '" loading="lazy"></div>';
   }
+
+  const art = typeof ILLUSTRATIONS !== "undefined"
+    ? (ILLUSTRATIONS[id] || ILLUSTRATIONS[ILLUSTRATION_FALLBACK[cat]])
+    : null;
+
+  if (art) {
+    return '<div class="' + cls + ' slot-art">' +
+             '<svg viewBox="0 0 200 150" role="img" aria-label="' + esc(label) + '">' + art + '</svg>' +
+           '</div>';
+  }
+
   return '<div class="' + cls + '"><span class="slot-label"><b>' + esc(label) + '</b>photo slot</span></div>';
 }
 
@@ -121,6 +138,8 @@ function initHeroVideo() {
   video.addEventListener("error", function () { layer.remove(); });
   video.addEventListener("loadeddata", function () {
     layer.hidden = false;
+    document.getElementById("hero").classList.add("has-video");
+    /* Someone who asked for reduced motion gets a still frame, not a loop. */
     if (!reduced) video.play().catch(function () {});
   });
   video.src = src;
@@ -130,7 +149,7 @@ function initHeroVideo() {
 function cardHTML(p) {
   return '' +
     '<a class="card" href="product.html?id=' + encodeURIComponent(p.id) + '">' +
-      slot(p.photo, p.name, "slot-wide") +
+      slot(p.photo, p.name, "slot-wide", p.id, p.cat) +
       '<div class="card-body">' +
         '<span class="card-cat">' + esc(catName(p.cat)) + '</span>' +
         '<h3 class="card-name">' + esc(p.name) + '</h3>' +
@@ -138,6 +157,21 @@ function cardHTML(p) {
         '<span class="card-go">View details <span aria-hidden="true">&rarr;</span></span>' +
       '</div>' +
     '</a>';
+}
+
+/* --------------------------------------------------------- hero collage */
+function initHeroCollage() {
+  const wrap = document.getElementById("heroCollage");
+  if (!wrap) return;
+
+  /* First tile is the large one; the rest fill the small squares. */
+  const tiles = ["t-shirts", "polos", "hoodies", "stickers", "caps"];
+
+  wrap.innerHTML = tiles.map(function (id, i) {
+    const p = productById(id);
+    if (!p) return "";
+    return slot(p.photo, p.name, i === 0 ? "slot-lg" : "slot-ratio", p.id, p.cat);
+  }).join("");
 }
 
 /* -------------------------------------------------------------- catalogue */
@@ -224,7 +258,7 @@ function initProductPage() {
   if (desc) desc.setAttribute("content", p.blurb);
 
   root.innerHTML =
-    '<div>' + slot(p.photo, p.name, "slot-wide") + '</div>' +
+    '<div>' + slot(p.photo, p.name, "slot-wide", p.id, p.cat) + '</div>' +
     '<div>' +
       '<p class="crumb"><a href="products.html">Products</a> / ' + esc(catName(p.cat)) + '</p>' +
       '<h1 class="h2">' + esc(p.name) + '</h1>' +
@@ -311,6 +345,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initNav();
   initHeaderSearch();
   initHeroVideo();
+  initHeroCollage();
   initCatalog();
   initProductPage();
   initQuoteForm();

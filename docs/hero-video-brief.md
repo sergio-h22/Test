@@ -88,16 +88,24 @@ const HERO_VIDEO = {
 };
 ```
 
-They ship empty on purpose, so a site with no footage yet makes no failed
-requests for it. Blank any one of them to turn that piece back off; blank all
-three and the hero returns to its still design.
+**This is already done** for the 16:9 file — `video/hero.mp4` is installed and
+playing. What is still missing is a 9:16 cut and a poster frame; phones
+currently get the 16:9 file cropped to portrait, which is fine but not ideal.
+
+Blank any one of these values to turn that piece back off; blank all three and
+the hero returns to its still design with no failed requests.
 
 ## What the page does with it
 
 - Plays muted, looped, inline — no controls, no sound, no tap needed.
 - Picks the 9:16 file under 700px wide, the 16:9 file above.
-- Fades a gradient scrim over it so the white headline stays readable.
-- Sits behind the headline scrim so the red type stays readable.
+- Sits behind a gradient scrim that stays near-opaque across the copy column,
+  so the red headline holds up whatever the footage is doing.
+- On phones it becomes its own full-width band above the copy instead of a
+  background, because a scrim heavy enough to keep small text legible would
+  bury the video entirely.
+- Hides the hero product collage while it plays, so the tiles don't sit on
+  top of the footage as a wall of opaque boxes.
 - Shows the poster frame instead of looping for visitors who have "reduce
   motion" switched on.
 - Removes itself silently if a file is missing or fails to load.

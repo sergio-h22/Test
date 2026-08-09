@@ -41,7 +41,7 @@
 <nav class="nav" aria-label="Main">
   <div class="wrap nav-in">
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
-    <div class="nav-links" id="navLinks" style="display:flex;align-items:center;gap:4px">
+    <div class="nav-links" id="navLinks">
       <a href="index.html" aria-current="page">Home</a>
       <a href="products.html">All products</a>
       <a href="products.html?q=banner">Signs &amp; banners</a>
@@ -56,7 +56,7 @@
 <main id="main">
 
 <!-- ================================================================ HERO -->
-<section class="hero">
+<section class="hero" id="hero">
   <!-- Background: a photo of the shop floor, or video. Both optional —
        without either, the tinted ground below carries the section. -->
   <div class="hero-media">
@@ -80,15 +80,9 @@
       </div>
     </div>
 
-    <div class="collage" id="heroCollage">
-      <div class="slot slot-lg" data-slot="hero-main">
-        <span class="slot-label"><b>Hero product</b>photo slot</span>
-      </div>
-      <div class="slot slot-ratio"><span class="slot-label"><b>Polo</b>photo slot</span></div>
-      <div class="slot slot-ratio"><span class="slot-label"><b>Hoodie</b>photo slot</span></div>
-      <div class="slot slot-ratio"><span class="slot-label"><b>Tote</b>photo slot</span></div>
-      <div class="slot slot-ratio"><span class="slot-label"><b>Cap</b>photo slot</span></div>
-    </div>
+    <!-- Filled by initHeroCollage() from the illustration set. Swap any
+         tile for a real photo by replacing its inner markup with an <img>. -->
+    <div class="collage" id="heroCollage"></div>
   </div>
 </section>
 
@@ -278,6 +272,7 @@
 </footer>
 
 <script src="assets/js/products.js"></script>
+<script src="assets/js/illustrations.js"></script>
 <script src="assets/js/site.js"></script>
 </body>
 </html>
