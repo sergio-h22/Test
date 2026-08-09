@@ -190,7 +190,10 @@ a{color:inherit}
   -webkit-backdrop-filter:blur(14px);
   border-bottom:1px solid var(--edge);
 }
-.nav-in{display:flex;align-items:center;gap:20px;width:100%}
+/* No width here — .wrap on the same element already sets it. Declaring
+   width:100% would win on equal specificity and break the nav out of the
+   page's column. */
+.nav-in{display:flex;align-items:center;gap:20px}
 
 .brand{
   font-family:var(--f-display);font-weight:900;text-transform:uppercase;
@@ -246,6 +249,33 @@ a{color:inherit}
 .hero-rings{
   top:50%;right:-14%;width:min(760px,88vw);
   transform:translateY(-50%);
+}
+
+/* --- hero video (hidden until a real file loads) --- */
+.hero-video{position:absolute;inset:0;z-index:1;overflow:hidden}
+.hero-video[hidden]{display:none}
+.hero-video video{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.hero-scrim{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,
+      rgba(8,9,10,.95) 0%,
+      rgba(8,9,10,.86) 34%,
+      rgba(8,9,10,.48) 66%,
+      rgba(8,9,10,.62) 100%),
+    linear-gradient(0deg, rgba(8,9,10,.92) 0%, rgba(8,9,10,0) 46%);
+}
+/* With footage behind it, the decorative layers step back so the type
+   stays the loudest thing in the frame. */
+.hero.has-video .hero-rings{opacity:.03}
+.hero.has-video::after{opacity:.45}
+@media (max-width:700px){
+  .hero-scrim{
+    background:
+      linear-gradient(0deg, rgba(8,9,10,.95) 0%, rgba(8,9,10,.55) 55%, rgba(8,9,10,.75) 100%);
+  }
 }
 .hero-in{position:relative;z-index:3}
 .hero-in > *{max-width:46ch}
@@ -524,7 +554,20 @@ a.contact-row:hover span{color:var(--cyan)}
 <a id="top"></a>
 
 <!-- ============================================================== HERO -->
-<section class="hero gloss">
+<section class="hero gloss" id="hero">
+
+  <!-- Hero video. Stays hidden until a real file loads, so the page looks
+       finished with or without one. Drop the files in as:
+         video/hero.mp4         16:9, desktop
+         video/hero-mobile.mp4  9:16, phones
+         video/hero-poster.jpg  first frame, shown while loading
+       File names are set in HERO_VIDEO at the bottom of this file. -->
+  <div class="hero-video" id="heroVideo" hidden>
+    <video id="heroVideoEl" muted loop playsinline preload="metadata"
+           aria-hidden="true" tabindex="-1"></video>
+    <div class="hero-scrim"></div>
+  </div>
+
   <svg class="rings hero-rings" viewBox="0 0 400 400" aria-hidden="true">
     <circle cx="200" cy="200" r="34" fill="currentColor"/>
     <circle cx="200" cy="200" r="72"  stroke="currentColor" stroke-width="24" fill="none"
@@ -892,6 +935,20 @@ const CONFIG = {
   instagram: "",
   hours:     ""
 };
+
+/* Hero video. Off until you have footage — empty strings mean the hero uses
+   its still design and the page makes no wasted requests.
+
+   TO TURN IT ON: put the files in video/ and fill in these three lines.
+
+     desktop: "video/hero.mp4",
+     mobile:  "video/hero-mobile.mp4",
+     poster:  "video/hero-poster.jpg"                                      */
+const HERO_VIDEO = {
+  desktop: "",   /* 16:9 file  */
+  mobile:  "",   /* 9:16 file  */
+  poster:  ""    /* still frame shown while it loads */
+};
 /* ======================================================================== */
 
 /* --- fill every [data-field] on the page from CONFIG --------------------- */
@@ -947,6 +1004,37 @@ links.addEventListener("click", function (e) {
 
 /* --- signature: gloss sweep tracks pointer and scroll --------------------- */
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* --- hero video ----------------------------------------------------------
+   Only reveals itself once a real file has decoded a frame. If the file is
+   missing, still uploading, or blocked, the layer removes itself and the
+   still hero shows instead — no broken box, no black rectangle.            */
+(function () {
+  const layer = document.getElementById("heroVideo");
+  const video = document.getElementById("heroVideoEl");
+  if (!layer || !video) return;
+
+  const src = window.matchMedia("(max-width: 700px)").matches
+    ? HERO_VIDEO.mobile
+    : HERO_VIDEO.desktop;
+
+  /* Nothing configured — take the layer out entirely so the page makes no
+     request for a file that isn't there. */
+  if (!src) { layer.remove(); return; }
+
+  if (HERO_VIDEO.poster) video.poster = HERO_VIDEO.poster;
+
+  video.addEventListener("error", function () { layer.remove(); });
+
+  video.addEventListener("loadeddata", function () {
+    layer.hidden = false;
+    document.getElementById("hero").classList.add("has-video");
+    /* Someone who asked for reduced motion gets the poster frame, not a loop. */
+    if (!reduced) video.play().catch(function () {});
+  });
+
+  video.src = src;
+})();
 
 if (!reduced) {
   let ticking = false;

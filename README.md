@@ -25,7 +25,17 @@ numbers went onto this site. When you want real figures shown, find the
 You can also add more spec columns (minimum quantity, turnaround) the same
 way — the row is a grid and will re-flow on its own.
 
-### 2. Photos of real jobs
+### 2. The hero video
+
+The top of the page has a video slot already wired up. It stays invisible
+until a real file loads, so the hero looks finished with or without one.
+
+Generate the footage, export a 16:9 and a 9:16, and drop three files into
+`video/`. No code changes needed — see
+[`docs/hero-video-brief.md`](docs/hero-video-brief.md) for the prompt,
+export settings and compression commands.
+
+### 3. Photos of real jobs
 
 The six panels in **The Work** are CSS-generated stand-ins. To swap one for a
 real photo, put your image in a `photos/` folder next to `index.html`, then
