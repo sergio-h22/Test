@@ -4,27 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>M-Power Print — #1 Print Provider At Affordable Prices</title>
-<meta name="description" content="M-Power Print: custom apparel, embroidered hats, business cards, flyers, banners and signage. Send your artwork, get a proof, pick it up.">
+<meta name="description" content="M-Power Print, Southern California: banners, stickers, flyers, postcards, business cards, posters, window vinyls, apparel, yard signs, labels, magnets, menus, letterhead, envelopes, catalogs, foam boards and signs.">
 <meta name="theme-color" content="#08090A">
 <meta property="og:title" content="M-Power Print">
-<meta property="og:description" content="#1 Print Provider At Affordable Prices — apparel, hats, cards, banners and signage.">
+<meta property="og:description" content="#1 Print Provider At Affordable Prices — banners, signs, cards, stickers and apparel. Conveniently located in Southern California.">
 <meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090A'/><circle cx='50' cy='50' r='12' fill='%23F4F2ED'/><circle cx='50' cy='50' r='26' stroke='%23F4F2ED' stroke-width='7' fill='none'/><circle cx='50' cy='50' r='42' stroke='%23F4F2ED' stroke-width='7' fill='none'/></svg>">
 
 <!--
   M-POWER PRINT
 
-  Everything you need to edit lives in TWO places:
+  Contact details live in the CONFIG block at the top of the script at the
+  bottom of this file. Change them once and the nav, hero, contact panel,
+  quote form and footer all update together.
 
-    1. The CONFIG block at the top of the script at the bottom of this file:
-       phone, email, Instagram, address, hours. Change it once and the nav,
-       hero, quote form and footer all update together.
+  Instagram and opening hours are empty in CONFIG, so those rows are hidden.
+  Fill either one in and its row appears by itself.
 
-    2. Anything marked "PLACEHOLDER" in the markup below.
+  The contact details and the service list are real, taken from the business
+  card. Pricing deliberately says "Quote on request" everywhere — add real
+  numbers only when you have them.
 
-  IMPORTANT: the prices, minimum quantities and turnaround times in the
-  Services section are PLACEHOLDER NUMBERS. Replace them with your real
-  figures before you publish this site.
+  The six panels under "The Work" are still stand-ins for photos of real jobs.
 -->
 
 <style>
@@ -543,9 +544,9 @@ a.contact-row:hover span{color:var(--cyan)}
     </h1>
 
     <p class="hero-sub">
-      Shirts, hats, cards, banners and signs — printed locally and priced so a
-      small shop can actually afford a full run. Send your artwork, approve the
-      proof, pick it up.
+      Banners, signs, cards, stickers and apparel — printed in Southern
+      California and priced so a small business can afford a full run. Send
+      your artwork, approve the proof, pick it up.
     </p>
 
     <div class="hero-cta">
@@ -558,7 +559,7 @@ a.contact-row:hover span{color:var(--cyan)}
     <div class="spec"><b>Artwork</b><span>PNG, JPG, PDF, AI or SVG</span></div>
     <div class="spec"><b>Proof</b><span>Approve before we print</span></div>
     <div class="spec"><b>Minimums</b><span>Small runs welcome</span></div>
-    <div class="spec"><b>Pickup</b><span data-field="address"></span></div>
+    <div class="spec"><b>Located in</b><span data-field="address"></span></div>
   </div>
 </section>
 
@@ -567,15 +568,67 @@ a.contact-row:hover span{color:var(--cyan)}
   <div class="wrap">
     <div class="head">
       <p class="eyebrow">What we print</p>
-      <h2 class="h2">Three presses,<br>one shop</h2>
+      <h2 class="h2">If it prints,<br>we print it</h2>
       <p class="lede">
-        Everything below runs in-house. Mixed order — shirts and hats and cards
-        together — is one job, one quote, one pickup.
+        Everything below runs through one shop. A mixed order — banners and
+        cards and shirts together — is one job, one quote, one pickup.
       </p>
     </div>
 
-    <!-- ← PLACEHOLDER: every price, minimum and turnaround below is a
-         made-up default. Replace with your real numbers before publishing. -->
+    <!-- Every product named below comes from the business card. Pricing says
+         "Quote on request" on purpose — add real numbers only when you have
+         them, in the <span> next to each Pricing label. -->
+
+    <a class="ticket gloss" href="#quote">
+      <div class="ticket-top">
+        <span class="ticket-tag">Large format</span>
+        <h3 class="ticket-name">Signs &amp; Banners</h3>
+        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
+      </div>
+      <p class="ticket-body">
+        The big stuff — the work people see from across a parking lot. Grand
+        openings, job sites, real estate, trade shows and storefronts.
+      </p>
+      <div class="ticket-specs">
+        <div><b>Includes</b><span>Banners · Yard signs · Foam boards · Window vinyls · Posters</span></div>
+        <div><b>Artwork</b><span>PDF, AI, EPS or SVG</span></div>
+        <div><b>Pricing</b><span>Quote on request</span></div>
+      </div>
+    </a>
+
+    <a class="ticket gloss" href="#quote">
+      <div class="ticket-top">
+        <span class="ticket-tag">Business print</span>
+        <h3 class="ticket-name">Cards &amp; Marketing</h3>
+        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
+      </div>
+      <p class="ticket-body">
+        Everything a business hands out or mails. The gloss card that brought
+        you here came off our press.
+      </p>
+      <div class="ticket-specs">
+        <div><b>Includes</b><span>Business cards · Flyers · Postcards · Menus · Letterhead · Envelopes · Catalogs</span></div>
+        <div><b>Artwork</b><span>PDF, AI, PSD or JPG</span></div>
+        <div><b>Pricing</b><span>Quote on request</span></div>
+      </div>
+    </a>
+
+    <a class="ticket gloss" href="#quote">
+      <div class="ticket-top">
+        <span class="ticket-tag">Adhesive</span>
+        <h3 class="ticket-name">Stickers &amp; Labels</h3>
+        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
+      </div>
+      <p class="ticket-body">
+        Cut to your shape, printed for indoor or outdoor life. Product labels,
+        packaging, giveaways and vehicle magnets.
+      </p>
+      <div class="ticket-specs">
+        <div><b>Includes</b><span>Stickers · Labels · Magnets</span></div>
+        <div><b>Artwork</b><span>Vector preferred for die-cuts</span></div>
+        <div><b>Pricing</b><span>Quote on request</span></div>
+      </div>
+    </a>
 
     <a class="ticket gloss" href="#quote">
       <div class="ticket-top">
@@ -584,56 +637,20 @@ a.contact-row:hover span{color:var(--cyan)}
         <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
       </div>
       <p class="ticket-body">
-        T-shirts, hoodies, crewnecks and long sleeves. DTF transfers for
-        full-colour artwork and photos, screen printing when the run is big
-        enough to be cheaper that way, and heat-transfer vinyl for names and
-        numbers.
+        Shirts, hoodies and uniforms for crews, teams, staff and events —
+        printed with your logo or artwork.
       </p>
       <div class="ticket-specs">
-        <div><b>Methods</b><span>DTF / Screen / HTV</span></div>
-        <div><b>Min qty</b><span>1 pc</span></div>
-        <div><b>Turnaround</b><span>3–5 days</span></div>
-        <div><b>From</b><span>$12 / pc</span></div>
+        <div><b>Includes</b><span>T-shirts · Hoodies · Uniforms · Event merch</span></div>
+        <div><b>Artwork</b><span>High-resolution PNG, AI or SVG</span></div>
+        <div><b>Pricing</b><span>Quote on request</span></div>
       </div>
     </a>
 
-    <a class="ticket gloss" href="#quote">
-      <div class="ticket-top">
-        <span class="ticket-tag">Headwear</span>
-        <h3 class="ticket-name">Hats &amp; Embroidery</h3>
-        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
-      </div>
-      <p class="ticket-body">
-        Snapbacks, dad hats, trucker caps and beanies. Stitched embroidery for a
-        raised, permanent finish, or woven and leather patches when you want the
-        logo to sit proud of the fabric.
-      </p>
-      <div class="ticket-specs">
-        <div><b>Methods</b><span>Embroidery / Patch</span></div>
-        <div><b>Min qty</b><span>6 pcs</span></div>
-        <div><b>Turnaround</b><span>5–7 days</span></div>
-        <div><b>From</b><span>$18 / pc</span></div>
-      </div>
-    </a>
-
-    <a class="ticket gloss" href="#quote">
-      <div class="ticket-top">
-        <span class="ticket-tag">Print</span>
-        <h3 class="ticket-name">Paper &amp; Signage</h3>
-        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
-      </div>
-      <p class="ticket-body">
-        Business cards in gloss, matte or spot UV — the card that brought you
-        here is ours. Plus flyers, postcards, stickers, decals, vinyl banners
-        and coroplast yard signs.
-      </p>
-      <div class="ticket-specs">
-        <div><b>Finishes</b><span>Gloss / Matte / Spot UV</span></div>
-        <div><b>Min qty</b><span>100 cards</span></div>
-        <div><b>Turnaround</b><span>2–4 days</span></div>
-        <div><b>From</b><span>$45 / 100</span></div>
-      </div>
-    </a>
+    <p class="lede" style="margin-top:26px">
+      Not on the list? The card says <em>and much more</em> for a reason —
+      <a href="#quote" style="color:var(--cyan)">ask</a>.
+    </p>
   </div>
 </section>
 
@@ -655,27 +672,27 @@ a.contact-row:hover span{color:var(--cyan)}
     <div class="grid-work">
       <figure class="tile" style="margin:0">
         <div class="tile-fill f1"></div>
-        <figcaption class="tile-cap"><b>Team hoodies</b><span>DTF · 24 pcs</span></figcaption>
+        <figcaption class="tile-cap"><b>Vinyl banners</b><span>Large format</span></figcaption>
       </figure>
       <figure class="tile" style="margin:0">
         <div class="tile-fill f2"></div>
-        <figcaption class="tile-cap"><b>Gloss business cards</b><span>Spot UV · 500</span></figcaption>
+        <figcaption class="tile-cap"><b>Business cards</b><span>Gloss finish</span></figcaption>
       </figure>
       <figure class="tile" style="margin:0">
         <div class="tile-fill f3"></div>
-        <figcaption class="tile-cap"><b>Embroidered dad hats</b><span>Stitch · 40 pcs</span></figcaption>
+        <figcaption class="tile-cap"><b>Window vinyls</b><span>Storefront</span></figcaption>
       </figure>
       <figure class="tile" style="margin:0">
         <div class="tile-fill f4"></div>
-        <figcaption class="tile-cap"><b>Grand opening banner</b><span>Vinyl · 3×8 ft</span></figcaption>
+        <figcaption class="tile-cap"><b>Yard signs</b><span>Coroplast</span></figcaption>
       </figure>
       <figure class="tile" style="margin:0">
         <div class="tile-fill f5"></div>
-        <figcaption class="tile-cap"><b>Event flyers</b><span>Gloss text · 1,000</span></figcaption>
+        <figcaption class="tile-cap"><b>Flyers &amp; postcards</b><span>Full colour</span></figcaption>
       </figure>
       <figure class="tile" style="margin:0">
         <div class="tile-fill f6"></div>
-        <figcaption class="tile-cap"><b>Die-cut stickers</b><span>Weatherproof · 250</span></figcaption>
+        <figcaption class="tile-cap"><b>Die-cut stickers</b><span>Weatherproof</span></figcaption>
       </figure>
     </div>
   </div>
@@ -736,13 +753,16 @@ a.contact-row:hover span{color:var(--cyan)}
           <b>Call or text</b><span data-field="phone"></span>
         </a>
         <a class="contact-row" href="#" data-field="emailHref">
-          <b>Email</b><span data-field="email"></span>
+          <b>Sales</b><span data-field="email"></span>
+        </a>
+        <a class="contact-row" href="#" data-field="email2Href">
+          <b>Mikey</b><span data-field="email2"></span>
         </a>
         <a class="contact-row" href="#" data-field="instagramHref" target="_blank" rel="noopener">
           <b>Instagram</b><span data-field="instagram"></span>
         </a>
         <div class="contact-row">
-          <b>Shop</b><span data-field="address"></span>
+          <b>Location</b><span data-field="address"></span>
         </div>
         <div class="contact-row">
           <b>Hours</b><span data-field="hours"></span>
@@ -765,12 +785,19 @@ a.contact-row:hover span{color:var(--cyan)}
           <div class="field">
             <label for="qService">What are we printing</label>
             <select id="qService" name="service" required>
-              <option value="Custom apparel">Custom apparel</option>
-              <option value="Hats &amp; embroidery">Hats &amp; embroidery</option>
+              <option value="Banners">Banners</option>
+              <option value="Yard signs">Yard signs</option>
+              <option value="Foam boards &amp; signs">Foam boards &amp; signs</option>
+              <option value="Window vinyls">Window vinyls</option>
+              <option value="Posters">Posters</option>
               <option value="Business cards">Business cards</option>
               <option value="Flyers &amp; postcards">Flyers &amp; postcards</option>
-              <option value="Banners &amp; signage">Banners &amp; signage</option>
-              <option value="Stickers &amp; decals">Stickers &amp; decals</option>
+              <option value="Menus">Menus</option>
+              <option value="Letterhead &amp; envelopes">Letterhead &amp; envelopes</option>
+              <option value="Catalogs">Catalogs</option>
+              <option value="Stickers &amp; labels">Stickers &amp; labels</option>
+              <option value="Magnets">Magnets</option>
+              <option value="Apparel">Apparel</option>
               <option value="Something else">Something else</option>
             </select>
           </div>
@@ -808,16 +835,17 @@ a.contact-row:hover span{color:var(--cyan)}
       <div>
         <h4>M-Power Print</h4>
         <p style="margin:0;font-size:.94rem;max-width:30ch">
-          #1 Print Provider At Affordable Prices.
+          #1 Print Provider At Affordable Prices. Conveniently located in
+          Southern California.
         </p>
       </div>
       <div>
         <h4>Services</h4>
         <ul>
+          <li><a href="#services">Signs &amp; banners</a></li>
+          <li><a href="#services">Cards &amp; marketing</a></li>
+          <li><a href="#services">Stickers &amp; labels</a></li>
           <li><a href="#services">Custom apparel</a></li>
-          <li><a href="#services">Hats &amp; embroidery</a></li>
-          <li><a href="#services">Business cards</a></li>
-          <li><a href="#services">Banners &amp; signage</a></li>
         </ul>
       </div>
       <div>
@@ -833,6 +861,7 @@ a.contact-row:hover span{color:var(--cyan)}
         <ul>
           <li><a href="#" data-field="phoneHref"><span data-field="phone"></span></a></li>
           <li><a href="#" data-field="emailHref"><span data-field="email"></span></a></li>
+          <li><a href="#" data-field="email2Href"><span data-field="email2"></span></a></li>
           <li><a href="#" data-field="instagramHref" target="_blank" rel="noopener"><span data-field="instagram"></span></a></li>
         </ul>
       </div>
@@ -853,11 +882,15 @@ a.contact-row:hover span{color:var(--cyan)}
    CONFIG — edit these five lines and the whole site updates.
    =========================================================================== */
 const CONFIG = {
-  phone:     "(000) 000-0000",        /* ← PLACEHOLDER */
-  email:     "info@mpowerprint.com",  /* ← PLACEHOLDER */
-  instagram: "@mpowerprint",          /* ← PLACEHOLDER */
-  address:   "City, ST",              /* ← PLACEHOLDER */
-  hours:     "Mon–Sat · 9am–6pm"      /* ← PLACEHOLDER */
+  phone:     "(949) 228-1226",
+  email:     "sales@m-powerprint.com",
+  email2:    "mikey@m-powerprint.com",
+  address:   "Southern California",
+
+  /* Leave either of these empty ("") and its row is hidden automatically.
+     Fill one in and the row appears — no other edits needed. */
+  instagram: "",
+  hours:     ""
 };
 /* ======================================================================== */
 
@@ -866,19 +899,30 @@ const igHandle = CONFIG.instagram.replace(/^@/, "");
 const values = {
   phone:         CONFIG.phone,
   email:         CONFIG.email,
+  email2:        CONFIG.email2,
   instagram:     CONFIG.instagram,
   address:       CONFIG.address,
   hours:         CONFIG.hours,
   phoneHref:     "tel:" + CONFIG.phone.replace(/[^\d+]/g, ""),
   emailHref:     "mailto:" + CONFIG.email,
-  instagramHref: "https://instagram.com/" + igHandle
+  email2Href:    "mailto:" + CONFIG.email2,
+  instagramHref: igHandle ? "https://instagram.com/" + igHandle : ""
 };
 
 document.querySelectorAll("[data-field]").forEach(function (el) {
-  const value = values[el.dataset.field];
-  if (!value) return;
-  if (el.dataset.field.endsWith("Href")) el.setAttribute("href", value);
-  else el.textContent = value;
+  const key   = el.dataset.field;
+  const value = values[key];
+
+  if (value) {
+    if (key.endsWith("Href")) el.setAttribute("href", value);
+    else el.textContent = value;
+    return;
+  }
+
+  /* Nothing configured for this field — drop the whole row rather than
+     leave a blank label sitting on the page. */
+  const row = el.closest(".contact-row, li");
+  if (row) row.remove();
 });
 
 document.getElementById("year").textContent = new Date().getFullYear();
@@ -956,7 +1000,7 @@ form.addEventListener("submit", function (e) {
     "Details:",
     get("notes") || "None given.",
     "",
-    "— Sent from mpowerprint.com"
+    "— Sent from m-powerprint.com"
   ];
 
   const subject = "Quote request — " + get("service") + " (" + get("qty") + ")";
