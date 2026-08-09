@@ -138,6 +138,82 @@
   </div>
 </div>
 
+<!-- ==================================================== BEFORE / AFTER -->
+<section class="sect">
+  <div class="wrap compare-wrap">
+    <div>
+      <p class="eyebrow">Blank to branded</p>
+      <h2 class="h2">Drag to see the difference</h2>
+      <p class="lede">
+        Send us a plain shirt or let us supply the blanks. Your artwork goes on
+        the front, the back, the sleeve — wherever it belongs. Same job for
+        hoodies, polos, caps and hi-vis.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-red" href="product.html?id=t-shirts">See apparel options</a>
+      </div>
+    </div>
+
+    <!-- To use real photos instead of the drawings, replace each pane's <svg>
+         with <img src="photos/shirt-blank.jpg" alt="Blank white t-shirt">
+         and <img src="photos/shirt-printed.jpg" alt="…">. Shoot both from the
+         same spot so the two line up when the slider moves. -->
+    <div class="compare" id="compare" style="--pos:50%">
+
+      <div class="compare-pane compare-before">
+        <svg viewBox="0 0 400 340" role="img" aria-label="Blank white t-shirt">
+          <ellipse cx="200" cy="322" rx="104" ry="10" fill="#16181B" opacity=".07"/>
+          <path d="M152 58 L108 76 L60 132 L96 176 L122 152 L122 318 L278 318 L278 152 L304 176 L340 132 L292 76 L248 58 Q200 100 152 58 Z"
+                fill="#fff" stroke="#16181B" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M159 62 Q200 102 241 62" fill="none" stroke="#16181B" stroke-width="2.5"/>
+          <path d="M122 300 L278 300" stroke="#C8CCD1" stroke-width="1.6"/>
+          <path d="M141 196 L141 296M259 206 L259 296" stroke="#C8CCD1" stroke-width="1.6"/>
+          <path d="M100 168 L118 148M300 168 L282 148" stroke="#C8CCD1" stroke-width="1.6"/>
+        </svg>
+      </div>
+
+      <div class="compare-pane compare-after">
+        <svg viewBox="0 0 400 340" role="img" aria-label="The same t-shirt printed with the M-Power Print logo">
+          <ellipse cx="200" cy="322" rx="104" ry="10" fill="#16181B" opacity=".07"/>
+          <path d="M152 58 L108 76 L60 132 L96 176 L122 152 L122 318 L278 318 L278 152 L304 176 L340 132 L292 76 L248 58 Q200 100 152 58 Z"
+                fill="#fff" stroke="#16181B" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M159 62 Q200 102 241 62" fill="none" stroke="#16181B" stroke-width="2.5"/>
+          <path d="M122 300 L278 300" stroke="#C8CCD1" stroke-width="1.6"/>
+          <path d="M141 196 L141 296M259 206 L259 296" stroke="#C8CCD1" stroke-width="1.6"/>
+          <path d="M100 168 L118 148M300 168 L282 148" stroke="#C8CCD1" stroke-width="1.6"/>
+
+          <!-- The chest print, sized to sit inside the body panel rather than
+               run past the side seams. -->
+          <text x="200" y="198" text-anchor="middle"
+                font-family="system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif"
+                font-size="25" font-weight="800" letter-spacing="-0.9">
+            <tspan fill="#E31B23">M-P</tspan><tspan fill="#16181B">OWER</tspan>
+          </text>
+          <rect x="163" y="206" width="74" height="2.4" fill="#E31B23"/>
+          <text x="200" y="221" text-anchor="middle"
+                font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"
+                font-size="7" letter-spacing="2.6" fill="#5C626B">PRINT SHOP</text>
+        </svg>
+      </div>
+
+      <div class="compare-line"></div>
+      <div class="compare-grip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+          <path d="m10 7-5 5 5 5M14 7l5 5-5 5"/>
+        </svg>
+      </div>
+
+      <span class="compare-tag compare-tag-before">Blank</span>
+      <span class="compare-tag compare-tag-after">Printed</span>
+
+      <!-- Clamped short of the edges so the divider never slides out of view
+           and the component always reads as a comparison. -->
+      <input type="range" min="4" max="96" value="46" step="1"
+             id="compareRange" aria-label="Drag to compare the blank shirt with the printed shirt">
+    </div>
+  </div>
+</section>
+
 <!-- ============================================================ PRODUCTS -->
 <section class="sect">
   <div class="wrap">

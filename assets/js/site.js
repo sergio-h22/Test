@@ -174,6 +174,23 @@ function initHeroCollage() {
   }).join("");
 }
 
+/* ------------------------------------------------- before / after slider */
+function initCompare() {
+  const box = document.getElementById("compare");
+  const range = document.getElementById("compareRange");
+  if (!box || !range) return;
+
+  function apply() {
+    box.style.setProperty("--pos", range.value + "%");
+    /* Left of the divider is the blank shirt, right of it is the printed one,
+       so a raw "46" would tell a screen reader nothing useful. */
+    range.setAttribute("aria-valuetext", (100 - range.value) + "% printed shirt showing");
+  }
+
+  range.addEventListener("input", apply);
+  apply();
+}
+
 /* -------------------------------------------------------------- catalogue */
 function initCatalog() {
   const grid = document.getElementById("catGrid");
@@ -346,6 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initHeaderSearch();
   initHeroVideo();
   initHeroCollage();
+  initCompare();
   initCatalog();
   initProductPage();
   initQuoteForm();

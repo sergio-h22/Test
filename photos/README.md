@@ -61,6 +61,23 @@ inner `<span class="slot-label">…</span>` with an `<img>`:
 
 Square crops, around 800×800.
 
+## The before / after shirt
+
+The home page has a draggable slider showing a blank shirt turning into a
+printed one. Both sides are drawings right now. To use real photos, put two
+shots in this folder and swap each pane's `<svg>` in `index.html` for:
+
+```html
+<img src="photos/shirt-blank.jpg" alt="Blank white t-shirt">
+<img src="photos/shirt-printed.jpg" alt="The same shirt printed with the M-Power Print logo">
+```
+
+**Shoot both from exactly the same spot** — same camera position, same
+distance, same lighting, shirt in the same place. The whole effect depends on
+the two images lining up as the divider moves. A tripod and one press job is
+all it takes: photograph the blank, print it, photograph it again without
+moving anything.
+
 ## A note on what not to use
 
 Do not use photos of garments carrying another company's logo — a Nike swoosh
