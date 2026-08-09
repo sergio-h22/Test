@@ -1,60 +1,27 @@
 # M-Power Print — website
 
-One-page marketing site for M-Power Print. Everything lives in a single
-self-contained `index.html`: no build step, no dependencies, no external
-requests. Upload that one file anywhere and it works.
+A small static site: home page, searchable product catalog, and a page for
+each of the 22 products. No build step, no dependencies, no backend, no
+monthly fee. Upload the folder and it works.
 
-Contact details and the service list are live and correct, taken from the
-business card. Two things still need your input — see below.
+```
+index.html          home
+products.html       catalog — search + category filters
+product.html        product detail, driven by ?id=
+assets/css/site.css design system, shared by all pages
+assets/js/products.js  ← the catalog. Edit this to change products.
+assets/js/site.js   config, search, forms
+photos/             product and hero images (optional)
+docs/               hero video brief
+```
 
 ---
 
-## Still to do
+## The two files you'll actually edit
 
-### 1. Pricing
+### `assets/js/site.js` — contact details
 
-Every service says **"Quote on request"**. That is deliberate — no invented
-numbers went onto this site. When you want real figures shown, find the
-`Pricing` label inside each `.ticket` block and replace the text:
-
-```html
-<div><b>Pricing</b><span>Quote on request</span></div>
-<!--                     ↑ e.g. "From $45 / 100" -->
-```
-
-You can also add more spec columns (minimum quantity, turnaround) the same
-way — the row is a grid and will re-flow on its own.
-
-### 2. The hero video
-
-The top of the page has a video slot already wired up. It stays invisible
-until a real file loads, so the hero looks finished with or without one.
-
-Generate the footage, export a 16:9 and a 9:16, and drop three files into
-`video/`. No code changes needed — see
-[`docs/hero-video-brief.md`](docs/hero-video-brief.md) for the prompt,
-export settings and compression commands.
-
-### 3. Photos of real jobs
-
-The six panels in **The Work** are CSS-generated stand-ins. To swap one for a
-real photo, put your image in a `photos/` folder next to `index.html`, then
-edit that tile:
-
-```html
-<figure class="tile" style="margin:0;background-image:url('photos/banner.jpg');background-size:cover">
-  <figcaption class="tile-cap"><b>Vinyl banners</b><span>Large format</span></figcaption>
-</figure>
-```
-
-Delete the `<div class="tile-fill …"></div>` line inside that tile when you add
-a photo. Landscape images around 1200×900 work best.
-
----
-
-## Editing contact details
-
-At the top of the `<script>` near the bottom of `index.html`:
+At the top:
 
 ```js
 const CONFIG = {
@@ -62,63 +29,96 @@ const CONFIG = {
   email:     "sales@m-powerprint.com",
   email2:    "mikey@m-powerprint.com",
   address:   "Southern California",
-
   instagram: "",
   hours:     ""
 };
 ```
 
-These feed the nav, hero, hero spec bar, contact panel, quote form and footer
-at once. The phone number becomes a tappable `tel:` link and the Instagram
-handle becomes a profile URL automatically, so write them however you want
-them to read.
+These feed the header, contact panel, quote form and footer on every page at
+once. `instagram` and `hours` are empty so those rows are hidden — fill either
+in and its row appears by itself. Blank any field and its row disappears
+rather than showing an empty label.
 
-**`instagram` and `hours` are empty, so those rows are hidden.** Fill either
-one in and its row appears by itself — no other edits needed. That works for
-any field: blank it out and the row disappears rather than showing an empty
-label.
+### `assets/js/products.js` — the catalog
 
-Adding a street address is just a matter of putting it in `address`.
+One array. Add, edit or delete an entry and the catalog, the home page grid,
+the product pages, the category counts and the quote form dropdown all update
+together. Each entry:
 
-## How the quote form works
+```js
+{
+  id: "banners",              // becomes product.html?id=banners — keep unique
+  name: "Vinyl Banners",
+  cat: "signs",               // must match a CATEGORIES id
+  photo: "",                  // "photos/banners.jpg" when you have one
+  blurb: "One sentence for the grid card.",
+  copy: "A paragraph for the product page.",
+  specs: [["Material", "Heavy vinyl"], ["Finishing", "Hemmed edges, grommets"]]
+}
+```
 
-Submitting it opens the customer's own email app with every field already
-filled in and addressed to `sales@m-powerprint.com`. No server, no signup,
-nothing to maintain — and customers can attach artwork directly in the reply.
+To add a product, copy an existing block and change the fields. To remove one,
+delete its block. Nothing else needs touching.
 
-The trade-off: it depends on the customer having a mail app set up. If you
-later want submissions delivered straight to the inbox instead, a free
+---
+
+## Still to do
+
+**Photos.** Every image is a labelled slot right now. They look deliberate
+rather than broken, but real photos are what make this design work. See
+[`photos/README.md`](photos/README.md) — start with the six on the home page.
+
+**Pricing.** Every product says "Quote on request". Nothing on this site
+quotes a number you haven't given me. Add real figures to the `specs` array
+when you want them shown.
+
+**Hero video.** Optional. The slot is wired and off by default; the prompt and
+export settings are in [`docs/hero-video-brief.md`](docs/hero-video-brief.md).
+
+---
+
+## How things work
+
+**Search** runs in the browser over the product array — instant, no server.
+The header search on any page jumps to the catalog with the query applied. The
+catalog's own search filters as you type, and every word has to match, so
+"vinyl banner" narrows properly.
+
+**The quote form** opens the customer's email app with every field filled in,
+addressed to `sales@m-powerprint.com`. A "Get a quote for this" button on a
+product page carries that product through and preselects it. No server, no
+signup, nothing to maintain.
+
+If you later want submissions delivered straight to your inbox instead, a free
 [Formspree](https://formspree.io) or [Web3Forms](https://web3forms.com)
-endpoint drops into the `form.addEventListener("submit", …)` handler.
+endpoint drops into `initQuoteForm()` in `assets/js/site.js`.
 
-## Publishing it
+## Publishing
 
-Any static host works. Two easy options:
+- **Netlify Drop** — [app.netlify.com/drop](https://app.netlify.com/drop),
+  drag the whole folder in. Live in seconds, free, HTTPS included.
+- **GitHub Pages** — Settings → Pages → deploy from branch, `/ (root)`.
 
-- **Netlify Drop** — go to [app.netlify.com/drop](https://app.netlify.com/drop)
-  and drag the folder in. Live in seconds, free, gives you an HTTPS URL.
-- **GitHub Pages** — in this repo, Settings → Pages → deploy from branch, pick
-  the branch and `/ (root)`.
+Both have a custom-domain setting for pointing `m-powerprint.com` at it.
 
-To point `m-powerprint.com` at it, both hosts have a "custom domain" setting
-that walks you through the DNS records.
+Upload the **folder**, not just `index.html` — the catalog needs the `assets/`
+files alongside it.
 
-## Notes on the design
+## Design notes
 
-The visual direction comes from the business card: glossy black stock, white
-skewed wordmark, concentric-ring motif. Two details carry it through:
+Built to the red-and-white direction supplied as a mockup: black utility
+header with the wordmark centred, black nav strip, light page, red as the
+single accent, capability cards overlapping the hero, a black trust strip, and
+a product grid.
 
-- **The gloss.** Panels catch a moving highlight that follows your cursor and
-  scroll position, the way the laminated card catches light. Gloss finish is a
-  thing the shop sells, so the site demonstrates it. It switches off
-  automatically for visitors who have "reduce motion" enabled.
-- **Job tickets.** Services are laid out as spec rows — what's included,
-  artwork accepted, pricing — because that is the document a print shop
-  actually runs on, rather than generic feature cards.
+Two things from that mockup were deliberately not copied. Its body text was
+scrambled placeholder, so the copy here is written from the business card and
+the real service list. And several garments in it carried Nike swooshes — a
+generation artifact — so no third-party marks appear anywhere on this site.
 
-The seventeen products on the card are grouped into four tickets: Signs &
-Banners, Cards & Marketing, Stickers & Labels, and Custom Apparel. The card's
-"and much more!" is carried by the line underneath them.
+The previous dark cyan-on-black design is preserved in git history at commit
+`534420f` if it's ever wanted back.
 
-Accessibility floor: keyboard focus rings on everything, semantic landmarks, a
-skip link, labelled form fields, and no horizontal scrolling down to 320px.
+Accessibility floor: visible focus rings, semantic landmarks, a skip link,
+labelled form fields, live region on the result count, and no horizontal
+scrolling down to 320px.

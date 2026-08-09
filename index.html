@@ -3,785 +3,170 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>M-Power Print — #1 Print Provider At Affordable Prices</title>
-<meta name="description" content="M-Power Print, Southern California: banners, stickers, flyers, postcards, business cards, posters, window vinyls, apparel, yard signs, labels, magnets, menus, letterhead, envelopes, catalogs, foam boards and signs.">
-<meta name="theme-color" content="#08090A">
+<title>M-Power Print — Custom apparel, signs and print in Southern California</title>
+<meta name="description" content="M-Power Print: banners, yard signs, business cards, flyers, stickers, labels, magnets and custom apparel. Conveniently located in Southern California.">
+<meta name="theme-color" content="#0A0A0B">
 <meta property="og:title" content="M-Power Print">
-<meta property="og:description" content="#1 Print Provider At Affordable Prices — banners, signs, cards, stickers and apparel. Conveniently located in Southern California.">
+<meta property="og:description" content="#1 Print Provider At Affordable Prices — signs, business print, stickers and custom apparel.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2308090A'/><circle cx='50' cy='50' r='12' fill='%23F4F2ED'/><circle cx='50' cy='50' r='26' stroke='%23F4F2ED' stroke-width='7' fill='none'/><circle cx='50' cy='50' r='42' stroke='%23F4F2ED' stroke-width='7' fill='none'/></svg>">
-
-<!--
-  M-POWER PRINT
-
-  Contact details live in the CONFIG block at the top of the script at the
-  bottom of this file. Change them once and the nav, hero, contact panel,
-  quote form and footer all update together.
-
-  Instagram and opening hours are empty in CONFIG, so those rows are hidden.
-  Fill either one in and its row appears by itself.
-
-  The contact details and the service list are real, taken from the business
-  card. Pricing deliberately says "Quote on request" everywhere — add real
-  numbers only when you have them.
-
-  The six panels under "The Work" are still stand-ins for photos of real jobs.
--->
-
-<style>
-/* ---------------------------------------------------------------- tokens */
-:root{
-  --ink:#08090A;          /* page ground — press black            */
-  --panel:#101114;        /* matte panel plane                    */
-  --gloss:#1B1D22;        /* raised gloss plane, black-on-black   */
-  --edge:#2A2D34;         /* hairlines, crop marks                */
-  --paper:#F4F2ED;        /* stock white — headlines              */
-  --paper-dim:#9BA0A8;    /* body copy                            */
-  --cyan:#21C7E8;         /* registration cyan — the one accent   */
-  --mag:#FF2D78;          /* magenta — registration marks ONLY    */
-
-  --f-display:"Helvetica Neue",Helvetica,Arial,sans-serif;
-  --f-body:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  --f-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
-
-  --nav-h:64px;
-}
-
-*,*::before,*::after{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
-
-body{
-  margin:0;
-  background:var(--ink);
-  color:var(--paper-dim);
-  font-family:var(--f-body);
-  font-size:clamp(15px,1.05vw,17px);
-  line-height:1.65;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
-
-img{max-width:100%;display:block}
-a{color:inherit}
-
-::selection{background:var(--cyan);color:var(--ink)}
-
-:focus-visible{
-  outline:2px solid var(--cyan);
-  outline-offset:3px;
-  border-radius:2px;
-}
-
-.skip{
-  position:absolute;left:-9999px;top:0;z-index:999;
-  background:var(--cyan);color:var(--ink);
-  padding:12px 20px;font-family:var(--f-mono);font-size:.8rem;font-weight:700;
-}
-.skip:focus{left:0}
-
-/* ------------------------------------------------------------- structure */
-.wrap{
-  width:min(1180px,100% - clamp(28px,6vw,80px));
-  margin-inline:auto;
-}
-.sect{padding:clamp(76px,10vw,148px) 0;position:relative}
-.sect-line{border-top:1px solid var(--edge)}
-
-/* ------------------------------------------------------ type: display    */
-.display{
-  font-family:var(--f-display);
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:-.028em;
-  line-height:.92;
-  color:var(--paper);
-  transform:skewX(-8deg);
-  transform-origin:left bottom;
-  margin:0;
-}
-
-.mono{
-  font-family:var(--f-mono);
-  font-size:.72rem;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
-
-.eyebrow{
-  font-family:var(--f-mono);
-  font-size:.7rem;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--cyan);
-  display:flex;align-items:center;gap:12px;
-  margin:0 0 22px;
-}
-.eyebrow::before{
-  content:"";width:26px;height:1px;background:var(--cyan);flex:none;
-}
-
-.h2{
-  font-family:var(--f-display);
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:-.025em;
-  line-height:.95;
-  color:var(--paper);
-  font-size:clamp(2rem,5.2vw,3.6rem);
-  transform:skewX(-8deg);
-  transform-origin:left bottom;
-  margin:0 0 20px;
-  padding-right:.12em;
-}
-
-.lede{
-  max-width:56ch;
-  margin:0;
-  font-size:clamp(1rem,1.35vw,1.12rem);
-}
-
-/* -------------------------------------------------- signature: the gloss */
-.gloss{position:relative;overflow:hidden;isolation:isolate}
-.gloss::after{
-  content:"";
-  position:absolute;
-  inset:-60% -30%;
-  z-index:2;
-  pointer-events:none;
-  background:linear-gradient(100deg,
-    transparent 32%,
-    rgba(255,255,255,.035) 42%,
-    rgba(255,255,255,.085) 50%,
-    rgba(255,255,255,.03)  58%,
-    transparent 68%);
-  transform:translate3d(calc(var(--sx,0) * 1px),0,0);
-  transition:transform .55s cubic-bezier(.22,.61,.36,1);
-}
-@media (prefers-reduced-motion:reduce){
-  .gloss::after{transform:none;transition:none;opacity:.5}
-}
-
-/* ------------------------------------------------------------ crop marks */
-.crop{position:relative}
-.crop::before,.crop::after{
-  content:"";position:absolute;width:13px;height:13px;pointer-events:none;
-  border-color:var(--edge);border-style:solid;
-}
-.crop::before{top:0;left:0;border-width:1px 0 0 1px}
-.crop::after{bottom:0;right:0;border-width:0 1px 1px 0}
-
-/* -------------------------------------------------------------- ring art */
-.rings{
-  position:absolute;
-  color:var(--paper);
-  opacity:.055;
-  pointer-events:none;
-  z-index:0;
-}
-
-/* -------------------------------------------------------------------- nav */
-.nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  height:var(--nav-h);
-  display:flex;align-items:center;
-  background:rgba(8,9,10,.72);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--edge);
-}
-/* No width here — .wrap on the same element already sets it. Declaring
-   width:100% would win on equal specificity and break the nav out of the
-   page's column. */
-.nav-in{display:flex;align-items:center;gap:20px}
-
-.brand{
-  font-family:var(--f-display);font-weight:900;text-transform:uppercase;
-  letter-spacing:-.02em;font-size:1.02rem;color:var(--paper);
-  text-decoration:none;transform:skewX(-8deg);
-  display:flex;align-items:center;gap:9px;margin-right:auto;
-}
-.brand-mark{
-  width:20px;height:20px;flex:none;color:var(--cyan);transform:skewX(8deg);
-}
-
-.nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{
-  font-family:var(--f-mono);font-size:.7rem;letter-spacing:.16em;
-  text-transform:uppercase;text-decoration:none;color:var(--paper-dim);
-  transition:color .2s;
-}
-.nav-links a:hover{color:var(--paper)}
-
-.nav-toggle{
-  display:none;
-  background:none;border:1px solid var(--edge);color:var(--paper);
-  font-family:var(--f-mono);font-size:.68rem;letter-spacing:.16em;
-  text-transform:uppercase;padding:9px 14px;cursor:pointer;
-}
-
-/* ------------------------------------------------------------- buttons */
-.btn{
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;
-  text-transform:uppercase;font-weight:700;
-  padding:15px 26px;border:1px solid transparent;
-  text-decoration:none;cursor:pointer;white-space:nowrap;
-  transition:background .2s,color .2s,border-color .2s,transform .2s;
-}
-.btn-fill{background:var(--cyan);color:var(--ink)}
-.btn-fill:hover{background:var(--paper);transform:translateY(-2px)}
-.btn-line{background:transparent;color:var(--paper);border-color:var(--edge)}
-.btn-line:hover{border-color:var(--paper);transform:translateY(-2px)}
-.btn-sm{padding:11px 18px;font-size:.68rem}
-@media (prefers-reduced-motion:reduce){
-  .btn:hover{transform:none}
-}
-
-/* ---------------------------------------------------------------- hero */
-.hero{
-  position:relative;
-  padding-top:calc(var(--nav-h) + clamp(64px,11vw,132px));
-  padding-bottom:clamp(56px,8vw,104px);
-  background:var(--panel);
-  border-bottom:1px solid var(--edge);
-}
-.hero-rings{
-  top:50%;right:-14%;width:min(760px,88vw);
-  transform:translateY(-50%);
-}
-
-/* --- hero video (hidden until a real file loads) --- */
-.hero-video{position:absolute;inset:0;z-index:1;overflow:hidden}
-.hero-video[hidden]{display:none}
-.hero-video video{
-  width:100%;height:100%;object-fit:cover;display:block;
-}
-.hero-scrim{
-  position:absolute;inset:0;
-  background:
-    linear-gradient(90deg,
-      rgba(8,9,10,.95) 0%,
-      rgba(8,9,10,.86) 34%,
-      rgba(8,9,10,.48) 66%,
-      rgba(8,9,10,.62) 100%),
-    linear-gradient(0deg, rgba(8,9,10,.92) 0%, rgba(8,9,10,0) 46%);
-}
-/* With footage behind it, the decorative layers step back so the type
-   stays the loudest thing in the frame. */
-.hero.has-video .hero-rings{opacity:.03}
-.hero.has-video::after{opacity:.45}
-@media (max-width:700px){
-  .hero-scrim{
-    background:
-      linear-gradient(0deg, rgba(8,9,10,.95) 0%, rgba(8,9,10,.55) 55%, rgba(8,9,10,.75) 100%);
-  }
-}
-.hero-in{position:relative;z-index:3}
-.hero-in > *{max-width:46ch}
-
-.hero-tag{
-  font-family:var(--f-mono);font-size:clamp(.58rem,1.6vw,.68rem);
-  letter-spacing:.2em;
-  text-transform:uppercase;color:var(--cyan);
-  display:inline-block;margin-bottom:26px;max-width:none;
-  padding:7px 13px;border:1px solid rgba(33,199,232,.35);
-}
-
-.wordmark{font-size:clamp(3rem,11vw,7.4rem);padding-right:.1em}
-.wordmark span{display:block}
-.wordmark .thin{
-  color:transparent;
-  -webkit-text-stroke:1.5px var(--paper);
-}
-
-.hero-sub{
-  margin:26px 0 0;max-width:44ch;
-  font-size:clamp(1.02rem,1.5vw,1.2rem);
-}
-
-.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:38px}
-
-.specbar{
-  position:relative;z-index:3;
-  margin-top:clamp(48px,7vw,86px);
-  padding-top:26px;border-top:1px solid var(--edge);
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:24px;
-}
-.spec b{
-  display:block;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--cyan);font-weight:400;margin-bottom:7px;
-}
-.spec span{color:var(--paper);font-size:.95rem}
-
-/* ------------------------------------------------------------ services */
-.head{margin-bottom:clamp(44px,6vw,72px);max-width:60ch}
-
-.ticket{
-  display:block;text-decoration:none;color:inherit;
-  border:1px solid var(--edge);
-  background:var(--panel);
-  padding:clamp(24px,3.4vw,38px);
-  margin-bottom:14px;
-  position:relative;
-  transition:border-color .25s,background .25s,transform .25s;
-}
-.ticket:hover{border-color:#3A3E47;background:var(--gloss);transform:translateY(-3px)}
-@media (prefers-reduced-motion:reduce){.ticket:hover{transform:none}}
-
-.ticket-top{
-  display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
-  margin-bottom:16px;
-}
-.ticket-tag{
-  font-family:var(--f-mono);font-size:.64rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--ink);background:var(--cyan);
-  padding:5px 9px;flex:none;
-}
-.ticket-name{
-  font-family:var(--f-display);font-weight:900;text-transform:uppercase;
-  letter-spacing:-.02em;color:var(--paper);
-  font-size:clamp(1.35rem,3vw,2.05rem);line-height:1;margin:0;
-}
-.ticket-arrow{
-  margin-left:auto;color:var(--cyan);font-size:1.25rem;line-height:1;
-  transition:transform .25s;
-}
-.ticket:hover .ticket-arrow{transform:translateX(5px)}
-@media (prefers-reduced-motion:reduce){.ticket:hover .ticket-arrow{transform:none}}
-
-.ticket-body{max-width:62ch;margin:0 0 20px}
-
-.ticket-specs{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
-  gap:18px;padding-top:18px;border-top:1px dashed var(--edge);
-}
-.ticket-specs div b{
-  display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.18em;
-  text-transform:uppercase;color:#6E747E;font-weight:400;margin-bottom:5px;
-}
-.ticket-specs div span{
-  font-family:var(--f-mono);font-size:.82rem;color:var(--paper);
-}
-
-/* ---------------------------------------------------------------- work */
-.grid-work{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:14px;
-}
-@media (max-width:900px){.grid-work{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.grid-work{grid-template-columns:1fr}}
-.tile{
-  position:relative;aspect-ratio:4/3;
-  background:var(--panel);border:1px solid var(--edge);
-  overflow:hidden;display:flex;align-items:flex-end;
-}
-/* PLACEHOLDER: halftone fills stand in for photos. To use a real photo,
-   add  style="background-image:url('photos/your-photo.jpg');background-size:cover"
-   to the .tile element and delete its .tile-fill div. */
-.tile-fill{position:absolute;inset:0;opacity:.7}
-.f1{background-image:radial-gradient(circle,rgba(244,242,237,.20) 1.1px,transparent 1.3px);background-size:8px 8px}
-.f2{background-image:radial-gradient(circle,rgba(33,199,232,.26) 1.3px,transparent 1.5px);background-size:13px 13px}
-.f3{background-image:repeating-linear-gradient(58deg,rgba(244,242,237,.12) 0 1px,transparent 1px 11px)}
-.f4{background-image:radial-gradient(circle,rgba(244,242,237,.16) 1.6px,transparent 1.8px);background-size:19px 19px}
-.f5{background-image:repeating-linear-gradient(0deg,rgba(244,242,237,.10) 0 1px,transparent 1px 9px),repeating-linear-gradient(90deg,rgba(244,242,237,.10) 0 1px,transparent 1px 9px)}
-.f6{background-image:radial-gradient(circle at 30% 30%,rgba(255,45,120,.18) 1.2px,transparent 1.4px);background-size:11px 11px}
-
-.tile-cap{
-  position:relative;z-index:2;width:100%;
-  padding:16px 18px;
-  background:linear-gradient(to top,rgba(8,9,10,.95),transparent);
-}
-.tile-cap b{
-  display:block;color:var(--paper);font-size:.95rem;font-weight:600;margin-bottom:3px;
-}
-.tile-cap span{
-  font-family:var(--f-mono);font-size:.62rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--cyan);
-}
-
-/* ------------------------------------------------------------- process */
-.steps{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;
-  background:var(--edge);border:1px solid var(--edge);
-}
-.step{background:var(--panel);padding:clamp(26px,3vw,36px)}
-.step-n{
-  font-family:var(--f-mono);font-size:.78rem;letter-spacing:.14em;
-  color:var(--cyan);display:block;margin-bottom:18px;
-}
-.step h3{
-  font-family:var(--f-display);font-weight:900;text-transform:uppercase;
-  letter-spacing:-.015em;color:var(--paper);
-  font-size:1.12rem;margin:0 0 9px;
-}
-.step p{margin:0;font-size:.94rem}
-
-/* ---------------------------------------------------------------- quote */
-.quote{background:var(--panel);border-top:1px solid var(--edge)}
-.quote-grid{
-  display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
-  gap:clamp(40px,6vw,80px);align-items:start;
-}
-.contact-block{
-  border:1px solid var(--edge);padding:clamp(24px,3vw,32px);
-  background:var(--gloss);
-}
-.contact-row{
-  display:block;text-decoration:none;
-  padding:16px 0;border-bottom:1px solid var(--edge);
-}
-.contact-row:last-of-type{border-bottom:0;padding-bottom:0}
-.contact-row b{
-  display:block;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.2em;
-  text-transform:uppercase;color:#6E747E;font-weight:400;margin-bottom:6px;
-}
-.contact-row span{color:var(--paper);font-size:1.02rem;word-break:break-word}
-a.contact-row:hover span{color:var(--cyan)}
-
-.field{margin-bottom:18px}
-.field label{
-  display:block;font-family:var(--f-mono);font-size:.64rem;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--paper-dim);margin-bottom:8px;
-}
-.field input,.field select,.field textarea{
-  width:100%;background:var(--ink);color:var(--paper);
-  border:1px solid var(--edge);
-  padding:14px 15px;font-family:var(--f-body);font-size:.98rem;
-  border-radius:0;-webkit-appearance:none;appearance:none;
-  transition:border-color .2s;
-}
-.field select{
-  background-image:linear-gradient(45deg,transparent 50%,var(--paper-dim) 50%),linear-gradient(135deg,var(--paper-dim) 50%,transparent 50%);
-  background-position:calc(100% - 19px) 21px,calc(100% - 14px) 21px;
-  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
-  padding-right:44px;
-}
-.field textarea{resize:vertical;min-height:118px}
-.field input:hover,.field select:hover,.field textarea:hover{border-color:#3A3E47}
-.field input::placeholder,.field textarea::placeholder{color:#5C626C}
-
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-
-.form-note{
-  font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;
-  color:#6E747E;margin:14px 0 0;line-height:1.7;
-}
-
-/* -------------------------------------------------------------- footer */
-.foot{border-top:1px solid var(--edge);padding:clamp(52px,6vw,72px) 0 34px}
-.foot-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-  gap:36px;margin-bottom:46px;
-}
-.foot h4{
-  font-family:var(--f-mono);font-size:.64rem;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--cyan);font-weight:400;margin:0 0 16px;
-}
-.foot ul{list-style:none;margin:0;padding:0}
-.foot li{margin-bottom:9px}
-.foot li a{text-decoration:none;font-size:.94rem;transition:color .2s}
-.foot li a:hover{color:var(--paper)}
-
-.foot-base{
-  display:flex;flex-wrap:wrap;gap:14px;align-items:center;
-  padding-top:26px;border-top:1px solid var(--edge);
-}
-.foot-base p{
-  margin:0;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.14em;
-  text-transform:uppercase;color:#5C626C;
-}
-.regmark{margin-left:auto;color:var(--mag);opacity:.6;flex:none}
-
-/* ------------------------------------------------------------ responsive */
-@media (max-width:880px){
-  .quote-grid{grid-template-columns:1fr}
-}
-@media (max-width:760px){
-  .nav-toggle{display:block}
-  .nav-links{
-    position:fixed;top:var(--nav-h);left:0;right:0;
-    flex-direction:column;align-items:stretch;gap:0;
-    background:var(--panel);border-bottom:1px solid var(--edge);
-    padding:8px 0;
-    display:none;
-  }
-  .nav-links.open{display:flex}
-  .nav-links a{
-    padding:16px clamp(14px,5vw,40px);
-    border-bottom:1px solid var(--edge);
-  }
-  .nav-links .btn{margin:12px clamp(14px,5vw,40px)}
-  .hero-rings{right:-40%;opacity:.6}
-}
-@media (max-width:520px){
-  .field-row{grid-template-columns:1fr}
-  .ticket-arrow{display:none}
-}
-</style>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230A0A0B'/><circle cx='50' cy='50' r='30' fill='%23E31B23'/></svg>">
+<link rel="stylesheet" href="assets/css/site.css">
 </head>
-
 <body>
 <a class="skip" href="#main">Skip to content</a>
 
-<!-- =============================================================== NAV -->
-<header class="nav">
-  <div class="wrap nav-in">
-    <a class="brand" href="#top">
-      <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
-        <circle cx="50" cy="50" r="11" fill="currentColor"/>
-        <circle cx="50" cy="50" r="26" stroke="currentColor" stroke-width="8" fill="none"
-                stroke-dasharray="120 45" stroke-linecap="round" transform="rotate(-40 50 50)"/>
-        <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="8" fill="none"
-                stroke-dasharray="200 76" stroke-linecap="round" transform="rotate(-40 50 50)"/>
-      </svg>
-      M-Power Print
+<!-- ====================================================== UTILITY HEADER -->
+<header class="util">
+  <div class="wrap util-in">
+    <a class="logo" href="index.html">
+      <span class="logo-mark">M-P<em>OWER</em></span>
+      <span class="logo-sub">Southern California</span>
     </a>
 
-    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <form class="search" id="utilSearch" role="search">
+      <label class="skip" for="utilSearchInput">Search products</label>
+      <input id="utilSearchInput" type="search" placeholder="Search products" autocomplete="off">
+      <button type="submit" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+      </button>
+    </form>
 
-    <nav class="nav-links" id="navLinks" aria-label="Main">
-      <a href="#services">Services</a>
-      <a href="#work">Work</a>
-      <a href="#process">Process</a>
-      <a class="btn btn-fill btn-sm" href="#quote">Get a Quote</a>
-    </nav>
+    <a class="btn btn-red btn-sm" href="#quote">Get a quote</a>
   </div>
 </header>
 
-<main id="main">
-<a id="top"></a>
-
-<!-- ============================================================== HERO -->
-<section class="hero gloss" id="hero">
-
-  <!-- Hero video. Stays hidden until a real file loads, so the page looks
-       finished with or without one. Drop the files in as:
-         video/hero.mp4         16:9, desktop
-         video/hero-mobile.mp4  9:16, phones
-         video/hero-poster.jpg  first frame, shown while loading
-       File names are set in HERO_VIDEO at the bottom of this file. -->
-  <div class="hero-video" id="heroVideo" hidden>
-    <video id="heroVideoEl" muted loop playsinline preload="metadata"
-           aria-hidden="true" tabindex="-1"></video>
-    <div class="hero-scrim"></div>
+<!-- ================================================================= NAV -->
+<nav class="nav" aria-label="Main">
+  <div class="wrap nav-in">
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <div class="nav-links" id="navLinks" style="display:flex;align-items:center;gap:4px">
+      <a href="index.html" aria-current="page">Home</a>
+      <a href="products.html">All products</a>
+      <a href="products.html?q=banner">Signs &amp; banners</a>
+      <a href="products.html?q=card">Business print</a>
+      <a href="products.html?q=sticker">Stickers</a>
+      <a href="products.html?q=shirt">Apparel</a>
+      <a href="#quote">Contact</a>
+    </div>
   </div>
+</nav>
 
-  <svg class="rings hero-rings" viewBox="0 0 400 400" aria-hidden="true">
-    <circle cx="200" cy="200" r="34" fill="currentColor"/>
-    <circle cx="200" cy="200" r="72"  stroke="currentColor" stroke-width="24" fill="none"
-            stroke-dasharray="330 125" stroke-linecap="round" transform="rotate(-42 200 200)"/>
-    <circle cx="200" cy="200" r="118" stroke="currentColor" stroke-width="24" fill="none"
-            stroke-dasharray="540 202" stroke-linecap="round" transform="rotate(-42 200 200)"/>
-    <circle cx="200" cy="200" r="164" stroke="currentColor" stroke-width="24" fill="none"
-            stroke-dasharray="750 280" stroke-linecap="round" transform="rotate(-42 200 200)"/>
-  </svg>
+<main id="main">
+
+<!-- ================================================================ HERO -->
+<section class="hero">
+  <!-- Background: a photo of the shop floor, or video. Both optional —
+       without either, the tinted ground below carries the section. -->
+  <div class="hero-media">
+    <div class="hero-video" id="heroVideo" hidden>
+      <video id="heroVideoEl" muted loop playsinline preload="metadata"
+             aria-hidden="true" tabindex="-1"></video>
+    </div>
+  </div>
 
   <div class="wrap hero-in">
-    <span class="hero-tag">#1 Print Provider At Affordable Prices</span>
-
-    <h1 class="display wordmark">
-      <span>M-Power</span>
-      <span class="thin">Print</span>
-    </h1>
-
-    <p class="hero-sub">
-      Banners, signs, cards, stickers and apparel — printed in Southern
-      California and priced so a small business can afford a full run. Send
-      your artwork, approve the proof, pick it up.
-    </p>
-
-    <div class="hero-cta">
-      <a class="btn btn-fill" href="#quote">Get a Quote</a>
-      <a class="btn btn-line" href="#" data-field="phoneHref">Call <span data-field="phone"></span></a>
-    </div>
-  </div>
-
-  <div class="wrap specbar">
-    <div class="spec"><b>Artwork</b><span>PNG, JPG, PDF, AI or SVG</span></div>
-    <div class="spec"><b>Proof</b><span>Approve before we print</span></div>
-    <div class="spec"><b>Minimums</b><span>Small runs welcome</span></div>
-    <div class="spec"><b>Located in</b><span data-field="address"></span></div>
-  </div>
-</section>
-
-<!-- ========================================================== SERVICES -->
-<section class="sect" id="services">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">What we print</p>
-      <h2 class="h2">If it prints,<br>we print it</h2>
+    <div class="hero-copy">
+      <h1 class="h1">Custom apparel and print that makes your brand stand out</h1>
       <p class="lede">
-        Everything below runs through one shop. A mixed order — banners and
-        cards and shirts together — is one job, one quote, one pickup.
+        Banners, signs, business cards, stickers and apparel — printed in
+        Southern California and priced so a small business can afford a full
+        run. Send your artwork, approve the proof, pick it up.
       </p>
+      <div class="hero-cta">
+        <a class="btn btn-white" href="#quote">Start your order</a>
+        <a class="btn btn-dark" href="products.html">Browse products</a>
+      </div>
     </div>
 
-    <!-- Every product named below comes from the business card. Pricing says
-         "Quote on request" on purpose — add real numbers only when you have
-         them, in the <span> next to each Pricing label. -->
-
-    <a class="ticket gloss" href="#quote">
-      <div class="ticket-top">
-        <span class="ticket-tag">Large format</span>
-        <h3 class="ticket-name">Signs &amp; Banners</h3>
-        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
+    <div class="collage" id="heroCollage">
+      <div class="slot slot-lg" data-slot="hero-main">
+        <span class="slot-label"><b>Hero product</b>photo slot</span>
       </div>
-      <p class="ticket-body">
-        The big stuff — the work people see from across a parking lot. Grand
-        openings, job sites, real estate, trade shows and storefronts.
-      </p>
-      <div class="ticket-specs">
-        <div><b>Includes</b><span>Banners · Yard signs · Foam boards · Window vinyls · Posters</span></div>
-        <div><b>Artwork</b><span>PDF, AI, EPS or SVG</span></div>
-        <div><b>Pricing</b><span>Quote on request</span></div>
-      </div>
-    </a>
-
-    <a class="ticket gloss" href="#quote">
-      <div class="ticket-top">
-        <span class="ticket-tag">Business print</span>
-        <h3 class="ticket-name">Cards &amp; Marketing</h3>
-        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
-      </div>
-      <p class="ticket-body">
-        Everything a business hands out or mails. The gloss card that brought
-        you here came off our press.
-      </p>
-      <div class="ticket-specs">
-        <div><b>Includes</b><span>Business cards · Flyers · Postcards · Menus · Letterhead · Envelopes · Catalogs</span></div>
-        <div><b>Artwork</b><span>PDF, AI, PSD or JPG</span></div>
-        <div><b>Pricing</b><span>Quote on request</span></div>
-      </div>
-    </a>
-
-    <a class="ticket gloss" href="#quote">
-      <div class="ticket-top">
-        <span class="ticket-tag">Adhesive</span>
-        <h3 class="ticket-name">Stickers &amp; Labels</h3>
-        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
-      </div>
-      <p class="ticket-body">
-        Cut to your shape, printed for indoor or outdoor life. Product labels,
-        packaging, giveaways and vehicle magnets.
-      </p>
-      <div class="ticket-specs">
-        <div><b>Includes</b><span>Stickers · Labels · Magnets</span></div>
-        <div><b>Artwork</b><span>Vector preferred for die-cuts</span></div>
-        <div><b>Pricing</b><span>Quote on request</span></div>
-      </div>
-    </a>
-
-    <a class="ticket gloss" href="#quote">
-      <div class="ticket-top">
-        <span class="ticket-tag">Apparel</span>
-        <h3 class="ticket-name">Custom Apparel</h3>
-        <span class="ticket-arrow" aria-hidden="true">&rarr;</span>
-      </div>
-      <p class="ticket-body">
-        Shirts, hoodies and uniforms for crews, teams, staff and events —
-        printed with your logo or artwork.
-      </p>
-      <div class="ticket-specs">
-        <div><b>Includes</b><span>T-shirts · Hoodies · Uniforms · Event merch</span></div>
-        <div><b>Artwork</b><span>High-resolution PNG, AI or SVG</span></div>
-        <div><b>Pricing</b><span>Quote on request</span></div>
-      </div>
-    </a>
-
-    <p class="lede" style="margin-top:26px">
-      Not on the list? The card says <em>and much more</em> for a reason —
-      <a href="#quote" style="color:var(--cyan)">ask</a>.
-    </p>
-  </div>
-</section>
-
-<!-- ============================================================== WORK -->
-<section class="sect sect-line" id="work">
-  <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">Recent jobs</p>
-      <h2 class="h2">The work</h2>
-      <p class="lede">
-        Swap these panels for photos of your own jobs — instructions are in the
-        comment above the grid in <code>index.html</code>.
-      </p>
-    </div>
-
-    <!-- ← PLACEHOLDER: replace each .tile with a real job photo by adding
-         style="background-image:url('photos/name.jpg');background-size:cover"
-         and updating the caption text. -->
-    <div class="grid-work">
-      <figure class="tile" style="margin:0">
-        <div class="tile-fill f1"></div>
-        <figcaption class="tile-cap"><b>Vinyl banners</b><span>Large format</span></figcaption>
-      </figure>
-      <figure class="tile" style="margin:0">
-        <div class="tile-fill f2"></div>
-        <figcaption class="tile-cap"><b>Business cards</b><span>Gloss finish</span></figcaption>
-      </figure>
-      <figure class="tile" style="margin:0">
-        <div class="tile-fill f3"></div>
-        <figcaption class="tile-cap"><b>Window vinyls</b><span>Storefront</span></figcaption>
-      </figure>
-      <figure class="tile" style="margin:0">
-        <div class="tile-fill f4"></div>
-        <figcaption class="tile-cap"><b>Yard signs</b><span>Coroplast</span></figcaption>
-      </figure>
-      <figure class="tile" style="margin:0">
-        <div class="tile-fill f5"></div>
-        <figcaption class="tile-cap"><b>Flyers &amp; postcards</b><span>Full colour</span></figcaption>
-      </figure>
-      <figure class="tile" style="margin:0">
-        <div class="tile-fill f6"></div>
-        <figcaption class="tile-cap"><b>Die-cut stickers</b><span>Weatherproof</span></figcaption>
-      </figure>
+      <div class="slot slot-ratio"><span class="slot-label"><b>Polo</b>photo slot</span></div>
+      <div class="slot slot-ratio"><span class="slot-label"><b>Hoodie</b>photo slot</span></div>
+      <div class="slot slot-ratio"><span class="slot-label"><b>Tote</b>photo slot</span></div>
+      <div class="slot slot-ratio"><span class="slot-label"><b>Cap</b>photo slot</span></div>
     </div>
   </div>
 </section>
 
-<!-- =========================================================== PROCESS -->
-<section class="sect sect-line" id="process">
+<!-- =================================================== CAPABILITY CARDS -->
+<div class="wrap">
+  <div class="caps">
+    <a class="cap" href="products.html?q=banner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <rect x="2" y="4" width="20" height="12" rx="1"/><path d="M6 16v4M18 16v4M2 8h20"/>
+      </svg>
+      <b>Signs &amp; Large Format</b>
+      <span>Banners, yard signs, window vinyls</span>
+    </a>
+    <a class="cap" href="products.html?q=card">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 10h6M6 14h4"/>
+      </svg>
+      <b>Business Print</b>
+      <span>Cards, flyers, menus, catalogs</span>
+    </a>
+    <a class="cap" href="products.html?q=sticker">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <path d="M15 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l5-5V5a2 2 0 0 0-2-2z"/><path d="M15 21v-5h5"/>
+      </svg>
+      <b>Stickers &amp; Labels</b>
+      <span>Die-cut stickers, labels, magnets</span>
+    </a>
+    <a class="cap" href="products.html?q=shirt">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+        <path d="M8 3 4 6v4h3v11h10V10h3V6l-4-3-2 2h-4z"/>
+      </svg>
+      <b>Custom Apparel</b>
+      <span>Shirts, hoodies, polos, caps</span>
+    </a>
+  </div>
+</div>
+
+<!-- ======================================================== TRUST STRIP -->
+<div class="wrap" style="margin-top:clamp(40px,5vw,64px)">
+  <div class="trust">
+    <div class="trust-lead">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+        <path d="M12 2 4 6v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V6z"/>
+      </svg>
+      Trusted by local businesses, schools &amp; organizations
+    </div>
+    <div class="trust-items">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>Fast turnaround</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>Premium quality</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>Competitive pricing</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="m4 12 5 5L20 6"/></svg>Locally owned</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ PRODUCTS -->
+<section class="sect">
   <div class="wrap">
-    <div class="head">
-      <p class="eyebrow">How it runs</p>
-      <h2 class="h2">Four steps</h2>
-      <p class="lede">
-        The order below is the actual order things happen in. Nothing gets
-        printed until you have signed off on the proof.
-      </p>
+    <div class="head-block" style="display:flex;flex-wrap:wrap;gap:16px;align-items:end;justify-content:space-between">
+      <div>
+        <p class="eyebrow">What we print</p>
+        <h2 class="h2">If it prints, we print it</h2>
+        <p class="lede">
+          Everything runs through one shop. A mixed order — banners and cards
+          and shirts together — is one job, one quote, one pickup.
+        </p>
+      </div>
+      <a class="btn btn-white" href="products.html">See all products</a>
     </div>
 
-    <div class="steps">
-      <div class="step">
-        <span class="step-n">01</span>
-        <h3>Send artwork</h3>
-        <p>Email your file or describe what you want. No file yet? Tell us the idea and we will set it up.</p>
-      </div>
-      <div class="step">
-        <span class="step-n">02</span>
-        <h3>Proof &amp; quote</h3>
-        <p>You get a digital proof and a firm price. Revisions here are free — this is the stage to change your mind.</p>
-      </div>
-      <div class="step">
-        <span class="step-n">03</span>
-        <h3>We print</h3>
-        <p>Approved proof goes to the press. You get a message the moment the run comes off.</p>
-      </div>
-      <div class="step">
-        <span class="step-n">04</span>
-        <h3>Pick up or ship</h3>
-        <p>Collect from the shop, or we box it and send it to you. Your call at checkout.</p>
-      </div>
-    </div>
+    <div class="grid" id="featured"></div>
   </div>
 </section>
 
-<!-- ============================================================= QUOTE -->
-<section class="sect quote" id="quote">
+<!-- =============================================================== QUOTE -->
+<section class="sect sect-mist" id="quote">
   <div class="wrap">
-    <div class="head">
+    <div class="head-block">
       <p class="eyebrow">Start a job</p>
       <h2 class="h2">Get a quote</h2>
       <p class="lede">
@@ -790,8 +175,8 @@ a.contact-row:hover span{color:var(--cyan)}
       </p>
     </div>
 
-    <div class="quote-grid">
-      <div class="contact-block crop">
+    <div class="form-grid">
+      <div class="contact-card">
         <a class="contact-row" href="#" data-field="phoneHref">
           <b>Call or text</b><span data-field="phone"></span>
         </a>
@@ -804,12 +189,8 @@ a.contact-row:hover span{color:var(--cyan)}
         <a class="contact-row" href="#" data-field="instagramHref" target="_blank" rel="noopener">
           <b>Instagram</b><span data-field="instagram"></span>
         </a>
-        <div class="contact-row">
-          <b>Location</b><span data-field="address"></span>
-        </div>
-        <div class="contact-row">
-          <b>Hours</b><span data-field="hours"></span>
-        </div>
+        <div class="contact-row"><b>Location</b><span data-field="address"></span></div>
+        <div class="contact-row"><b>Hours</b><span data-field="hours"></span></div>
       </div>
 
       <form id="quoteForm" novalidate>
@@ -827,22 +208,7 @@ a.contact-row:hover span{color:var(--cyan)}
         <div class="field-row">
           <div class="field">
             <label for="qService">What are we printing</label>
-            <select id="qService" name="service" required>
-              <option value="Banners">Banners</option>
-              <option value="Yard signs">Yard signs</option>
-              <option value="Foam boards &amp; signs">Foam boards &amp; signs</option>
-              <option value="Window vinyls">Window vinyls</option>
-              <option value="Posters">Posters</option>
-              <option value="Business cards">Business cards</option>
-              <option value="Flyers &amp; postcards">Flyers &amp; postcards</option>
-              <option value="Menus">Menus</option>
-              <option value="Letterhead &amp; envelopes">Letterhead &amp; envelopes</option>
-              <option value="Catalogs">Catalogs</option>
-              <option value="Stickers &amp; labels">Stickers &amp; labels</option>
-              <option value="Magnets">Magnets</option>
-              <option value="Apparel">Apparel</option>
-              <option value="Something else">Something else</option>
-            </select>
+            <select id="qService" name="service" required></select>
           </div>
           <div class="field">
             <label for="qQty">How many</label>
@@ -860,7 +226,7 @@ a.contact-row:hover span{color:var(--cyan)}
           <textarea id="qNotes" name="notes" placeholder="Sizes, colours, placement, and whether you already have artwork."></textarea>
         </div>
 
-        <button class="btn btn-fill" type="submit">Send quote request</button>
+        <button class="btn btn-red" type="submit">Send quote request</button>
         <p class="form-note" id="formNote">
           Opens your email app with the details filled in. Attach your artwork
           there and send.
@@ -871,233 +237,47 @@ a.contact-row:hover span{color:var(--cyan)}
 </section>
 </main>
 
-<!-- ============================================================ FOOTER -->
+<!-- ============================================================== FOOTER -->
 <footer class="foot">
   <div class="wrap">
     <div class="foot-grid">
       <div>
         <h4>M-Power Print</h4>
-        <p style="margin:0;font-size:.94rem;max-width:30ch">
-          #1 Print Provider At Affordable Prices. Conveniently located in
-          Southern California.
-        </p>
-      </div>
-      <div>
-        <h4>Services</h4>
-        <ul>
-          <li><a href="#services">Signs &amp; banners</a></li>
-          <li><a href="#services">Cards &amp; marketing</a></li>
-          <li><a href="#services">Stickers &amp; labels</a></li>
-          <li><a href="#services">Custom apparel</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Shop</h4>
-        <ul>
-          <li><a href="#work">Recent work</a></li>
-          <li><a href="#process">How it works</a></li>
-          <li><a href="#quote">Get a quote</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Reach us</h4>
         <ul>
           <li><a href="#" data-field="phoneHref"><span data-field="phone"></span></a></li>
           <li><a href="#" data-field="emailHref"><span data-field="email"></span></a></li>
           <li><a href="#" data-field="email2Href"><span data-field="email2"></span></a></li>
           <li><a href="#" data-field="instagramHref" target="_blank" rel="noopener"><span data-field="instagram"></span></a></li>
+          <li><span data-field="address"></span></li>
         </ul>
       </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products.html?q=banner">Signs &amp; banners</a></li>
+          <li><a href="products.html?q=card">Business print</a></li>
+          <li><a href="products.html?q=sticker">Stickers &amp; labels</a></li>
+          <li><a href="products.html?q=shirt">Custom apparel</a></li>
+          <li><a href="products.html">All products</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="#quote">Get a quote</a></li>
+          <li><a href="index.html">Home</a></li>
+        </ul>
+      </div>
+      <p class="foot-tag">#1 Print Provider<br>At Affordable Prices</p>
     </div>
 
     <div class="foot-base">
       <p>&copy; <span id="year"></span> M-Power Print. All rights reserved.</p>
-      <svg class="regmark" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="6.5" fill="none" stroke="currentColor" stroke-width="1"/>
-        <path d="M12 0v7M12 17v7M0 12h7M17 12h7" stroke="currentColor" stroke-width="1"/>
-      </svg>
     </div>
   </div>
 </footer>
 
-<script>
-/* ===========================================================================
-   CONFIG — edit these five lines and the whole site updates.
-   =========================================================================== */
-const CONFIG = {
-  phone:     "(949) 228-1226",
-  email:     "sales@m-powerprint.com",
-  email2:    "mikey@m-powerprint.com",
-  address:   "Southern California",
-
-  /* Leave either of these empty ("") and its row is hidden automatically.
-     Fill one in and the row appears — no other edits needed. */
-  instagram: "",
-  hours:     ""
-};
-
-/* Hero video. Off until you have footage — empty strings mean the hero uses
-   its still design and the page makes no wasted requests.
-
-   TO TURN IT ON: put the files in video/ and fill in these three lines.
-
-     desktop: "video/hero.mp4",
-     mobile:  "video/hero-mobile.mp4",
-     poster:  "video/hero-poster.jpg"                                      */
-const HERO_VIDEO = {
-  desktop: "",   /* 16:9 file  */
-  mobile:  "",   /* 9:16 file  */
-  poster:  ""    /* still frame shown while it loads */
-};
-/* ======================================================================== */
-
-/* --- fill every [data-field] on the page from CONFIG --------------------- */
-const igHandle = CONFIG.instagram.replace(/^@/, "");
-const values = {
-  phone:         CONFIG.phone,
-  email:         CONFIG.email,
-  email2:        CONFIG.email2,
-  instagram:     CONFIG.instagram,
-  address:       CONFIG.address,
-  hours:         CONFIG.hours,
-  phoneHref:     "tel:" + CONFIG.phone.replace(/[^\d+]/g, ""),
-  emailHref:     "mailto:" + CONFIG.email,
-  email2Href:    "mailto:" + CONFIG.email2,
-  instagramHref: igHandle ? "https://instagram.com/" + igHandle : ""
-};
-
-document.querySelectorAll("[data-field]").forEach(function (el) {
-  const key   = el.dataset.field;
-  const value = values[key];
-
-  if (value) {
-    if (key.endsWith("Href")) el.setAttribute("href", value);
-    else el.textContent = value;
-    return;
-  }
-
-  /* Nothing configured for this field — drop the whole row rather than
-     leave a blank label sitting on the page. */
-  const row = el.closest(".contact-row, li");
-  if (row) row.remove();
-});
-
-document.getElementById("year").textContent = new Date().getFullYear();
-
-/* --- mobile menu --------------------------------------------------------- */
-const toggle = document.getElementById("navToggle");
-const links  = document.getElementById("navLinks");
-
-toggle.addEventListener("click", function () {
-  const open = links.classList.toggle("open");
-  toggle.setAttribute("aria-expanded", String(open));
-  toggle.textContent = open ? "Close" : "Menu";
-});
-
-links.addEventListener("click", function (e) {
-  if (e.target.closest("a") && links.classList.contains("open")) {
-    links.classList.remove("open");
-    toggle.setAttribute("aria-expanded", "false");
-    toggle.textContent = "Menu";
-  }
-});
-
-/* --- signature: gloss sweep tracks pointer and scroll --------------------- */
-const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-/* --- hero video ----------------------------------------------------------
-   Only reveals itself once a real file has decoded a frame. If the file is
-   missing, still uploading, or blocked, the layer removes itself and the
-   still hero shows instead — no broken box, no black rectangle.            */
-(function () {
-  const layer = document.getElementById("heroVideo");
-  const video = document.getElementById("heroVideoEl");
-  if (!layer || !video) return;
-
-  const src = window.matchMedia("(max-width: 700px)").matches
-    ? HERO_VIDEO.mobile
-    : HERO_VIDEO.desktop;
-
-  /* Nothing configured — take the layer out entirely so the page makes no
-     request for a file that isn't there. */
-  if (!src) { layer.remove(); return; }
-
-  if (HERO_VIDEO.poster) video.poster = HERO_VIDEO.poster;
-
-  video.addEventListener("error", function () { layer.remove(); });
-
-  video.addEventListener("loadeddata", function () {
-    layer.hidden = false;
-    document.getElementById("hero").classList.add("has-video");
-    /* Someone who asked for reduced motion gets the poster frame, not a loop. */
-    if (!reduced) video.play().catch(function () {});
-  });
-
-  video.src = src;
-})();
-
-if (!reduced) {
-  let ticking = false;
-
-  const sweep = function (ratio) {
-    document.documentElement.style.setProperty("--sx", (ratio * 260 - 130).toFixed(1));
-  };
-
-  window.addEventListener("pointermove", function (e) {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () {
-      sweep(e.clientX / window.innerWidth);
-      ticking = false;
-    });
-  }, { passive: true });
-
-  window.addEventListener("scroll", function () {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(function () {
-      const max = document.body.scrollHeight - window.innerHeight;
-      sweep(max > 0 ? window.scrollY / max : 0);
-      ticking = false;
-    });
-  }, { passive: true });
-}
-
-/* --- quote form: compose a prefilled email -------------------------------- */
-const form = document.getElementById("quoteForm");
-const note = document.getElementById("formNote");
-
-form.addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  if (!form.checkValidity()) {
-    form.reportValidity();
-    return;
-  }
-
-  const data = new FormData(form);
-  const get  = function (key) { return (data.get(key) || "").toString().trim(); };
-
-  const lines = [
-    "Name: "      + get("name"),
-    "Contact: "   + get("contact"),
-    "Service: "   + get("service"),
-    "Quantity: "  + get("qty"),
-    "Needed by: " + (get("deadline") || "Not specified"),
-    "",
-    "Details:",
-    get("notes") || "None given.",
-    "",
-    "— Sent from m-powerprint.com"
-  ];
-
-  const subject = "Quote request — " + get("service") + " (" + get("qty") + ")";
-  window.location.href = values.emailHref
-    + "?subject=" + encodeURIComponent(subject)
-    + "&body="    + encodeURIComponent(lines.join("\n"));
-
-  note.textContent = "Your email app should be opening. Attach your artwork before you send.";
-});
-</script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/site.js"></script>
 </body>
 </html>

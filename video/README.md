@@ -16,6 +16,6 @@ nothing looks unfinished.
 
 Full brief and the generation prompt: [`../docs/hero-video-brief.md`](../docs/hero-video-brief.md)
 
-Once the files are here, switch the slot on by filling in `HERO_VIDEO` at the
-bottom of `index.html` — it ships empty so a site without footage makes no
+Once the files are here, switch the slot on by filling in `HERO_VIDEO` near the
+top of `assets/js/site.js` — it ships empty so a site without footage makes no
 failed requests.

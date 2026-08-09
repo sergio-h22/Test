@@ -77,7 +77,8 @@ ffmpeg -i video/hero.mp4 -vframes 1 -q:v 3 video/hero-poster.jpg
 ## Installing them
 
 Put all three files in the `video/` folder, then switch the slot on by
-filling in these three lines in `HERO_VIDEO` at the bottom of `index.html`:
+filling in these three lines in `HERO_VIDEO` near the top of
+`assets/js/site.js`:
 
 ```js
 const HERO_VIDEO = {
@@ -96,7 +97,7 @@ three and the hero returns to its still design.
 - Plays muted, looped, inline — no controls, no sound, no tap needed.
 - Picks the 9:16 file under 700px wide, the 16:9 file above.
 - Fades a gradient scrim over it so the white headline stays readable.
-- Drops the ring motif and gloss sweep back so the type stays loudest.
+- Sits behind the headline scrim so the red type stays readable.
 - Shows the poster frame instead of looping for visitors who have "reduce
   motion" switched on.
 - Removes itself silently if a file is missing or fails to load.
