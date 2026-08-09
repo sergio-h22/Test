@@ -3,6 +3,10 @@
     {
       "name": "frontend-design",
       "path": "/workspace/anthropics/skills/skills/frontend-design"
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "path": "/workspace/nextlevelbuilder/ui-ux-pro-max-skill"
     }
   ]
 }
