@@ -140,6 +140,66 @@ a{color:inherit}
 .btn-dark:hover{background:#2A2E34}
 .btn-sm{padding:10px 16px;font-size:.64rem}
 
+/* Hover does nothing on a touchscreen, so taps need their own feedback. */
+.btn:active{transform:translateY(1px) scale(.985)}
+.card:active{transform:translateY(0) scale(.995)}
+.filter-btn:active{opacity:.6}
+@media (prefers-reduced-motion:reduce){
+  .btn:active,.card:active{transform:none}
+}
+
+/* ------------------------------------------------------------------- FAQ */
+.faq-list{max-width:70ch}
+.faq{border-bottom:1px solid var(--line)}
+.faq summary{
+  cursor:pointer;list-style:none;
+  padding:18px 40px 18px 0;position:relative;
+  font-weight:700;color:var(--head);font-size:1.02rem;
+  transition:color .18s;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:hover{color:var(--red)}
+/* Plus that becomes a minus, drawn from the box so there is no icon font. */
+.faq summary::after,
+.faq summary::before{
+  content:"";position:absolute;right:6px;top:50%;
+  background:var(--red);transition:transform .2s,opacity .2s;
+}
+.faq summary::before{width:14px;height:2px;margin-top:-1px}
+.faq summary::after{width:2px;height:14px;right:12px;margin-top:-7px}
+.faq[open] summary::after{transform:rotate(90deg);opacity:0}
+.faq-a{padding:0 40px 20px 0}
+.faq-a p{margin:0;font-size:.96rem}
+@media (prefers-reduced-motion:reduce){
+  .faq summary::after,.faq summary::before{transition:none}
+}
+
+/* ------------------------------------------------- sticky call bar (phone) */
+/* The phone is how a local shop actually gets work, and the number was
+   otherwise buried below the fold. Shown only where tapping makes sense. */
+.callbar{display:none}
+@media (max-width:760px){
+  .callbar{
+    display:grid;grid-template-columns:1fr 1fr;gap:1px;
+    position:fixed;left:0;right:0;bottom:0;z-index:80;
+    background:var(--line);
+    padding-bottom:env(safe-area-inset-bottom);
+    box-shadow:0 -2px 14px rgba(10,10,11,.16);
+  }
+  .callbar a{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:15px 10px;text-decoration:none;
+    font-family:var(--f-mono);font-size:.68rem;letter-spacing:.14em;
+    text-transform:uppercase;font-weight:700;
+  }
+  .callbar svg{width:15px;height:15px;flex:none}
+  .callbar .cb-call{background:var(--ink);color:#fff}
+  .callbar .cb-quote{background:var(--red);color:#fff}
+  .callbar a:active{filter:brightness(.85)}
+  /* Keep the bar from covering the last of the footer. */
+  body{padding-bottom:62px}
+}
+
 /* ------------------------------------------------------------------ type */
 .h1{
   font-size:clamp(2.1rem,4.4vw,3.5rem);

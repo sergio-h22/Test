@@ -12,9 +12,13 @@ assets/css/site.css design system, shared by all pages
 assets/js/products.js  ← the catalog. Edit this to change products.
 assets/js/illustrations.js  product drawings, used until photos arrive
 assets/img/         the fist logo, dark and white versions
-assets/js/site.js   config, search, forms
+assets/js/site.js   config, FAQ, search, forms, structured data
+assets/img/         logo, favicon, link-preview card
 photos/             product and hero images (optional)
 video/hero.mp4      the hero video
+404.html            branded not-found page
+sitemap.xml         24 URLs — regenerate if you add products
+robots.txt          points crawlers at the sitemap
 docs/               hero video brief
 ```
 
@@ -79,6 +83,15 @@ when you want them shown.
 same 16:9 file cropped to portrait, which works but isn't ideal. Details in
 [`docs/hero-video-brief.md`](docs/hero-video-brief.md).
 
+**Two FAQ answers.** "How long does a job take?" and "Is there a minimum
+order?" both say `TODO` in the `FAQ` array in `assets/js/site.js`. Replace them
+with your real turnaround and minimums — those two questions stall more orders
+than anything else on the site.
+
+**Your real domain.** `SITE_URL` at the top of `assets/js/site.js`, plus
+`sitemap.xml` and `robots.txt`, all assume `https://m-powerprint.com/`. If you
+deploy somewhere else, change it in those three places.
+
 **The original logo artwork.** The fist logo on the site was recovered from a
 photograph of your business card. It came out clean, but vector artwork would
 be sharper at large sizes — see [`photos/README.md`](photos/README.md).
@@ -102,12 +115,45 @@ stops being used for that product. Nothing needs deleting.
 
 ---
 
+## Getting found on Google
+
+The site publishes structured data so search engines understand what the
+business is, rather than guessing from the text:
+
+| Page | What it declares |
+|---|---|
+| Home | `LocalBusiness`, `WebSite` (with site search), `FAQPage` |
+| Catalog | `ItemList` of all 22 products |
+| Each product | `Service` + `BreadcrumbList` |
+
+It is generated in `assets/js/site.js` from the same `CONFIG` and `PRODUCTS`
+data the page renders from, so it can never drift out of sync with what
+visitors actually see.
+
+**One limit worth knowing.** Because no street address is published, the site
+can't appear in Google's local map pack — that needs a verifiable address on a
+Google Business Profile. The `areaServed` field carries "Southern California"
+instead, which helps ordinary search results but not maps. Adding even just a
+city would recover most of the difference.
+
+Products are modelled as `Service` rather than `Product` on purpose: a
+`Product` with no price reports a missing-offer error, and everything here is
+quote-on-request.
+
 ## How things work
 
 **Search** runs in the browser over the product array — instant, no server.
 The header search on any page jumps to the catalog with the query applied. The
 catalog's own search filters as you type, and every word has to match, so
 "vinyl banner" narrows properly.
+
+**The sticky call bar** appears on phones only, pinned to the bottom, because
+the phone is how a local shop actually gets work and the number was otherwise
+below the fold.
+
+**The hero video** is fetched only once the hero scrolls into view, and is
+skipped entirely when the browser reports Save-Data or a 2G/3G connection. It
+used to download 2.6 MB on every visit before anything else loaded.
 
 **The quote form** opens the customer's email app with every field filled in,
 addressed to `sales@m-powerprint.com`. A "Get a quote for this" button on a

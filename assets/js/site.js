@@ -25,6 +25,31 @@ const HERO_VIDEO = {
   poster:  ""
 };
 
+/* The address the site is published at. Used for canonical URLs, the sitemap
+   and structured data — change it if you deploy somewhere else. Keep the
+   trailing slash. */
+const SITE_URL = "https://m-powerprint.com/";
+
+/* The home page FAQ. Also becomes the FAQPage structured data Google reads,
+   so edit here and both update together.
+   TODO marks answers that need the shop's real numbers. */
+const FAQ = [
+  { q: "What file formats can I send?",
+    a: "PDF, AI, EPS and SVG are ideal because they stay sharp at any size. High-resolution PNG, JPG and PSD are fine too. For anything die-cut or embroidered, vector artwork gives the cleanest result." },
+  { q: "What if I don't have artwork?",
+    a: "Tell us the idea and we will set it up for you. Plenty of jobs start as a sketch, a photo of an old sign, or a description over the phone." },
+  { q: "Do I get to see it before it prints?",
+    a: "Yes. Every job gets a digital proof and a firm price before anything goes to the press, and changes at that stage are free. Nothing prints until you approve it." },
+  { q: "Can I collect it, or do you ship?",
+    a: "Either. Collect from the shop, or we will box it and send it to you — your call when you order." },
+  { q: "How long does a job take?",
+    a: "TODO — replace with your real turnaround. Ask us for a date when you request the quote and we will confirm it with the proof." },
+  { q: "Is there a minimum order?",
+    a: "TODO — replace with your real minimums. Small runs are welcome; ask and we will tell you what is worth doing." },
+  { q: "Where are you based?",
+    a: "We are in Southern California and work with businesses, schools and organisations across the area. Call (949) 228-1226 or email sales@m-powerprint.com to get started." }
+];
+
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ------------------------------------------------------------- utilities */
@@ -134,6 +159,13 @@ function initHeroVideo() {
   /* Nothing configured — remove the layer so no request is made at all. */
   if (!src) { layer.remove(); return; }
 
+  /* Don't spend someone's data plan on decoration. */
+  const net = navigator.connection;
+  if (net && (net.saveData || /^([23]g|slow-2g)$/.test(net.effectiveType || ""))) {
+    layer.remove();
+    return;
+  }
+
   if (HERO_VIDEO.poster) video.poster = HERO_VIDEO.poster;
   video.addEventListener("error", function () { layer.remove(); });
   video.addEventListener("loadeddata", function () {
@@ -142,7 +174,135 @@ function initHeroVideo() {
     /* Someone who asked for reduced motion gets a still frame, not a loop. */
     if (!reduced) video.play().catch(function () {});
   });
-  video.src = src;
+
+  /* Fetch only once the hero is actually on screen. Setting src at load time
+     pulled megabytes down ahead of everything that matters. */
+  function load() { if (!video.src) video.src = src; }
+
+  if (!("IntersectionObserver" in window)) { load(); return; }
+
+  /* Watch the hero section, not the video layer: the layer starts `hidden`,
+     and a display:none element never reports as intersecting, so observing
+     it would mean the video never loads at all. */
+  const target = document.getElementById("hero") || layer;
+
+  const io = new IntersectionObserver(function (entries) {
+    if (entries.some(function (e) { return e.isIntersecting; })) {
+      io.disconnect();
+      load();
+    }
+  }, { rootMargin: "200px" });
+  io.observe(target);
+}
+
+/* ------------------------------------------------------- structured data */
+/* Injected from CONFIG and PRODUCTS so the markup can never drift from what
+   the page actually says. */
+function jsonLd(obj) {
+  const s = document.createElement("script");
+  s.type = "application/ld+json";
+  s.textContent = JSON.stringify(obj);
+  document.head.appendChild(s);
+}
+
+function business() {
+  const emails = [CONFIG.email, CONFIG.email2].filter(Boolean);
+  const b = {
+    "@type": "LocalBusiness",
+    "@id": SITE_URL + "#business",
+    name: "M-Power Print",
+    description: "Printing for banners, signs, business cards, flyers, stickers, labels, magnets and custom apparel.",
+    url: SITE_URL,
+    logo: SITE_URL + "assets/img/logo-mark.png",
+    image: SITE_URL + "assets/img/og-card.png",
+    telephone: CONFIG.phone,
+    email: emails[0],
+    priceRange: "$$",
+    /* No street address is published by choice, so the service area carries
+       the location signal instead. */
+    areaServed: { "@type": "Place", name: CONFIG.address }
+  };
+  if (CONFIG.hours) b.openingHours = CONFIG.hours;
+  if (values.instagramHref) b.sameAs = [values.instagramHref];
+  return b;
+}
+
+function initStructuredData() {
+  const page = document.body.dataset.page;
+
+  if (page === "home") {
+    jsonLd({
+      "@context": "https://schema.org",
+      "@graph": [
+        business(),
+        {
+          "@type": "WebSite",
+          url: SITE_URL,
+          name: "M-Power Print",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: SITE_URL + "products.html?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          mainEntity: FAQ.map(function (f) {
+            return {
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a }
+            };
+          })
+        }
+      ]
+    });
+  }
+
+  if (page === "catalog") {
+    jsonLd({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "M-Power Print products",
+      itemListElement: PRODUCTS.map(function (p, i) {
+        return {
+          "@type": "ListItem",
+          position: i + 1,
+          name: p.name,
+          url: SITE_URL + "product.html?id=" + encodeURIComponent(p.id)
+        };
+      })
+    });
+  }
+}
+
+/* Product pages render from a query string, so their markup is emitted once
+   the product resolves. Modelled as Service rather than Product: everything
+   is quote-on-request, and a Product with no offers reports a missing price. */
+function productStructuredData(p) {
+  const url = SITE_URL + "product.html?id=" + encodeURIComponent(p.id);
+  jsonLd({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Service",
+        name: p.name,
+        description: p.copy,
+        serviceType: catName(p.cat),
+        url: url,
+        provider: business(),
+        areaServed: { "@type": "Place", name: CONFIG.address }
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Products", item: SITE_URL + "products.html" },
+          { "@type": "ListItem", position: 3, name: p.name, item: url }
+        ]
+      }
+    ]
+  });
 }
 
 /* ------------------------------------------------------------- card HTML */
@@ -171,6 +331,20 @@ function initHeroCollage() {
     const p = productById(id);
     if (!p) return "";
     return slot(p.photo, p.name, i === 0 ? "slot-lg" : "slot-ratio", p.id, p.cat);
+  }).join("");
+}
+
+/* ------------------------------------------------------------------- FAQ */
+function initFaq() {
+  const wrap = document.getElementById("faqList");
+  if (!wrap) return;
+
+  /* <details> gives keyboard support and works with JS disabled. */
+  wrap.innerHTML = FAQ.map(function (f) {
+    return '<details class="faq">' +
+             '<summary>' + esc(f.q) + '</summary>' +
+             '<div class="faq-a"><p>' + esc(f.a) + '</p></div>' +
+           '</details>';
   }).join("");
 }
 
@@ -293,6 +467,7 @@ function initProductPage() {
     '</div>';
 
   fillFields(root);
+  productStructuredData(p);
 
   /* Related products from the same category. */
   const rel = document.getElementById("related");
@@ -363,6 +538,8 @@ document.addEventListener("DOMContentLoaded", function () {
   initHeaderSearch();
   initHeroVideo();
   initHeroCollage();
+  initFaq();
+  initStructuredData();
   initCompare();
   initCatalog();
   initProductPage();
