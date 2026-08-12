@@ -325,7 +325,7 @@ function initHeroCollage() {
   if (!wrap) return;
 
   /* First tile is the large one; the rest fill the small squares. */
-  const tiles = ["t-shirts", "polos", "hoodies", "stickers", "caps"];
+  const tiles = ["t-shirts", "polos", "hoodies", "stickers", "uniforms"];
 
   wrap.innerHTML = tiles.map(function (id, i) {
     const p = productById(id);
@@ -429,6 +429,85 @@ function initCatalog() {
 }
 
 /* ------------------------------------------------------------ product page */
+/* ------------------------------------------------------- color customizer
+   Applies to apparel products with a `colors` array. T-shirts get a live
+   recolor of the shared shirt symbol with the real logo composited on top;
+   every other apparel item keeps its existing flat illustration and simply
+   records which color was picked — recoloring a line-art icon by swatch
+   would read as a broken tint rather than "the garment in that color," so
+   we don't pretend otherwise. Either way the choice carries into the quote. */
+
+function quoteHref(p, color) {
+  var href = "index.html?product=" + encodeURIComponent(p.id);
+  if (color) href += "&color=" + encodeURIComponent(color);
+  return href + "#quote";
+}
+
+function shirtPreviewHTML(p) {
+  return '<div class="slot slot-wide slot-art">' +
+           '<svg viewBox="0 0 600 620" role="img" aria-label="' + esc(p.name) + '">' +
+             '<use href="#shirtArt"/>' +
+             '<image href="assets/img/logo-mark.png" x="238" y="246" width="124" height="142" ' +
+                    'opacity=".93" style="mix-blend-mode:multiply"/>' +
+           '</svg>' +
+         '</div>';
+}
+
+function colorSwatchesHTML(p) {
+  return '<div class="swatches" id="colorSwatches">' +
+           '<span class="swatches-label">Color</span>' +
+           '<div class="swatch-row" role="group" aria-label="Choose a color">' +
+             p.colors.map(function (c, i) {
+               return '<button type="button" class="swatch" data-color="' + esc(c) + '" ' +
+                      'aria-pressed="' + (i === 0 ? "true" : "false") + '" ' +
+                      'style="--sw:' + esc(SWATCH_HEX[c] || "#C8CCD1") + '" ' +
+                      'aria-label="' + esc(c) + '"></button>';
+             }).join("") +
+           '</div>' +
+           '<p class="swatch-note" id="swatchNote"></p>' +
+         '</div>';
+}
+
+function initColorCustomizer(p) {
+  const wrap = document.getElementById("colorSwatches");
+  const note = document.getElementById("swatchNote");
+  const btn = document.getElementById("pdpQuoteBtn");
+  if (!wrap) return;
+
+  const isShirt = p.id === "t-shirts";
+
+  function select(color) {
+    wrap.querySelectorAll(".swatch").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.color === color));
+    });
+
+    if (isShirt) {
+      /* The shared <linearGradient id="cloth"> lives in the defs block
+         ensureShirtDefs() injects at the top of <body> — a sibling of
+         #garmentPreview, not a descendant of it. Custom properties only
+         cascade down the DOM, so setting them on the preview's own <svg>
+         never reaches those <stop> elements. Only one shirt is ever being
+         colored on a page at a time (the home page slider never calls this
+         at all), so scoping to the document root is correct, not just
+         convenient. */
+      applyGarmentColor(document.documentElement, color);
+      note.textContent = color;
+    } else {
+      note.textContent = color + " — color noted for your quote";
+    }
+
+    if (btn) btn.setAttribute("href", quoteHref(p, color));
+  }
+
+  wrap.addEventListener("click", function (e) {
+    const b = e.target.closest(".swatch");
+    if (!b) return;
+    select(b.dataset.color);
+  });
+
+  select(p.colors[0]);
+}
+
 function initProductPage() {
   const root = document.getElementById("pdp");
   if (!root) return;
@@ -448,8 +527,14 @@ function initProductPage() {
   const desc = document.querySelector('meta[name="description"]');
   if (desc) desc.setAttribute("content", p.blurb);
 
+  const hasColors = Array.isArray(p.colors) && p.colors.length > 0;
+  const isShirt = p.id === "t-shirts";
+
   root.innerHTML =
-    '<div>' + slot(p.photo, p.name, "slot-wide", p.id, p.cat) + '</div>' +
+    '<div>' +
+      '<div id="garmentPreview">' + (isShirt ? shirtPreviewHTML(p) : slot(p.photo, p.name, "slot-wide", p.id, p.cat)) + '</div>' +
+      (hasColors ? colorSwatchesHTML(p) : '') +
+    '</div>' +
     '<div>' +
       '<p class="crumb"><a href="products.html">Products</a> / ' + esc(catName(p.cat)) + '</p>' +
       '<h1 class="h2">' + esc(p.name) + '</h1>' +
@@ -461,13 +546,16 @@ function initProductPage() {
         '<li><b>Pricing</b><span>Quote on request</span></li>' +
       '</ul>' +
       '<div class="hero-cta">' +
-        '<a class="btn btn-red" href="index.html?product=' + encodeURIComponent(p.id) + '#quote">Get a quote for this</a>' +
+        '<a class="btn btn-red" id="pdpQuoteBtn" href="' + quoteHref(p) + '">' +
+          (hasColors ? 'Get a quote in this color' : 'Get a quote for this') +
+        '</a>' +
         '<a class="btn btn-white" href="#" data-field="phoneHref">Call <span data-field="phone"></span></a>' +
       '</div>' +
     '</div>';
 
   fillFields(root);
   productStructuredData(p);
+  if (hasColors) initColorCustomizer(p);
 
   /* Related products from the same category. */
   const rel = document.getElementById("related");
@@ -497,10 +585,16 @@ function initQuoteForm() {
       }).join("") +
       '<option value="Something else">Something else</option>';
 
-    /* Arriving from a product page preselects that product. */
-    const wanted = new URLSearchParams(window.location.search).get("product");
+    /* Arriving from a product page preselects that product, and — from the
+       apparel color customizer — pre-fills the color they picked. */
+    const params = new URLSearchParams(window.location.search);
+    const wanted = params.get("product");
+    const color = params.get("color");
     const p = wanted ? productById(wanted) : null;
     if (p) select.value = p.name;
+
+    const notes = document.getElementById("qNotes");
+    if (color && notes && !notes.value) notes.value = "Color: " + color;
   }
 
   form.addEventListener("submit", function (e) {
@@ -533,6 +627,7 @@ function initQuoteForm() {
 
 /* -------------------------------------------------------------------- boot */
 document.addEventListener("DOMContentLoaded", function () {
+  if (typeof ensureShirtDefs === "function") ensureShirtDefs();
   fillFields();
   initNav();
   initHeaderSearch();

@@ -132,36 +132,35 @@ const PRODUCTS = [
     id: "t-shirts", name: "T-Shirts", cat: "apparel", photo: "",
     blurb: "Custom printed tees for crews, teams and events.",
     copy: "Your logo or artwork on shirts for staff, teams, events and merch. Full colour artwork and photographs handled as easily as a single-colour logo.",
-    specs: [["Sizes", "Youth through 5XL"], ["Placement", "Front, back, sleeve"], ["Artwork", "High-res PNG, AI or SVG"]]
+    specs: [["Sizes", "Youth through 5XL"], ["Placement", "Front, back, sleeve"], ["Artwork", "High-res PNG, AI or SVG"]],
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
   },
   {
     id: "hoodies", name: "Hoodies & Sweatshirts", cat: "apparel", photo: "",
     blurb: "Pullovers and zip hoodies, printed or embroidered.",
     copy: "Heavier pieces for cold mornings on site and for merch people actually keep. Printed or embroidered depending on the look you want.",
-    specs: [["Styles", "Pullover or full zip"], ["Decoration", "Print or embroidery"], ["Artwork", "High-res PNG, AI or SVG"]]
+    specs: [["Styles", "Pullover or full zip"], ["Decoration", "Print or embroidery"], ["Artwork", "High-res PNG, AI or SVG"]],
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
   },
   {
     id: "polos", name: "Polos", cat: "apparel", photo: "",
     blurb: "Embroidered polos for staff and business wear.",
     copy: "The default staff shirt. Embroidered left chest logo reads as more permanent and more professional than a print, and survives commercial washing.",
-    specs: [["Decoration", "Embroidery"], ["Placement", "Left chest standard"], ["Artwork", "Vector for embroidery"]]
-  },
-  {
-    id: "caps", name: "Caps & Hats", cat: "apparel", photo: "",
-    blurb: "Embroidered caps, snapbacks and beanies.",
-    copy: "Embroidered headwear in the usual shapes — structured caps, snapbacks, dad hats and beanies. Stitched logos sit proud of the fabric and last.",
-    specs: [["Styles", "Structured, snapback, beanie"], ["Decoration", "Embroidery"], ["Artwork", "Vector for embroidery"]]
+    specs: [["Decoration", "Embroidery"], ["Placement", "Left chest standard"], ["Artwork", "Vector for embroidery"]],
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
   },
   {
     id: "hi-vis", name: "Hi-Vis & Workwear", cat: "apparel", photo: "",
     blurb: "Safety vests and jackets with your company branding.",
     copy: "Hi-vis vests and jackets branded with your company name so a crew reads as a crew on site. Reflective striping kept clear of the print area.",
-    specs: [["Use", "Job site"], ["Decoration", "Print or embroidery"], ["Artwork", "Vector preferred"]]
+    specs: [["Use", "Job site"], ["Decoration", "Print or embroidery"], ["Artwork", "Vector preferred"]],
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
   },
   {
     id: "uniforms", name: "Uniforms", cat: "apparel", photo: "",
     blurb: "Full staff uniform programmes, names and numbers.",
     copy: "Kitting out a whole team, including individual names and numbers. Set the artwork up once and reorder as staff change.",
-    specs: [["Personalisation", "Names and numbers"], ["Reorders", "Artwork kept on file"], ["Artwork", "Vector preferred"]]
+    specs: [["Personalisation", "Names and numbers"], ["Reorders", "Artwork kept on file"], ["Artwork", "Vector preferred"]],
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
   }
 ];

@@ -1,7 +1,7 @@
 # M-Power Print — website
 
 A small static site: home page, searchable product catalog, and a page for
-each of the 22 products. No build step, no dependencies, no backend, no
+each of the 21 products. No build step, no dependencies, no backend, no
 monthly fee. Upload the folder and it works.
 
 ```
@@ -17,7 +17,7 @@ assets/img/         logo, favicon, link-preview card
 photos/             product and hero images (optional)
 video/hero.mp4      the hero video
 404.html            branded not-found page
-sitemap.xml         24 URLs — regenerate if you add products
+sitemap.xml         23 URLs — regenerate if you add products
 robots.txt          points crawlers at the sitemap
 docs/               hero video brief
 ```
@@ -100,7 +100,7 @@ be sharper at large sizes — see [`photos/README.md`](photos/README.md).
 
 ## Illustrations
 
-`assets/js/illustrations.js` holds a drawing for each of the 22 products,
+`assets/js/illustrations.js` holds a drawing for each of the 21 products,
 built from the brand palette. They exist so the catalog looks finished before
 photography arrives — they are a bridge, not a substitute.
 
@@ -115,6 +115,38 @@ stops being used for that product. Nothing needs deleting.
 
 ---
 
+## The color customizer
+
+Apparel products (t-shirts, hoodies, polos, hi-vis, uniforms) show a `colors`
+array in `products.js`:
+
+```js
+colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
+```
+
+Add or remove a color there and its swatch appears or disappears on that
+product's page — no other file needs touching. `assets/js/illustrations.js`
+holds the hex values each swatch name maps to, in `GARMENT_COLORS` (the fabric
+shading) and `SWATCH_HEX` (the flat dot color for the button itself).
+
+**T-shirts get a live preview** — the swatch actually recolors the shirt on
+screen, with the real logo composited on top. The other four apparel products
+show the same swatches, but picking one doesn't repaint their icon: those are
+flat line-art illustrations, and tinting a stroke-based icon by swatch would
+read as a broken color shift rather than "the garment in that color," so it
+isn't attempted. The choice still gets captured — a line under the swatches
+confirms it, and it's carried into the quote either way.
+
+Whichever swatch is selected rides along into the quote form automatically:
+the "Get a quote in this color" button appends the color to the URL, and the
+form pre-fills it into the notes field so it lands in the emailed request.
+
+Products outside apparel (signs, business print, stickers) don't get
+swatches — "pick a color" isn't a real choice for a banner or a business
+card, so those keep the plain "Get a quote for this" button.
+
+---
+
 ## Getting found on Google
 
 The site publishes structured data so search engines understand what the
@@ -123,7 +155,7 @@ business is, rather than guessing from the text:
 | Page | What it declares |
 |---|---|
 | Home | `LocalBusiness`, `WebSite` (with site search), `FAQPage` |
-| Catalog | `ItemList` of all 22 products |
+| Catalog | `ItemList` of all 21 products |
 | Each product | `Service` + `BreadcrumbList` |
 
 It is generated in `assets/js/site.js` from the same `CONFIG` and `PRODUCTS`

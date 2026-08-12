@@ -18,6 +18,145 @@
      grey      #C8CCD1  secondary marks, ground lines
    ========================================================================== */
 
+/* ==========================================================================
+   Shared shirt symbol
+   --------------------------------------------------------------------------
+   The garment used by the home-page before/after slider and the apparel
+   colour customizer on product.html — defined once here so both pages draw
+   from the same artwork instead of two copies drifting apart.
+
+   Colour lives entirely in CSS custom properties (--cloth-0…--cloth-5 for
+   the fabric gradient, --rib and --rib-edge for the collar). The defaults
+   below render white; GARMENT_COLORS holds the full palette for every other
+   swatch. Custom properties cross into an SVG <use> shadow tree normally, so
+   scoping an override to one container recolors only that instance — the
+   home page's two panes stay white while a product page can independently
+   show any picked colour.
+   ========================================================================== */
+const SHIRT_DEFS_SVG = `
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <defs>
+    <linearGradient id="cloth" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   style="stop-color:var(--cloth-0, #C6CBD0)"/>
+      <stop offset="11%"  style="stop-color:var(--cloth-1, #E9ECEE)"/>
+      <stop offset="34%"  style="stop-color:var(--cloth-2, #FBFCFC)"/>
+      <stop offset="60%"  style="stop-color:var(--cloth-3, #F6F8F8)"/>
+      <stop offset="86%"  style="stop-color:var(--cloth-4, #DDE1E4)"/>
+      <stop offset="100%" style="stop-color:var(--cloth-5, #C1C7CC)"/>
+    </linearGradient>
+    <linearGradient id="clothV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#000" stop-opacity="0"/>
+      <stop offset="62%"  stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity=".10"/>
+    </linearGradient>
+    <radialGradient id="neckIn" cx="50%" cy="35%" r="70%">
+      <stop offset="0%"   stop-color="#8A9096"/>
+      <stop offset="100%" stop-color="#5E646A"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="9"/>
+    </filter>
+    <filter id="ground" x="-40%" y="-120%" width="180%" height="340%">
+      <feGaussianBlur stdDeviation="11"/>
+    </filter>
+    <filter id="weave">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="n"/>
+      <feColorMatrix in="n" type="saturate" values="0"/>
+    </filter>
+
+    <clipPath id="shirtClip">
+      <path d="M232 106 C214 114 196 124 182 136 L120 250 C114 262 118 276 128 286
+               L170 316 C182 324 196 318 202 306 L216 272 C210 298 208 328 208 358
+               L206 538 C206 550 214 558 226 558 L374 558 C386 558 394 550 394 538
+               L392 358 C392 328 390 298 384 272 L398 306 C404 318 418 324 430 316
+               L472 286 C482 276 486 262 480 250 L418 136 C404 124 386 114 368 106 Q300 166 232 106 Z"/>
+    </clipPath>
+
+    <symbol id="shirtArt" viewBox="0 0 600 620">
+      <ellipse cx="300" cy="572" rx="138" ry="13" fill="#16181B" opacity=".17" filter="url(#ground)"/>
+
+      <path d="M232 106 C214 114 196 124 182 136 L120 250 C114 262 118 276 128 286
+               L170 316 C182 324 196 318 202 306 L216 272 C210 298 208 328 208 358
+               L206 538 C206 550 214 558 226 558 L374 558 C386 558 394 550 394 538
+               L392 358 C392 328 390 298 384 272 L398 306 C404 318 418 324 430 316
+               L472 286 C482 276 486 262 480 250 L418 136 C404 124 386 114 368 106 Q300 166 232 106 Z"
+            fill="url(#cloth)"/>
+
+      <g clip-path="url(#shirtClip)">
+        <rect x="0" y="0" width="600" height="620" fill="url(#clothV)"/>
+        <ellipse cx="222" cy="286" rx="26" ry="15" fill="#0E1013" opacity=".11" filter="url(#soft)"/>
+        <ellipse cx="378" cy="286" rx="26" ry="15" fill="#0E1013" opacity=".12" filter="url(#soft)"/>
+        <path d="M206 300 Q232 410 218 560 L196 560 L196 300 Z" fill="#0E1013" opacity=".13" filter="url(#soft)"/>
+        <path d="M394 300 Q368 410 382 560 L404 560 L404 300 Z" fill="#0E1013" opacity=".15" filter="url(#soft)"/>
+        <ellipse cx="300" cy="152" rx="56" ry="10" fill="#0E1013" opacity=".08" filter="url(#soft)"/>
+        <path d="M262 360 Q276 450 266 552" stroke="#0E1013" stroke-width="9" fill="none"
+              opacity=".045" filter="url(#soft)"/>
+        <path d="M342 372 Q332 460 342 552" stroke="#0E1013" stroke-width="8" fill="none"
+              opacity=".04" filter="url(#soft)"/>
+        <path d="M150 268 Q168 296 190 306" stroke="#0E1013" stroke-width="13" fill="none"
+              opacity=".07" filter="url(#soft)"/>
+        <path d="M450 268 Q432 296 410 306" stroke="#0E1013" stroke-width="13" fill="none"
+              opacity=".08" filter="url(#soft)"/>
+        <rect x="0" y="0" width="600" height="620" filter="url(#weave)" opacity=".035"/>
+      </g>
+
+      <path d="M208 534 Q300 543 392 534" stroke="#C9CED3" stroke-width="2.2" fill="none"/>
+      <path d="M168 306 Q186 314 200 298" stroke="#C9CED3" stroke-width="2.2" fill="none"/>
+      <path d="M432 306 Q414 314 400 298" stroke="#C9CED3" stroke-width="2.2" fill="none"/>
+
+      <path d="M232 106 Q300 166 368 106 Q300 138 232 106 Z" fill="url(#neckIn)"/>
+      <path d="M232 106 Q300 166 368 106" style="stroke:var(--rib, #E9ECEE)" stroke-width="9"
+            fill="none" stroke-linecap="round"/>
+      <path d="M232 106 Q300 166 368 106" style="stroke:var(--rib-edge, #BFC5CB)" stroke-width="1.6" fill="none"/>
+      <path d="M239 104 Q300 156 361 104" stroke="#fff" stroke-width="2.4"
+            fill="none" opacity=".75"/>
+
+      <path d="M232 106 C214 114 196 124 182 136 L120 250 C114 262 118 276 128 286
+               L170 316 C182 324 196 318 202 306 L216 272 C210 298 208 328 208 358
+               L206 538 C206 550 214 558 226 558 L374 558 C386 558 394 550 394 538
+               L392 358 C392 328 390 298 384 272 L398 306 C404 318 418 324 430 316
+               L472 286 C482 276 486 262 480 250 L418 136 C404 124 386 114 368 106 Q300 166 232 106 Z"
+            fill="none" stroke="#B9BFC5" stroke-width="1.8"/>
+    </symbol>
+  </defs>
+</svg>`;
+
+/* Fabric palette per swatch — six cloth-gradient stops plus two rib-collar
+   tones, chosen to keep the same highlight/shadow shape as the white
+   default so every colour reads as the same shirt, just recoloured. */
+const GARMENT_COLORS = {
+  "White":        { cloth: ["#C6CBD0", "#E9ECEE", "#FBFCFC", "#F6F8F8", "#DDE1E4", "#C1C7CC"], rib: "#E9ECEE", ribEdge: "#BFC5CB" },
+  "Black":        { cloth: ["#1A1B1E", "#2E3033", "#45474B", "#3A3C40", "#232427", "#141517"], rib: "#2A2C2F", ribEdge: "#17181A" },
+  "Red":          { cloth: ["#9E1017", "#C41822", "#E8404A", "#DD323C", "#B41520", "#7E0D13"], rib: "#B21821", ribEdge: "#7E0D13" },
+  "Navy":         { cloth: ["#10182A", "#1C2740", "#33456B", "#2A3A5C", "#182238", "#0B111F"], rib: "#202C46", ribEdge: "#0F1526" },
+  "Heather Grey": { cloth: ["#7B7F84", "#96999D", "#B7BABD", "#ACAFB2", "#8C8F93", "#6E7175"], rib: "#999C9F", ribEdge: "#6C6F72" }
+};
+
+/* A single flat hex per swatch, for the little color-picker dots themselves
+   — the fabric gradient above is for the garment, this is just "what color
+   is this button." */
+const SWATCH_HEX = {
+  "White": "#F4F5F6", "Black": "#1A1B1E", "Red": "#C41822",
+  "Navy": "#1C2740", "Heather Grey": "#9A9DA1"
+};
+
+/* Sets the CSS custom properties that recolor #shirtArt within one
+   container's subtree, without touching any other instance on the page. */
+function applyGarmentColor(el, colorName) {
+  const g = GARMENT_COLORS[colorName] || GARMENT_COLORS["White"];
+  g.cloth.forEach(function (hex, i) { el.style.setProperty("--cloth-" + i, hex); });
+  el.style.setProperty("--rib", g.rib);
+  el.style.setProperty("--rib-edge", g.ribEdge);
+}
+
+/* Injects SHIRT_DEFS_SVG once per page, however many previews use it. */
+function ensureShirtDefs() {
+  if (document.getElementById("shirtArt")) return;
+  const holder = document.createElement("div");
+  holder.innerHTML = SHIRT_DEFS_SVG;
+  document.body.insertBefore(holder.firstElementChild, document.body.firstChild);
+}
+
 const ILLUSTRATIONS = {
 
   /* ------------------------------------------------------ signs --------- */
@@ -173,13 +312,6 @@ const ILLUSTRATIONS = {
     <path d="M100 46v22" stroke="#16181B" stroke-width="2"/>
     <circle cx="96" cy="54" r="1.8" fill="#16181B"/><circle cx="96" cy="64" r="1.8" fill="#16181B"/>
     <circle cx="128" cy="62" r="8" fill="#E31B23"/>`,
-
-  "caps": `
-    <path d="M46 88a54 40 0 0 1 108 0z" fill="#fff" stroke="#16181B" stroke-width="2"/>
-    <path d="M46 88h116a16 12 0 0 1-16 12H46z" fill="#F5F6F7" stroke="#16181B" stroke-width="2"/>
-    <path d="M100 48v40" stroke="#C8CCD1" stroke-width="2"/>
-    <circle cx="100" cy="50" r="4" fill="#16181B"/>
-    <circle cx="76" cy="72" r="10" fill="#E31B23"/>`,
 
   "hi-vis": `
     <path d="M74 26 46 42v76h108V42l-28-16z" fill="#fff" stroke="#16181B" stroke-width="2" stroke-linejoin="round"/>

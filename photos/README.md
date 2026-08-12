@@ -23,14 +23,14 @@ and any "related products" strip at once.
 product against a plain wall or floor — consistency across the grid matters
 more than any single shot being perfect.
 
-The 22 products and the filenames worth using:
+The 21 products and the filenames worth using:
 
 | Category | Products |
 |---|---|
 | Signs & Large Format | `banners` `yard-signs` `foam-boards` `window-vinyls` `posters` `signs` |
 | Business Print | `business-cards` `flyers` `postcards` `menus` `letterhead` `envelopes` `catalogs` |
 | Stickers & Labels | `stickers` `labels` `magnets` |
-| Custom Apparel | `t-shirts` `hoodies` `polos` `caps` `hi-vis` `uniforms` |
+| Custom Apparel | `t-shirts` `hoodies` `polos` `hi-vis` `uniforms` |
 
 Start with the six that show on the home page — banners, business cards,
 stickers, t-shirts, yard signs, foam boards. Those carry the first impression.
