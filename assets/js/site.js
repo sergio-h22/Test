@@ -509,6 +509,58 @@ function initHeroDemo() {
   io.observe(wrap);
 }
 
+/* ------------------------------------------------------------- portfolio --
+   Real finished work, or nothing at all. The whole section removes itself
+   while PORTFOLIO is empty rather than showing placeholder tiles: a grid of
+   "photo coming soon" boxes on a print shop's portfolio actively damages
+   trust, which is the opposite of what the section is for.
+
+   An entry with a `before` photo becomes a drag-to-compare card, reusing the
+   same interaction the home page shirt already uses. */
+function initPortfolio() {
+  const section = document.getElementById("work");
+  if (!section) return;
+
+  const list = typeof PORTFOLIO !== "undefined" ? PORTFOLIO.filter(function (w) { return w.photo; }) : [];
+  if (!list.length) { section.remove(); return; }
+
+  const grid = document.getElementById("workGrid");
+  grid.innerHTML = list.map(function (w, i) {
+    const caption =
+      '<div class="work-cap">' +
+        '<b>' + esc(w.title) + '</b>' +
+        (w.blurb ? "<span>" + esc(w.blurb) + "</span>" : "") +
+      "</div>";
+
+    if (w.before) {
+      return '<figure class="work work-cmp" data-i="' + i + '">' +
+               '<div class="work-shot">' +
+                 '<img class="work-before" src="' + esc(w.before) + '" alt="' + esc(w.title) + ', before printing" loading="lazy">' +
+                 '<img class="work-after" src="' + esc(w.photo) + '" alt="' + esc(w.title) + '" loading="lazy">' +
+                 '<span class="work-line" aria-hidden="true"></span>' +
+                 '<input type="range" min="0" max="100" value="50" ' +
+                        'aria-label="Reveal the printed version of ' + esc(w.title) + '">' +
+               "</div>" + caption +
+             "</figure>";
+    }
+    return '<figure class="work">' +
+             '<div class="work-shot"><img src="' + esc(w.photo) + '" alt="' + esc(w.title) + '" loading="lazy"></div>' +
+             caption +
+           "</figure>";
+  }).join("");
+
+  grid.querySelectorAll(".work-cmp").forEach(function (fig) {
+    const range = fig.querySelector("input[type=range]");
+    const shot = fig.querySelector(".work-shot");
+    function apply() {
+      shot.style.setProperty("--pos", range.value + "%");
+      range.setAttribute("aria-valuetext", (100 - range.value) + "% printed showing");
+    }
+    range.addEventListener("input", apply);
+    apply();
+  });
+}
+
 /* ----------------------------------------------------------- design ideas */
 function initIdeas() {
   const wrap = document.getElementById("ideaGrid");
@@ -859,6 +911,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initHeroCollage();
   initHeroDemo();
   initIdeas();
+  initPortfolio();
   initFaq();
   initStructuredData();
   initCompare();

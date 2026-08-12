@@ -191,3 +191,38 @@ const PRODUCTS = [
     pricing: null
   }
 ];
+
+/* ==========================================================================
+   Portfolio — finished work
+   --------------------------------------------------------------------------
+   Photographs of real jobs. Empty on purpose: nothing here is invented, and
+   a print shop's portfolio has to be its own work or it is worth nothing.
+
+   The section on the home page stays hidden entirely while this array is
+   empty — no placeholder grid, no "coming soon". Add one entry and the
+   section appears by itself.
+
+   Each entry:
+     photo    file in photos/, e.g. "photos/work-acme-tees.jpg"
+     title    what it was, e.g. "Acme Plumbing — crew tees"
+     cat      one of: apparel, signs, print, stickers  (matches CATEGORIES)
+     blurb    one short line. Optional.
+     before   optional second photo of the blank/unprinted item. Supply this
+              and the card becomes a drag-to-compare before/after, the way
+              the home page shirt already works. Shoot both from the same
+              spot or the effect breaks.
+
+   Do not put photos of garments carrying another company's logo here unless
+   that company is your customer and has agreed to it.
+   ========================================================================== */
+const PORTFOLIO = [
+  /* Example of the shape — delete this comment and add real entries:
+  {
+    photo: "photos/work-acme-tees.jpg",
+    before: "",
+    title: "Acme Plumbing — crew tees",
+    cat: "apparel",
+    blurb: "24 shirts, one-colour front and back."
+  },
+  */
+];

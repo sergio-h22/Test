@@ -8,16 +8,20 @@ monthly fee. Upload the folder and it works.
 index.html          home
 products.html       catalog — search + category filters
 product.html        product detail, driven by ?id=
+design.html         the customizer — pick, upload, position, quote
 assets/css/site.css design system, shared by all pages
 assets/js/products.js  ← the catalog. Edit this to change products.
 assets/js/illustrations.js  product drawings, used until photos arrive
+assets/js/garments.js       garment art + print areas for the customizer
+assets/js/customizer/       the customizer: engine, ui, quote
+assets/vendor/              Fabric.js (MIT)
 assets/img/         the fist logo, dark and white versions
 assets/js/site.js   config, FAQ, search, forms, structured data
 assets/img/         logo, favicon, link-preview card
 photos/             product and hero images (optional)
 video/hero.mp4      the hero video
 404.html            branded not-found page
-sitemap.xml         23 URLs — regenerate if you add products
+sitemap.xml         24 URLs — regenerate if you add products
 robots.txt          points crawlers at the sitemap
 docs/               hero video brief
 ```
@@ -144,6 +148,83 @@ form pre-fills it into the notes field so it lands in the emailed request.
 Products outside apparel (signs, business print, stickers) don't get
 swatches — "pick a color" isn't a real choice for a banner or a business
 card, so those keep the plain "Get a quote for this" button.
+
+---
+
+## Design your own (the customizer)
+
+`design.html` is the customizer: pick a garment, pick a colour, upload artwork
+or add text, position it inside the printable area, design front and back, and
+send the result as a quote.
+
+Three files, deliberately separate:
+
+```
+assets/js/customizer/engine.js   the canvas and the design state
+assets/js/customizer/ui.js       the controls. Holds no state of its own.
+assets/js/customizer/quote.js    turning a design into a quote request
+assets/vendor/fabric.min.js      Fabric.js (MIT), loaded only on design.html
+```
+
+**Positions are stored as a fraction of the print area, not in pixels.** That
+is what lets someone switch t-shirt → hoodie without re-uploading: the print
+areas are different rectangles, but the fractions still mean something, so the
+design re-lays-out instead of landing in the wrong place.
+
+**Adding a product to the customizer** needs no customizer code. In
+`products.js` set `customizable: true` and point `art` at a garment shape; in
+`garments.js` add the shape and its `PRINT_AREAS` entry. That's it.
+
+### Where uploaded artwork goes — read this one
+
+You cannot attach a file to a `mailto:` link. It is not part of the spec and no
+browser supports it, so artwork physically cannot ride along on the mechanism
+the rest of the site uses for quotes.
+
+Delivery is therefore an adapter, and right now it uses the free path: the
+design is exported as a PNG the customer downloads, and the email carries a
+full written spec — product, colour, quantity, and every layer's position, size
+and rotation as percentages.
+
+**To get real attachments in your inbox instead**, sign up for
+[Formspree](https://formspree.io) or [Web3Forms](https://web3forms.com) and put
+the endpoint in one constant:
+
+```js
+// assets/js/customizer/quote.js
+const QUOTE_ENDPOINT = "https://formspree.io/f/your-id-here";
+```
+
+Nothing else changes. If the endpoint ever fails, it falls back to email rather
+than losing the customer's work.
+
+---
+
+## Our work (the portfolio)
+
+`PORTFOLIO` at the bottom of `products.js` is empty, and while it is empty the
+"Our work" section **removes itself from the page entirely** — no placeholder
+tiles. A print shop showing a grid of "photo coming soon" boxes is worse off
+than one showing no portfolio at all.
+
+Add one entry with a `photo` and the section appears. Give an entry a `before`
+photo as well and its card becomes a drag-to-compare, the same as the shirt on
+the home page.
+
+This is the highest-value thing you can add to the site. Photos of your actual
+jobs beat every drawing and every generated image on here, because they are the
+proof.
+
+---
+
+## Two documents worth reading
+
+- [`docs/higgsfield-visuals.md`](docs/higgsfield-visuals.md) — the exact prompt
+  for every marketing image the site would benefit from, in the order I'd
+  spend credits on them. Nothing generated yet.
+- [`docs/ai-design-assistant.md`](docs/ai-design-assistant.md) — why the AI
+  design assistant can't ship on a static site, and the small piece of
+  infrastructure that would change that.
 
 ---
 
