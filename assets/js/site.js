@@ -50,6 +50,29 @@ const FAQ = [
     a: "We are in Southern California and work with businesses, schools and organisations across the area. Call (949) 228-1226 or email sales@m-powerprint.com to get started." }
 ];
 
+/* ---------------------------------------------------------- design ideas --
+   Most people arrive knowing the occasion, not the product. These route from
+   "family reunion" to the thing that actually prints it.
+
+   Every destination is a real page: either the customizer with a product
+   preselected, or a catalogue search that returns results. Nothing here
+   invents a product the shop does not offer — `to` is checked against the
+   catalogue at render time and an idea pointing nowhere is dropped rather
+   than shown as a dead end. */
+const IDEAS = [
+  { label: "Business apparel",     blurb: "Staff shirts and polos with your logo.",        to: "design.html?product=polos" },
+  { label: "Work uniforms",        blurb: "Kitted-out crews, names and numbers.",          to: "design.html?product=uniforms" },
+  { label: "Sports teams",         blurb: "Team tees and hoodies for the season.",         to: "design.html?product=t-shirts" },
+  { label: "School events",        blurb: "Spirit wear, fundraisers, field trips.",        to: "design.html?product=t-shirts" },
+  { label: "Family reunions",      blurb: "Matching shirts everyone keeps.",               to: "design.html?product=t-shirts" },
+  { label: "Church events",        blurb: "Shirts, banners and programmes.",               to: "products.html?q=banner" },
+  { label: "Branded merch",        blurb: "Hoodies and tees people actually wear.",        to: "design.html?product=hoodies" },
+  { label: "Job site gear",        blurb: "Hi-vis and workwear that reads as a crew.",     to: "design.html?product=hi-vis" },
+  { label: "Grand openings",       blurb: "Banners, yard signs and flyers.",               to: "products.html?q=banner" },
+  { label: "Promotional giveaways", blurb: "Stickers, magnets and labels.",                to: "products.html?q=sticker" },
+  { label: "New business kit",     blurb: "Cards, letterhead and envelopes.",              to: "products.html?q=card" }
+];
+
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ------------------------------------------------------------- utilities */
@@ -426,6 +449,28 @@ function initHeroDemo() {
   io.observe(wrap);
 }
 
+/* ----------------------------------------------------------- design ideas */
+function initIdeas() {
+  const wrap = document.getElementById("ideaGrid");
+  if (!wrap) return;
+
+  /* An idea whose destination does not exist is worse than no idea at all,
+     so anything pointing at a product that is not in the catalogue is
+     dropped rather than rendered as a broken promise. */
+  const live = IDEAS.filter(function (idea) {
+    const m = /product=([^&]+)/.exec(idea.to);
+    return m ? Boolean(productById(decodeURIComponent(m[1]))) : true;
+  });
+
+  wrap.innerHTML = live.map(function (idea) {
+    return '<a class="idea" href="' + esc(idea.to) + '">' +
+             '<b>' + esc(idea.label) + '</b>' +
+             '<span>' + esc(idea.blurb) + '</span>' +
+             '<i aria-hidden="true">&rarr;</i>' +
+           "</a>";
+  }).join("");
+}
+
 /* ------------------------------------------------------------------- FAQ */
 function initFaq() {
   const wrap = document.getElementById("faqList");
@@ -691,7 +736,25 @@ function initQuoteForm() {
     if (p) select.value = p.name;
 
     const notes = document.getElementById("qNotes");
-    if (color && notes && !notes.value) notes.value = "Color: " + color;
+    const lines = [];
+    if (color) lines.push("Color: " + color);
+
+    /* "We'll design it for you" lands here rather than on a second form.
+       Saying so in the notes is what turns a generic quote into a design
+       request, and it means the customer starts with the prompt already
+       written rather than a blank box. */
+    if (params.get("help") === "design") {
+      lines.push("I'd like help with the design.");
+      lines.push("");
+      lines.push("What it's for:");
+      lines.push("Wording or ideas I have so far:");
+      lines.push("Anything I want it to look like:");
+    }
+
+    /* Deliberately not focused on load: the hash already scrolls the form
+       into view, and stealing focus on arrival pops the keyboard on a phone
+       before the customer has read what the field is asking for. */
+    if (notes && !notes.value && lines.length) notes.value = lines.join("\n");
   }
 
   form.addEventListener("submit", function (e) {
@@ -733,6 +796,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initHeroVideo();
   initHeroCollage();
   initHeroDemo();
+  initIdeas();
   initFaq();
   initStructuredData();
   initCompare();
