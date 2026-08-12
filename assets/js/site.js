@@ -73,6 +73,66 @@ const IDEAS = [
   { label: "New business kit",     blurb: "Cards, letterhead and envelopes.",              to: "products.html?q=card" }
 ];
 
+/* ------------------------------------------------------- recommendations --
+   What a customer ordering one thing usually needs alongside it. Same-category
+   "related products" misses the useful pairings: someone ordering staff polos
+   is far more likely to want business cards than another style of polo.
+
+   Every value is a product id from the catalogue above, so these can never
+   point at something the shop does not print — recommendFor() drops anything
+   that fails to resolve. */
+const RECOMMENDS = {
+  "t-shirts":       ["hoodies", "stickers", "banners"],
+  "hoodies":        ["t-shirts", "polos", "stickers"],
+  "polos":          ["uniforms", "business-cards", "hi-vis"],
+  "hi-vis":         ["uniforms", "magnets", "yard-signs"],
+  "uniforms":       ["polos", "hi-vis", "business-cards"],
+
+  "business-cards": ["letterhead", "envelopes", "flyers"],
+  "flyers":         ["postcards", "posters", "business-cards"],
+  "postcards":      ["flyers", "letterhead", "stickers"],
+  "menus":          ["flyers", "posters", "window-vinyls"],
+  "letterhead":     ["envelopes", "business-cards", "catalogs"],
+  "envelopes":      ["letterhead", "business-cards", "postcards"],
+  "catalogs":       ["flyers", "posters", "business-cards"],
+
+  "banners":        ["yard-signs", "foam-boards", "t-shirts"],
+  "yard-signs":     ["banners", "magnets", "foam-boards"],
+  "foam-boards":    ["posters", "banners", "signs"],
+  "window-vinyls":  ["signs", "menus", "stickers"],
+  "posters":        ["foam-boards", "flyers", "banners"],
+  "signs":          ["window-vinyls", "banners", "yard-signs"],
+
+  "stickers":       ["labels", "magnets", "t-shirts"],
+  "labels":         ["stickers", "postcards", "catalogs"],
+  "magnets":        ["stickers", "yard-signs", "business-cards"]
+};
+
+/* Resolves a product's recommendations, topping up from its own category if
+   the map is short or an id has gone stale. Never returns the product itself. */
+function recommendFor(p, limit) {
+  const max = limit || 4;
+  const seen = { };
+  seen[p.id] = true;
+  const out = [];
+
+  (RECOMMENDS[p.id] || []).forEach(function (id) {
+    const other = productById(id);
+    if (other && !seen[id]) { seen[id] = true; out.push(other); }
+  });
+
+  /* Fall back to the same category so a product with no map entry — a newly
+     added one, say — still shows something useful rather than nothing. */
+  PRODUCTS.forEach(function (other) {
+    if (out.length >= max) return;
+    if (seen[other.id] || other.cat !== p.cat) return;
+    seen[other.id] = true;
+    out.push(other);
+  });
+
+  return out.slice(0, max);
+}
+
 const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ------------------------------------------------------------- utilities */
@@ -699,10 +759,12 @@ function initProductPage() {
   productStructuredData(p);
   if (hasColors) initColorCustomizer(p);
 
-  /* Related products from the same category. */
+  /* What people ordering this usually need alongside it — see RECOMMENDS.
+     Cross-category on purpose: staff polos pair with business cards far more
+     often than with another style of polo. */
   const rel = document.getElementById("related");
   if (rel) {
-    const others = PRODUCTS.filter(function (x) { return x.cat === p.cat && x.id !== p.id; }).slice(0, 4);
+    const others = recommendFor(p, 4);
     if (others.length) rel.innerHTML = others.map(cardHTML).join("");
     else rel.closest("section").remove();
   }

@@ -866,3 +866,73 @@ a.contact-row:hover span{color:var(--red)}
 @media (max-width:520px){
   .steps{grid-template-columns:1fr}
 }
+
+/* ==========================================================================
+   Cross-sells in the customizer
+   ========================================================================== */
+.dz-also{display:grid;gap:8px}
+.dz-also-item{
+  background:#fff;border:1px solid var(--line);padding:12px 14px;
+  text-decoration:none;display:block;
+  transition:border-color .18s,transform .18s;
+}
+.dz-also-item b{display:block;color:var(--head);font-size:.92rem;margin-bottom:2px}
+.dz-also-item span{font-size:.8rem;color:var(--body)}
+.dz-also-item:hover{border-color:var(--red);transform:translateX(3px)}
+@media (prefers-reduced-motion:reduce){.dz-also-item:hover{transform:none}}
+
+/* ==========================================================================
+   Micro-interactions
+   --------------------------------------------------------------------------
+   Deliberately few. The brief asked for a small number of big moments and a
+   lot of small polished ones — the big moment is the customizer, so what is
+   left here is restraint: things that confirm an action happened, and
+   nothing that moves on its own.
+   ========================================================================== */
+
+/* Buttons get a subtle lift, so a click feels answered. */
+.btn{will-change:transform}
+.btn-red:hover,.btn-dark:hover{transform:translateY(-1px)}
+.btn-red:active,.btn-dark:active,.btn-white:active{transform:translateY(1px) scale(.985)}
+
+/* Card artwork lifts slightly out of its slot on hover — the drawing moves,
+   the frame does not, which reads as depth rather than as the whole tile
+   wobbling. */
+.card .slot-art svg{transition:transform .3s cubic-bezier(.2,.7,.3,1)}
+.card:hover .slot-art svg{transform:scale(1.045)}
+
+/* Nav underline that grows from the left rather than fading in. */
+.nav-in a{position:relative}
+.nav-in a::after{
+  content:"";position:absolute;left:16px;right:16px;bottom:6px;height:1px;
+  background:currentColor;transform:scaleX(0);transform-origin:left;
+  transition:transform .22s cubic-bezier(.2,.7,.3,1);
+}
+.nav-in a:hover::after{transform:scaleX(1)}
+.nav-in a[aria-current="page"]::after{display:none}
+
+/* A dropped file should visibly land. */
+@keyframes dz-pop{
+  0%{transform:scale(.97)}
+  60%{transform:scale(1.012)}
+  100%{transform:scale(1)}
+}
+.dz-garment.just-added{animation:dz-pop .34s cubic-bezier(.34,1.4,.64,1)}
+
+/* Swatches confirm selection with a ring that scales in, so the change is
+   legible without relying on the colour difference alone. */
+.swatch::after{
+  content:"";position:absolute;inset:-5px;border-radius:50%;
+  border:1px solid var(--red);opacity:0;transform:scale(.8);
+  transition:opacity .18s,transform .18s;
+}
+.swatch{position:relative}
+.swatch[aria-pressed="true"]::after{opacity:1;transform:scale(1)}
+
+@media (prefers-reduced-motion:reduce){
+  .btn-red:hover,.btn-dark:hover,.btn:active,
+  .card:hover .slot-art svg{transform:none}
+  .nav-in a::after{transition:none}
+  .dz-garment.just-added{animation:none}
+  .swatch::after{transition:none}
+}

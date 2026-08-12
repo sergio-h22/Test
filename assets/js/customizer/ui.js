@@ -39,7 +39,9 @@
     qty:         document.getElementById("qtyInput"),
     quote:       document.getElementById("quoteBtn"),
     quoteNote:   document.getElementById("quoteNote"),
-    price:       document.getElementById("priceNote")
+    price:       document.getElementById("priceNote"),
+    alsoBlock:   document.getElementById("alsoBlock"),
+    alsoGrid:    document.getElementById("alsoGrid")
   };
 
   const customizable = PRODUCTS.filter(function (p) { return p.customizable; });
@@ -107,6 +109,7 @@
   function syncPanel() {
     el.undo.disabled = !CustomizerEngine.canUndo();
     el.redo.disabled = !CustomizerEngine.canRedo();
+    renderAlso();
 
     const layer = CustomizerEngine.getActiveLayer();
     el.layerBlock.hidden = !layer;
@@ -125,6 +128,24 @@
       el.italic.setAttribute("aria-pressed", String(Boolean(layer.italic)));
       el.textColor.value = layer.fill || "#16181B";
     }
+  }
+
+  /* Cross-sells appear only once there is a design to cross-sell against.
+     Shown next to an empty garment they are just clutter in the way of the
+     thing the customer came to do. */
+  function renderAlso() {
+    if (!el.alsoBlock) return;
+    const show = CustomizerEngine.hasAnyDesign();
+    el.alsoBlock.hidden = !show;
+    if (!show) return;
+
+    const picks = recommendFor(current, 3);
+    el.alsoGrid.innerHTML = picks.map(function (p) {
+      return '<a class="dz-also-item" href="product.html?id=' + encodeURIComponent(p.id) + '">' +
+               '<b>' + esc(p.name) + "</b>" +
+               "<span>" + esc(p.blurb) + "</span>" +
+             "</a>";
+    }).join("");
   }
 
   function hint(msg) {
@@ -210,7 +231,15 @@
   function handleFiles(files) {
     if (!files || !files.length) return;
     CustomizerEngine.addImage(files[0])
-      .then(function () { hint("Drag it to move, or use the corner handles to resize and rotate."); })
+      .then(function () {
+        hint("Drag it to move, or use the corner handles to resize and rotate.");
+        /* A brief settle on the garment so the upload visibly lands rather
+           than simply appearing. */
+        if (!reduced) {
+          el.stage.classList.add("just-added");
+          window.setTimeout(function () { el.stage.classList.remove("just-added"); }, 360);
+        }
+      })
       .catch(function (err) { showError(err.message); });
   }
 
