@@ -546,9 +546,14 @@ function initProductPage() {
         '<li><b>Pricing</b><span>Quote on request</span></li>' +
       '</ul>' +
       '<div class="hero-cta">' +
-        '<a class="btn btn-red" id="pdpQuoteBtn" href="' + quoteHref(p) + '">' +
-          (hasColors ? 'Get a quote in this color' : 'Get a quote for this') +
-        '</a>' +
+        /* Customizable products lead with designing rather than asking, since
+           seeing the artwork on the garment is what makes the decision. */
+        (p.customizable
+          ? '<a class="btn btn-red" href="design.html?product=' + encodeURIComponent(p.id) + '">Design your own</a>' +
+            '<a class="btn btn-white" id="pdpQuoteBtn" href="' + quoteHref(p) + '">Get a quote</a>'
+          : '<a class="btn btn-red" id="pdpQuoteBtn" href="' + quoteHref(p) + '">' +
+              (hasColors ? 'Get a quote in this color' : 'Get a quote for this') +
+            '</a>') +
         '<a class="btn btn-white" href="#" data-field="phoneHref">Call <span data-field="phone"></span></a>' +
       '</div>' +
     '</div>';

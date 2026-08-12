@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design your own — M-Power Print</title>
+<meta name="description" content="Design your own custom printed apparel. Pick a product and colour, upload your artwork, position it, and send it to us for a quote.">
+<meta name="theme-color" content="#0A0A0B">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="canonical" href="https://m-powerprint.com/design.html">
+<meta property="og:title" content="Design your own — M-Power Print">
+<meta property="og:description" content="Pick a product and colour, upload your artwork, position it, and send it to us for a quote.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://m-powerprint.com/design.html">
+<meta property="og:site_name" content="M-Power Print">
+<meta property="og:image" content="https://m-powerprint.com/assets/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body data-page="design">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="util">
+  <div class="wrap util-in">
+    <a class="logo" href="index.html">
+      <img class="logo-fist" src="assets/img/logo-mark-white.png" alt="" width="30" height="34">
+      <span class="logo-text">
+        <span class="logo-mark">M-P<em>OWER</em></span>
+        <span class="logo-sub">Southern California</span>
+      </span>
+    </a>
+    <form class="search" id="utilSearch" role="search">
+      <label class="skip" for="utilSearchInput">Search products</label>
+      <input id="utilSearchInput" type="search" placeholder="Search products" autocomplete="off">
+      <button type="submit" aria-label="Search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+      </button>
+    </form>
+    <a class="btn btn-red btn-sm" href="index.html#quote">Get a quote</a>
+  </div>
+</header>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap nav-in">
+    <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks">Menu</button>
+    <div class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="products.html">All products</a>
+      <a href="design.html" aria-current="page">Design your own</a>
+      <a href="products.html?q=sticker">Stickers</a>
+      <a href="products.html?q=shirt">Apparel</a>
+      <a href="index.html#quote">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<main id="main">
+<div class="dz" id="designer">
+
+  <!-- ------------------------------------------------------------ stage -->
+  <section class="dz-stage" aria-label="Design preview">
+    <div class="dz-stage-in">
+      <div class="dz-garment" id="garmentStage">
+        <!-- Garment art, injected by ensureGarmentDefs() and swapped by ui.js -->
+        <svg class="dz-garment-art" id="garmentArt" viewBox="0 0 600 620" aria-hidden="true">
+          <use id="garmentUse" href="#garment-tshirtFront"/>
+        </svg>
+        <!-- Fabric draws here, exactly on top of the garment at the same scale -->
+        <canvas id="designCanvas" width="600" height="620"></canvas>
+        <!-- Print-area boundary, shown only while editing -->
+        <div class="dz-area" id="printArea" hidden><span id="printAreaLabel"></span></div>
+      </div>
+
+      <div class="dz-sides" role="group" aria-label="Which side to design">
+        <button type="button" class="dz-side" data-side="front" aria-pressed="true">Front</button>
+        <button type="button" class="dz-side" data-side="back" aria-pressed="false">Back</button>
+      </div>
+
+      <p class="dz-hint" id="stageHint" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- controls -->
+  <section class="dz-panel" aria-label="Customisation controls">
+
+    <div class="dz-block">
+      <p class="eyebrow">Step 1</p>
+      <h2 class="dz-h">Pick your product</h2>
+      <div class="dz-products" id="productPicker" role="group" aria-label="Choose a product"></div>
+    </div>
+
+    <div class="dz-block">
+      <p class="eyebrow">Step 2</p>
+      <h2 class="dz-h">Choose a colour</h2>
+      <div class="swatch-row" id="colorRow" role="group" aria-label="Choose a colour"></div>
+      <p class="swatch-note" id="colorNote"></p>
+    </div>
+
+    <div class="dz-block">
+      <p class="eyebrow">Step 3</p>
+      <h2 class="dz-h">Add your design</h2>
+
+      <div class="dz-drop" id="dropZone" tabindex="0" role="button"
+           aria-label="Upload your artwork. Drag a file here, or press Enter to browse.">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
+        </svg>
+        <b>Drop your artwork here</b>
+        <span>or click to browse — PNG, JPG, WebP or SVG</span>
+      </div>
+      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+
+      <div class="dz-row">
+        <button type="button" class="btn btn-white btn-sm" id="addTextBtn">Add text</button>
+        <button type="button" class="btn btn-white btn-sm" id="undoBtn" disabled>Undo</button>
+        <button type="button" class="btn btn-white btn-sm" id="redoBtn" disabled>Redo</button>
+      </div>
+
+      <p class="dz-err" id="uploadErr" role="alert" hidden></p>
+    </div>
+
+    <!-- Appears only when something is selected on the canvas -->
+    <div class="dz-block" id="layerBlock" hidden>
+      <p class="eyebrow">Selected</p>
+      <h2 class="dz-h" id="layerTitle">Layer</h2>
+
+      <div id="textControls" hidden>
+        <div class="field">
+          <label for="textValue">Text</label>
+          <input type="text" id="textValue" maxlength="40" autocomplete="off">
+        </div>
+        <div class="dz-row">
+          <button type="button" class="dz-chip" id="boldBtn" aria-pressed="false"><b>B</b></button>
+          <button type="button" class="dz-chip" id="italicBtn" aria-pressed="false"><i>I</i></button>
+          <input type="color" id="textColor" value="#16181B" aria-label="Text colour" class="dz-color">
+        </div>
+      </div>
+
+      <div class="dz-row">
+        <button type="button" class="btn btn-white btn-sm" id="dupBtn">Duplicate</button>
+        <button type="button" class="btn btn-white btn-sm" id="delBtn">Delete</button>
+      </div>
+    </div>
+
+    <div class="dz-block dz-block-end">
+      <p class="eyebrow">Step 4</p>
+      <h2 class="dz-h">Send it to us</h2>
+      <div class="field">
+        <label for="qtyInput">How many do you need?</label>
+        <input type="number" id="qtyInput" min="1" value="24" inputmode="numeric">
+      </div>
+      <p class="dz-price" id="priceNote">Quote on request — we price every job individually.</p>
+      <button type="button" class="btn btn-red" id="quoteBtn">Get my quote</button>
+      <p class="form-note" id="quoteNote"></p>
+    </div>
+
+  </section>
+</div>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h4>M-Power Print</h4>
+        <ul>
+          <li><a href="#" data-field="phoneHref"><span data-field="phone"></span></a></li>
+          <li><a href="#" data-field="emailHref"><span data-field="email"></span></a></li>
+          <li><a href="#" data-field="email2Href"><span data-field="email2"></span></a></li>
+          <li><a href="#" data-field="instagramHref" target="_blank" rel="noopener"><span data-field="instagram"></span></a></li>
+          <li><span data-field="address"></span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Products</h4>
+        <ul>
+          <li><a href="products.html?q=banner">Signs &amp; banners</a></li>
+          <li><a href="products.html?q=card">Business print</a></li>
+          <li><a href="products.html?q=sticker">Stickers &amp; labels</a></li>
+          <li><a href="products.html?q=shirt">Custom apparel</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="design.html">Design your own</a></li>
+          <li><a href="index.html#quote">Get a quote</a></li>
+          <li><a href="products.html">All products</a></li>
+        </ul>
+      </div>
+      <p class="foot-tag">#1 Print Provider<br>At Affordable Prices</p>
+    </div>
+    <div class="foot-base">
+      <p>&copy; <span id="year"></span> M-Power Print. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/products.js"></script>
+<script src="assets/js/illustrations.js"></script>
+<script src="assets/js/garments.js"></script>
+<script src="assets/js/site.js"></script>
+<!-- Fabric is ~316KB, so it loads only on this page — never on the home page
+     or the catalogue. See assets/vendor/fabric.LICENSE.txt (MIT). -->
+<script src="assets/vendor/fabric.min.js"></script>
+<script src="assets/js/customizer/engine.js"></script>
+<script src="assets/js/customizer/quote.js"></script>
+<script src="assets/js/customizer/ui.js"></script>
+</body>
+</html>

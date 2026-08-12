@@ -493,6 +493,12 @@ a{color:inherit}
 .swatch[aria-pressed="true"]{border-color:var(--red)}
 .swatch:active{transform:translateY(0) scale(.94)}
 @media (prefers-reduced-motion:reduce){.swatch:hover,.swatch:active{transform:none}}
+/* A 34px dot is a comfortable mouse target and an awkward thumb one. On touch
+   the swatches are picked constantly in the customizer, so they clear 44px. */
+@media (max-width:760px){
+  .swatch{width:46px;height:46px}
+  .swatch-row{gap:12px}
+}
 .swatch-note{
   margin:12px 0 0;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;
   color:var(--body);
@@ -603,4 +609,142 @@ a.contact-row:hover span{color:var(--red)}
   .foot-grid{grid-template-columns:1fr}
   .collage{grid-template-columns:1fr 1fr}
   .collage .slot-lg{grid-row:auto}
+}
+
+/* ==========================================================================
+   The customizer (design.html)
+   --------------------------------------------------------------------------
+   Two columns on desktop: the garment holds the left, controls the right.
+   On phones that inverts into a stacked layout with the preview pinned to
+   the top, because on a small screen the thing you are editing has to stay
+   visible while you reach for the control that changes it.
+   ========================================================================== */
+.dz{
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+  gap:clamp(20px,3vw,44px);
+  width:min(var(--shell),100% - clamp(24px,4vw,64px));
+  margin-inline:auto;padding:clamp(24px,3vw,44px) 0 clamp(48px,6vw,80px);
+  align-items:start;
+}
+
+/* ------------------------------------------------------------------ stage */
+.dz-stage{position:sticky;top:16px}
+.dz-stage-in{background:var(--mist);border:1px solid var(--line);padding:clamp(14px,2vw,26px)}
+
+/* Garment art, design canvas and print-area box are all laid out in the same
+   600x620 space and stacked, so a coordinate means the same thing in all
+   three without any conversion. */
+.dz-garment{
+  position:relative;aspect-ratio:600/620;max-width:520px;margin-inline:auto;
+  transition:transform .4s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;
+}
+.dz-garment.is-flipping{transform:rotateY(180deg)}
+@media (prefers-reduced-motion:reduce){
+  .dz-garment{transition:none}
+  .dz-garment.is-flipping{transform:none}
+}
+.dz-garment-art{position:absolute;inset:0;width:100%;height:100%}
+.dz-garment canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+/* Fabric wraps the canvas in its own container; it has to fill the stage too
+   or pointer coordinates land in the wrong place. */
+.dz-garment .canvas-container{position:absolute!important;inset:0;width:100%!important;height:100%!important}
+
+.dz-area{
+  position:absolute;border:2px dashed var(--red);pointer-events:none;
+  border-radius:2px;
+}
+.dz-area span{
+  position:absolute;top:-9px;left:8px;background:var(--red);color:#fff;
+  font-family:var(--f-mono);font-size:.5rem;letter-spacing:.14em;
+  text-transform:uppercase;padding:2px 6px;white-space:nowrap;
+}
+
+.dz-sides{display:flex;gap:1px;justify-content:center;margin-top:16px;background:var(--line)}
+.dz-side{
+  flex:0 1 140px;background:#fff;border:1px solid var(--line);cursor:pointer;
+  font-family:var(--f-mono);font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:700;color:var(--body);padding:11px 8px;
+  transition:background .18s,color .18s;
+}
+.dz-side:hover{color:var(--head)}
+.dz-side[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+.dz-hint{
+  text-align:center;margin:12px 0 0;min-height:1.4em;
+  font-size:.82rem;color:var(--body);
+}
+
+/* --------------------------------------------------------------- controls */
+.dz-panel{display:flex;flex-direction:column;gap:clamp(18px,2.4vw,30px)}
+.dz-block{border-bottom:1px solid var(--line);padding-bottom:clamp(18px,2.4vw,26px)}
+.dz-block-end{border-bottom:0;padding-bottom:0}
+.dz-h{font-size:1.06rem;font-weight:700;color:var(--head);margin:0 0 14px}
+.dz-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+
+.dz-products{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:8px}
+.dz-product{
+  background:#fff;border:1px solid var(--line);cursor:pointer;padding:8px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  transition:border-color .18s,box-shadow .18s,transform .18s;
+}
+.dz-product svg{width:100%;height:auto;max-height:74px}
+.dz-product span{
+  font-family:var(--f-mono);font-size:.52rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--body);text-align:center;line-height:1.4;
+}
+.dz-product:hover{border-color:#C8CCD1;transform:translateY(-2px)}
+.dz-product[aria-pressed="true"]{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.dz-product[aria-pressed="true"] span{color:var(--head);font-weight:700}
+@media (prefers-reduced-motion:reduce){.dz-product:hover{transform:none}}
+
+/* ---------------------------------------------------------------- upload */
+.dz-drop{
+  border:2px dashed var(--line);background:var(--mist);
+  padding:clamp(20px,3vw,32px) 16px;text-align:center;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  transition:border-color .18s,background .18s;
+}
+.dz-drop svg{width:26px;height:26px;color:var(--red)}
+.dz-drop b{color:var(--head);font-size:.95rem}
+.dz-drop span{font-size:.8rem;color:var(--body)}
+.dz-drop:hover,.dz-drop:focus-visible{border-color:var(--red);background:#fff}
+.dz-drop.is-over{border-color:var(--red);background:#fff;border-style:solid}
+
+.dz-err{
+  margin:12px 0 0;padding:10px 12px;background:#FDECEd;border-left:3px solid var(--red);
+  color:#8C1218;font-size:.85rem;
+}
+
+.dz-chip{
+  width:38px;height:38px;background:#fff;border:1px solid var(--line);cursor:pointer;
+  color:var(--body);font-size:.95rem;display:grid;place-items:center;
+  transition:border-color .18s,background .18s,color .18s;
+}
+.dz-chip:hover{border-color:#C8CCD1;color:var(--head)}
+.dz-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.dz-color{
+  width:38px;height:38px;padding:2px;border:1px solid var(--line);background:#fff;
+  cursor:pointer;
+}
+
+.dz-price{
+  font-family:var(--f-mono);font-size:.62rem;letter-spacing:.1em;
+  color:#8A9098;margin:0 0 14px;line-height:1.7;
+}
+
+/* -------------------------------------------------------------- responsive */
+@media (max-width:940px){
+  .dz{grid-template-columns:1fr}
+  /* Stop the preview being sticky once it is above rather than beside the
+     controls — a pinned garment would eat most of a phone screen. */
+  .dz-stage{position:static}
+  .dz-garment{max-width:380px}
+}
+@media (max-width:560px){
+  .dz-garment{max-width:100%}
+  /* Everything tappable clears the 44px floor. The side toggles are the ones
+     that miss it by default — their padding alone leaves them at 36px. */
+  .dz-side{flex:1 1 auto;padding:15px 8px;min-height:48px}
+  .dz-chip,.dz-color{width:46px;height:46px}
+  .dz-product{padding:10px 6px}
 }
