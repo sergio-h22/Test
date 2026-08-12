@@ -93,9 +93,29 @@
       </div>
     </div>
 
-    <!-- Filled by initHeroCollage() from the illustration set. Swap any
-         tile for a real photo by replacing its inner markup with an <img>. -->
-    <div class="collage" id="heroCollage"></div>
+    <!-- The hero demonstrates the customizer rather than describing it: a
+         blank garment, artwork landing on it, the colour changing, done.
+         Built by initHeroDemo() in site.js from the same garment artwork
+         and logo the real customizer uses, so it cannot show something the
+         product does not actually do. -->
+    <div class="herodemo" id="heroDemo">
+      <div class="herodemo-stage">
+        <svg class="herodemo-garment" id="heroDemoArt" viewBox="0 0 600 620" aria-hidden="true">
+          <use href="#garment-tshirtFront"/>
+        </svg>
+        <img class="herodemo-art" id="heroDemoLogo" src="assets/img/logo-mark.png" alt="">
+      </div>
+
+      <ol class="herodemo-steps" id="heroDemoSteps">
+        <li><button type="button" data-step="0" aria-pressed="true">Blank</button></li>
+        <li><button type="button" data-step="1" aria-pressed="false">Your design</button></li>
+        <li><button type="button" data-step="2" aria-pressed="false">Any colour</button></li>
+        <li><button type="button" data-step="3" aria-pressed="false">Printed</button></li>
+      </ol>
+
+      <p class="herodemo-cap" id="heroDemoCap" role="status" aria-live="polite"></p>
+      <a class="btn btn-red btn-sm herodemo-cta" href="design.html">Start designing</a>
+    </div>
   </div>
 </section>
 
@@ -359,6 +379,7 @@
 
 <script src="assets/js/products.js"></script>
 <script src="assets/js/illustrations.js"></script>
+<script src="assets/js/garments.js"></script>
 <script src="assets/js/site.js"></script>
 
 <!-- Sticky tap-to-call bar. Phones only; see .callbar in site.css. -->

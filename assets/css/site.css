@@ -748,3 +748,60 @@ a.contact-row:hover span{color:var(--red)}
   .dz-chip,.dz-color{width:46px;height:46px}
   .dz-product{padding:10px 6px}
 }
+
+/* ==========================================================================
+   Hero product demo
+   --------------------------------------------------------------------------
+   Occupies the hero's right column. Shows the customizer working rather than
+   claiming it exists — see initHeroDemo() in site.js.
+   ========================================================================== */
+.herodemo{
+  background:rgba(255,255,255,.92);backdrop-filter:blur(6px);
+  border:1px solid var(--line);padding:clamp(18px,2.4vw,28px);
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+}
+.herodemo-stage{position:relative;width:min(300px,72%);aspect-ratio:600/620}
+.herodemo-garment{position:absolute;inset:0;width:100%;height:100%}
+
+/* The artwork sits over the garment's chest, matching the print area the
+   real customizer uses for a t-shirt front so the demo is not showing a
+   placement the product would not allow. */
+.herodemo-art{
+  position:absolute;left:36%;top:32%;width:28%;height:auto;
+  opacity:0;transform:translateY(-14px) scale(.86);
+  mix-blend-mode:multiply;
+  transition:opacity .5s ease,transform .5s cubic-bezier(.34,1.4,.64,1);
+}
+.herodemo.has-art .herodemo-art{opacity:.94;transform:translateY(0) scale(1)}
+
+.herodemo-steps{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:6px;
+  list-style:none;margin:0;padding:0;
+}
+.herodemo-steps button{
+  background:none;border:1px solid var(--line);cursor:pointer;
+  font-family:var(--f-mono);font-size:.54rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--body);padding:7px 10px;
+  transition:background .18s,color .18s,border-color .18s;
+}
+.herodemo-steps button:hover{color:var(--head);border-color:#C8CCD1}
+.herodemo-steps button[aria-pressed="true"]{
+  background:var(--red);border-color:var(--red);color:#fff;
+}
+
+.herodemo-cap{
+  margin:0;text-align:center;font-size:.85rem;color:var(--body);
+  min-height:2.6em;max-width:30ch;
+}
+.herodemo-cta{align-self:stretch;justify-content:center}
+
+@media (prefers-reduced-motion:reduce){
+  .herodemo-art{transition:none}
+}
+/* The hero video and the demo would fight for the same column, and the demo
+   is the one carrying the message now. */
+.hero.has-video .herodemo{background:rgba(255,255,255,.96)}
+@media (max-width:960px){
+  .herodemo-stage{width:min(240px,60%)}
+  .herodemo-cap{min-height:0}
+}

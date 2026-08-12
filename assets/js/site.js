@@ -334,6 +334,98 @@ function initHeroCollage() {
   }).join("");
 }
 
+/* ------------------------------------------------------------ hero demo --
+   Shows the product instead of asserting it: a blank garment, artwork
+   landing on it, the colour changing, finished. Four steps, auto-advancing,
+   and every one of them is a thing the real customizer does — the artwork is
+   the shop's own logo and the garment is the same SVG design.html draws, so
+   this cannot drift into promising something the tool will not do.
+
+   It pauses on hover and on focus, because an animation that keeps moving
+   while someone is reading it or tabbing through it is a nuisance rather
+   than a demonstration. */
+const HERO_DEMO_STEPS = [
+  { color: "White", art: false, cap: "Start with a blank." },
+  { color: "White", art: true,  cap: "Drop your logo or artwork straight onto it." },
+  { color: "Navy",  art: true,  cap: "Change the colour and your design stays put." },
+  { color: "Black", art: true,  cap: "That's your finished product — ready to quote." }
+];
+
+/* Garments dark enough that dark ink would disappear into them. A shop
+   prints light ink on these, so the demo swaps to the white logo rather
+   than showing artwork that is technically present and visually absent. */
+const DARK_GARMENTS = ["Black", "Navy"];
+
+function initHeroDemo() {
+  const wrap = document.getElementById("heroDemo");
+  if (!wrap) return;
+
+  const stage = wrap.querySelector(".herodemo-stage");
+  const logo  = document.getElementById("heroDemoLogo");
+  const cap   = document.getElementById("heroDemoCap");
+  const btns  = Array.prototype.slice.call(wrap.querySelectorAll(".herodemo-steps button"));
+
+  let at = 0;
+  let timer = null;
+
+  function paint(i) {
+    at = i;
+    const step = HERO_DEMO_STEPS[i];
+    applyGarmentColor(stage, step.color);
+
+    /* Dark ink multiplied onto a dark garment is invisible — which is both a
+       bad demo and a lie about what the shop would actually print. Light
+       garments get the dark mark blended into the weave; dark garments get
+       the white one laid on top, the way light ink really behaves. */
+    const dark = DARK_GARMENTS.indexOf(step.color) !== -1;
+    logo.src = dark ? "assets/img/logo-mark-white.png" : "assets/img/logo-mark.png";
+    logo.style.mixBlendMode = dark ? "normal" : "multiply";
+
+    wrap.classList.toggle("has-art", step.art);
+    cap.textContent = step.cap;
+    btns.forEach(function (b, n) { b.setAttribute("aria-pressed", String(n === i)); });
+  }
+
+  function advance() { paint((at + 1) % HERO_DEMO_STEPS.length); }
+
+  function play() {
+    if (timer || reduced) return;
+    timer = window.setInterval(advance, 2600);
+  }
+  function pause() {
+    window.clearInterval(timer);
+    timer = null;
+  }
+
+  btns.forEach(function (b) {
+    b.addEventListener("click", function () {
+      pause();
+      paint(Number(b.dataset.step));
+      /* Clicking is a deliberate choice, so hand control back rather than
+         yanking it away again a moment later. */
+    });
+  });
+
+  wrap.addEventListener("mouseenter", pause);
+  wrap.addEventListener("mouseleave", play);
+  wrap.addEventListener("focusin", pause);
+  wrap.addEventListener("focusout", play);
+
+  /* Anyone who asked for reduced motion gets the finished garment outright —
+     the point of the sequence is the end state, so that is what they see. */
+  if (reduced) { paint(HERO_DEMO_STEPS.length - 1); return; }
+
+  paint(0);
+
+  /* Do not animate off-screen: on a phone the hero scrolls away quickly and
+     there is no reason to keep a timer running against it. */
+  if (!("IntersectionObserver" in window)) { play(); return; }
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) play(); else pause(); });
+  }, { threshold: 0.25 });
+  io.observe(wrap);
+}
+
 /* ------------------------------------------------------------------- FAQ */
 function initFaq() {
   const wrap = document.getElementById("faqList");
@@ -633,11 +725,14 @@ function initQuoteForm() {
 /* -------------------------------------------------------------------- boot */
 document.addEventListener("DOMContentLoaded", function () {
   if (typeof ensureShirtDefs === "function") ensureShirtDefs();
+  /* The hero demo and the customizer both draw the full garment set. */
+  if (typeof ensureGarmentDefs === "function") ensureGarmentDefs();
   fillFields();
   initNav();
   initHeaderSearch();
   initHeroVideo();
   initHeroCollage();
+  initHeroDemo();
   initFaq();
   initStructuredData();
   initCompare();
