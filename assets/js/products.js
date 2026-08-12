@@ -13,6 +13,16 @@
      specs  rows on the product page. Add or remove freely.
      photo  file in photos/ — leave "" and a labelled slot shows instead
 
+   Customizer fields (apparel only — see design.html)
+     colors        swatches offered. Hexes live in illustrations.js.
+     customizable  true puts the product in the "Design Your Own" picker
+     art           { front, back } keys into GARMENT_SHAPES in garments.js
+     pricing       null until real numbers exist. Never invent one — the
+                   customizer shows "Quote on request" while this is null.
+
+   Print areas live in PRINT_AREAS in garments.js, keyed by this product's id,
+   because they are geometry rather than catalogue copy.
+
    Prices are deliberately absent. Nothing on this site quotes a number the
    shop has not given.
    ========================================================================== */
@@ -133,34 +143,51 @@ const PRODUCTS = [
     blurb: "Custom printed tees for crews, teams and events.",
     copy: "Your logo or artwork on shirts for staff, teams, events and merch. Full colour artwork and photographs handled as easily as a single-colour logo.",
     specs: [["Sizes", "Youth through 5XL"], ["Placement", "Front, back, sleeve"], ["Artwork", "High-res PNG, AI or SVG"]],
-    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"],
+    customizable: true,
+    art: { front: "tshirtFront", back: "tshirtBack" },
+    pricing: null
   },
   {
     id: "hoodies", name: "Hoodies & Sweatshirts", cat: "apparel", photo: "",
     blurb: "Pullovers and zip hoodies, printed or embroidered.",
     copy: "Heavier pieces for cold mornings on site and for merch people actually keep. Printed or embroidered depending on the look you want.",
     specs: [["Styles", "Pullover or full zip"], ["Decoration", "Print or embroidery"], ["Artwork", "High-res PNG, AI or SVG"]],
-    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"],
+    customizable: true,
+    art: { front: "hoodieFront", back: "hoodieBack" },
+    pricing: null
   },
   {
     id: "polos", name: "Polos", cat: "apparel", photo: "",
     blurb: "Embroidered polos for staff and business wear.",
     copy: "The default staff shirt. Embroidered left chest logo reads as more permanent and more professional than a print, and survives commercial washing.",
     specs: [["Decoration", "Embroidery"], ["Placement", "Left chest standard"], ["Artwork", "Vector for embroidery"]],
-    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"],
+    customizable: true,
+    art: { front: "poloFront", back: "poloBack" },
+    pricing: null
   },
   {
     id: "hi-vis", name: "Hi-Vis & Workwear", cat: "apparel", photo: "",
     blurb: "Safety vests and jackets with your company branding.",
     copy: "Hi-vis vests and jackets branded with your company name so a crew reads as a crew on site. Reflective striping kept clear of the print area.",
     specs: [["Use", "Job site"], ["Decoration", "Print or embroidery"], ["Artwork", "Vector preferred"]],
-    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
+    /* Safety garments come in safety colours — offering navy or white here
+       would let someone configure a vest that is not a hi-vis vest. */
+    colors: ["Hi-Vis Yellow", "Hi-Vis Orange"],
+    customizable: true,
+    art: { front: "hivisFront", back: "hivisBack" },
+    pricing: null
   },
   {
     id: "uniforms", name: "Uniforms", cat: "apparel", photo: "",
     blurb: "Full staff uniform programmes, names and numbers.",
     copy: "Kitting out a whole team, including individual names and numbers. Set the artwork up once and reorder as staff change.",
     specs: [["Personalisation", "Names and numbers"], ["Reorders", "Artwork kept on file"], ["Artwork", "Vector preferred"]],
-    colors: ["White", "Black", "Red", "Navy", "Heather Grey"]
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"],
+    customizable: true,
+    art: { front: "uniformFront", back: "uniformBack" },
+    pricing: null
   }
 ];

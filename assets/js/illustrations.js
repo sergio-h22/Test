@@ -129,7 +129,13 @@ const GARMENT_COLORS = {
   "Black":        { cloth: ["#1A1B1E", "#2E3033", "#45474B", "#3A3C40", "#232427", "#141517"], rib: "#2A2C2F", ribEdge: "#17181A" },
   "Red":          { cloth: ["#9E1017", "#C41822", "#E8404A", "#DD323C", "#B41520", "#7E0D13"], rib: "#B21821", ribEdge: "#7E0D13" },
   "Navy":         { cloth: ["#10182A", "#1C2740", "#33456B", "#2A3A5C", "#182238", "#0B111F"], rib: "#202C46", ribEdge: "#0F1526" },
-  "Heather Grey": { cloth: ["#7B7F84", "#96999D", "#B7BABD", "#ACAFB2", "#8C8F93", "#6E7175"], rib: "#999C9F", ribEdge: "#6C6F72" }
+  "Heather Grey": { cloth: ["#7B7F84", "#96999D", "#B7BABD", "#ACAFB2", "#8C8F93", "#6E7175"], rib: "#999C9F", ribEdge: "#6C6F72" },
+
+  /* Safety colours. A hi-vis garment's colour is a compliance property, not a
+     styling choice, so these are offered only on hi-vis and the ordinary
+     apparel swatches are not. */
+  "Hi-Vis Yellow": { cloth: ["#B8C41A", "#D6E020", "#EDF64A", "#E4EE33", "#C7D31D", "#A3AE14"], rib: "#C7D31D", ribEdge: "#95A012" },
+  "Hi-Vis Orange": { cloth: ["#C4560F", "#E06714", "#F68A34", "#EE7A22", "#D35F11", "#A6470B"], rib: "#D35F11", ribEdge: "#96410A" }
 };
 
 /* A single flat hex per swatch, for the little color-picker dots themselves
@@ -137,14 +143,54 @@ const GARMENT_COLORS = {
    is this button." */
 const SWATCH_HEX = {
   "White": "#F4F5F6", "Black": "#1A1B1E", "Red": "#C41822",
-  "Navy": "#1C2740", "Heather Grey": "#9A9DA1"
+  "Navy": "#1C2740", "Heather Grey": "#9A9DA1",
+  "Hi-Vis Yellow": "#DDE822", "Hi-Vis Orange": "#EE7A22"
 };
 
-/* Sets the CSS custom properties that recolor #shirtArt within one
-   container's subtree, without touching any other instance on the page. */
+/* A url-safe id fragment for a colour name: "Hi-Vis Yellow" → "hi-vis-yellow". */
+function colorSlug(name) {
+  return String(name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+/* ------------------------------------------------------- per-colour fills --
+   One <linearGradient> per swatch, so a garment's fabric can be recoloured by
+   pointing its fill at a different gradient.
+
+   Why not just drive the single #cloth gradient with custom properties, the
+   way #shirtArt does? Because `fill="url(#cloth)"` resolves against the
+   gradient's own location in the defs block, not against the <use> that
+   instantiated the symbol. Custom properties set on an ancestor of the <use>
+   reach elements inside the shadow tree (which is why the collar recolours)
+   but never reach the gradient's <stop>s. That limits the whole page to one
+   fabric colour at a time — fine for a single product page, fatal for a
+   customizer that has to draw colour swatches of the same garment.
+
+   Pointing `fill` at a per-colour gradient sidesteps it entirely: the fill
+   value itself is what varies, carried in --cloth-fill, and any number of
+   garments can show different colours simultaneously. */
+function clothGradients() {
+  return Object.keys(GARMENT_COLORS).map(function (name) {
+    const g = GARMENT_COLORS[name];
+    const offs = ["0%", "11%", "34%", "60%", "86%", "100%"];
+    return '<linearGradient id="cloth-' + colorSlug(name) + '" x1="0" y1="0" x2="1" y2="0">' +
+      g.cloth.map(function (hex, i) {
+        return '<stop offset="' + offs[i] + '" stop-color="' + hex + '"/>';
+      }).join("") +
+    "</linearGradient>";
+  }).join("");
+}
+
+/* Recolours every garment inside `el` — and only inside `el`. Sets the fabric
+   fill reference plus the collar-rib tones, all of which do cascade into the
+   <use> shadow tree.
+
+   Still sets --cloth-0…5 as well, so the older #shirtArt symbol used by the
+   home page's before/after slider keeps working unchanged. */
 function applyGarmentColor(el, colorName) {
-  const g = GARMENT_COLORS[colorName] || GARMENT_COLORS["White"];
+  const name = GARMENT_COLORS[colorName] ? colorName : "White";
+  const g = GARMENT_COLORS[name];
   g.cloth.forEach(function (hex, i) { el.style.setProperty("--cloth-" + i, hex); });
+  el.style.setProperty("--cloth-fill", "url(#cloth-" + colorSlug(name) + ")");
   el.style.setProperty("--rib", g.rib);
   el.style.setProperty("--rib-edge", g.ribEdge);
 }
