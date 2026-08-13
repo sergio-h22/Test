@@ -50,6 +50,49 @@ alternates for the six that carry the home page.
 
 All 2048px wide.
 
+### Second batch — alternates and lifestyle
+
+Generated in the same session, 23 more images for 3.45 credits. Balance
+4.71 → **1.26**. Every product now has at least two takes.
+
+**Product alternates** (a second option for each)
+
+| Product id | Alternate job ID |
+|---|---|
+| `business-cards` | `89d5a276-077a-40da-ac61-aadb9148b5b4` |
+| `stickers` | `603b567f-148d-42ac-92d8-1d32757ca6e0` |
+| `window-vinyls` | `cbffc667-bf59-435b-82f8-8e312e72750a` |
+| `posters` | `fbf49823-adbd-489d-99cc-be02f289a2d0` |
+| `signs` | `6c07b744-52d8-45c2-887d-6635e218eda0` |
+| `flyers` | `655914c2-7bc7-4ce7-914e-a194e5e79ef0` |
+| `postcards` | `4e8f5b6f-0191-4600-ba09-7fb3a6c2adb1` |
+| `menus` | `ed1d8c37-afae-407f-9398-8b439e8fedc5` |
+| `letterhead` | `505e5e52-5ac6-4c34-a356-c515faee593e` |
+| `envelopes` | `43e76cb8-57a2-4431-860d-1b5fd54f1bf7` |
+| `catalogs` | `c11f26b1-a438-4985-9bb2-0af11c4fe929` |
+| `labels` | `748b74cb-b1fb-48d4-b42e-c4f89de8eb01` |
+| `magnets` | `394fd3ff-288c-4f33-999f-4ecc2ba5027b` |
+| `hoodies` (on hanger) | `d664b67d-d7e8-4096-bc57-9746eefa5fa0` |
+| `polos` (on hanger) | `2a62c2a1-e527-43d5-a72f-b9091ddbd4bd` |
+| `hi-vis` (orange, hung) | `c92b2bfd-0cc2-4554-81a5-eec5aabe5738` |
+| `uniforms` (on a rail) | `19bacc37-04ba-4789-97d7-0b6c8f7f87d1` |
+
+**Lifestyle and context shots** — products in use rather than on a sweep.
+Good for section backgrounds, the ideas grid, or the portfolio once real
+work replaces them.
+
+| Shot | Ratio | Job ID |
+|---|---|---|
+| Banner on a site fence | 16:9 | `2d6f9501-c2e7-419d-abe0-493f4ad9476b` |
+| Folded tees on shelving | 4:3 | `5f824be6-e99c-4252-8109-e9b001996a24` |
+| Tees on a garment rail | 4:3 | `55629e59-9d4c-4410-b7ce-14e715343663` |
+| Finishing bench from above | 16:9 | `b7e29d23-8de1-4af5-a082-a8e8ef8786b5` |
+| Stickers on a laptop and bottle | 4:3 | `9c51a1b2-a755-45ca-a426-c1b93b39b393` |
+| Vinyl and coroplast stock | 16:9 | `142aaf3f-7ffe-4803-82f0-7c323e42f5e1` |
+
+**Running total: 51 images, 7.65 credits. 1.26 left**, which is not enough
+for anything further, so generation stops here.
+
 ### Three things worth knowing
 
 **Every product is shot blank.** No text, no logos, no branding anywhere. That
