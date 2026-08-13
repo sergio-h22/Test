@@ -101,6 +101,12 @@
       <p class="swatch-note" id="colorNote"></p>
     </div>
 
+    <!-- Size, material and finish. Built by renderOptions() from the product's
+         own `options` object in products.js, so a banner offers material and a
+         letterhead does not offer a finish it has no choices for. Hidden
+         entirely for products that define no options. -->
+    <div class="dz-block" id="productOptions" hidden></div>
+
     <div class="dz-block">
       <p class="eyebrow">Step 3</p>
       <h2 class="dz-h">Add your design</h2>
@@ -220,6 +226,9 @@
 
 <script src="assets/js/products.js"></script>
 <script src="assets/js/illustrations.js"></script>
+<!-- Flat print surfaces (cards, banners, signs). Consulted by
+     printAreaFor() in garments.js, so it loads alongside it. -->
+<script src="assets/js/surfaces.js"></script>
 <script src="assets/js/garments.js"></script>
 <script src="assets/js/site.js"></script>
 <!-- Fabric is ~316KB, so it loads only on this page — never on the home page

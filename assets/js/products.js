@@ -38,36 +38,73 @@ const PRODUCTS = [
   /* ---------------------------------------------------------- signs ----- */
   {
     id: "banners", name: "Vinyl Banners", cat: "signs", photo: "photos/banners.jpg",
+    customizable: true,
+    options: {
+      sizes: ["2ft × 4ft", "3ft × 6ft", "4ft × 8ft", "Custom"],
+      material: ["13oz vinyl", "18oz heavy duty", "Mesh"]
+    },
+    pricing: null,
     blurb: "Heavy vinyl banners for storefronts, events and job sites.",
     copy: "Printed on heavy vinyl and finished with hemmed edges and grommets so they hang flat and survive weather. Sized to whatever the space needs — grand openings, sponsorships, construction fencing, trade show backdrops.",
     specs: [["Material", "Heavy vinyl"], ["Finishing", "Hemmed edges, grommets"], ["Use", "Indoor or outdoor"], ["Artwork", "PDF, AI, EPS or SVG"]]
   },
   {
     id: "yard-signs", name: "Yard Signs", cat: "signs", photo: "photos/yard-signs.jpg",
+    customizable: true,
+    options: {
+      sizes: ['18" × 24"', '24" × 18"', '12" × 18"'],
+      material: ["4mm coroplast", "10mm coroplast"],
+      sided: ["Single sided", "Double sided"]
+    },
+    pricing: null,
     blurb: "Coroplast signs with stakes — real estate, elections, events.",
     copy: "Lightweight corrugated plastic that stands up to sun and sprinklers. Single or double sided, with H-stakes included. The workhorse of local advertising.",
     specs: [["Material", "Coroplast"], ["Sides", "Single or double"], ["Includes", "H-stakes"], ["Artwork", "PDF, AI or SVG"]]
   },
   {
     id: "foam-boards", name: "Foam Boards", cat: "signs", photo: "photos/foam-boards.jpg",
+    customizable: true,
+    options: {
+      sizes: ['18" × 24"', '24" × 36"', '36" × 48"'],
+      material: ["3/16in foam", "1/2in foam"]
+    },
+    pricing: null,
     blurb: "Rigid mounted boards for presentations and displays.",
     copy: "Prints mounted to rigid foam core — clean, light and easy to stand on an easel. Good for presentations, directional signage, photo displays and event backdrops.",
     specs: [["Material", "Foam core"], ["Use", "Indoor"], ["Mounting", "Easel or wall"], ["Artwork", "PDF or high-res JPG"]]
   },
   {
     id: "window-vinyls", name: "Window Vinyls", cat: "signs", photo: "photos/window-vinyls.jpg",
+    customizable: true,
+    options: {
+      sizes: ["Cut to size"],
+      material: ["Clear", "Frosted", "Perforated", "Opaque"]
+    },
+    pricing: null,
     blurb: "Storefront window graphics, lettering and full wraps.",
     copy: "Cut vinyl lettering or full printed window graphics. Turns your glass into signage — hours, phone number, logo, promotions, or a full frosted privacy treatment.",
     specs: [["Type", "Cut vinyl or printed"], ["Surface", "Glass"], ["Removable", "Yes"], ["Artwork", "Vector preferred"]]
   },
   {
     id: "posters", name: "Posters", cat: "signs", photo: "photos/posters.jpg",
+    customizable: true,
+    options: {
+      sizes: ['11" × 17"', '18" × 24"', '24" × 36"'],
+      finish: ["Matte", "Gloss", "Satin"]
+    },
+    pricing: null,
     blurb: "Large format posters in gloss or matte.",
     copy: "Big, sharp and colour-accurate. Events, promotions, menus, wayfinding, or anything that needs to read from a distance.",
     specs: [["Finish", "Gloss or matte"], ["Use", "Indoor"], ["Artwork", "PDF, AI or high-res JPG"]]
   },
   {
     id: "signs", name: "Rigid Signs", cat: "signs", photo: "photos/signs.jpg",
+    customizable: true,
+    options: {
+      sizes: ['12" × 18"', '18" × 24"', '24" × 36"'],
+      material: ["Aluminum", "PVC", "Dibond"]
+    },
+    pricing: null,
     blurb: "Durable panel signs for permanent installation.",
     copy: "Rigid panel signage built to stay up. Parking and safety notices, business identification, directional signs and site boards.",
     specs: [["Use", "Indoor or outdoor"], ["Mounting", "Wall, post or frame"], ["Artwork", "Vector preferred"]]
@@ -76,42 +113,87 @@ const PRODUCTS = [
   /* ---------------------------------------------------------- print ----- */
   {
     id: "business-cards", name: "Business Cards", cat: "print", photo: "photos/business-cards.jpg",
+    customizable: true,
+    options: {
+      sizes: ['3.5" × 2" standard'],
+      finish: ["Matte", "Gloss", "Soft touch", "Uncoated"],
+      sided: ["Single sided", "Double sided"]
+    },
+    pricing: null,
     blurb: "Gloss, matte or spot UV — the card that brought you here.",
     copy: "The card in your hand came off our press. Heavy stock, tight registration, and a choice of gloss laminate, soft matte, or spot UV where you want a raised shine against a flat ground.",
     specs: [["Finishes", "Gloss, matte, spot UV"], ["Sides", "Single or double"], ["Artwork", "PDF with bleed preferred"]]
   },
   {
     id: "flyers", name: "Flyers", cat: "print", photo: "photos/flyers.jpg",
+    customizable: true,
+    options: {
+      sizes: ['8.5" × 11"', '5.5" × 8.5"', '4" × 6"'],
+      finish: ["Matte", "Gloss", "Uncoated"],
+      sided: ["Single sided", "Double sided"]
+    },
+    pricing: null,
     blurb: "Full colour flyers for handouts, mailers and counters.",
     copy: "Full colour both sides on your choice of stock. The cheapest way to put something physical in a lot of hands at once.",
     specs: [["Sides", "Single or double"], ["Stock", "Text or card weight"], ["Artwork", "PDF, AI or PSD"]]
   },
   {
     id: "postcards", name: "Postcards", cat: "print", photo: "photos/postcards.jpg",
+    customizable: true,
+    options: {
+      sizes: ['4" × 6"', '5" × 7"', '6" × 9"'],
+      finish: ["Matte", "Gloss", "Uncoated"],
+      sided: ["Single sided", "Double sided"]
+    },
+    pricing: null,
     blurb: "Card stock postcards for promotions and direct mail.",
     copy: "Heavier than a flyer and built to survive the mail. Promotions, appointment reminders, save-the-dates and new-location announcements.",
     specs: [["Stock", "Card weight"], ["Finish", "Gloss or matte"], ["Mailable", "Yes"]]
   },
   {
     id: "menus", name: "Menus", cat: "print", photo: "photos/menus.jpg",
+    customizable: true,
+    options: {
+      sizes: ['8.5" × 11"', '8.5" × 14"', '11" × 17" folded'],
+      finish: ["Gloss", "Matte", "Laminated"]
+    },
+    pricing: null,
     blurb: "Single sheet or folded menus, wipeable finishes available.",
     copy: "Printed to survive service. Single sheet, folded, or laminated so they can be wiped down between customers.",
     specs: [["Formats", "Flat or folded"], ["Finish", "Gloss, matte or laminated"], ["Artwork", "PDF preferred"]]
   },
   {
     id: "letterhead", name: "Letterhead", cat: "print", photo: "photos/letterhead.jpg",
+    customizable: true,
+    options: {
+      sizes: ['8.5" × 11"'],
+      material: ["Bond", "Premium"]
+    },
+    pricing: null,
     blurb: "Branded letterhead on quality stock.",
     copy: "Your logo and details on proper paper. Quotes, invoices and letters that look like they came from an established business.",
     specs: [["Stock", "Bond or premium"], ["Sides", "Single"], ["Artwork", "PDF or AI"]]
   },
   {
     id: "envelopes", name: "Envelopes", cat: "print", photo: "photos/envelopes.jpg",
+    customizable: true,
+    options: {
+      sizes: ["#10 business", "A2", "9in × 12in"],
+      material: ["Standard", "Windowed"]
+    },
+    pricing: null,
     blurb: "Printed envelopes to match your letterhead.",
     copy: "Branded envelopes in standard business sizes, printed to match your letterhead so the whole set arrives looking deliberate.",
     specs: [["Sizes", "Standard business"], ["Windowed", "Available"], ["Artwork", "PDF or AI"]]
   },
   {
     id: "catalogs", name: "Catalogs", cat: "print", photo: "photos/catalogs.jpg",
+    customizable: true,
+    options: {
+      sizes: ['8.5" × 11"', '5.5" × 8.5"'],
+      finish: ["Saddle stitch"]
+    },
+    pricing: null,
     blurb: "Multi-page booklets, saddle stitched.",
     copy: "Multi-page booklets bound and trimmed. Product ranges, programmes, lookbooks and service guides.",
     specs: [["Binding", "Saddle stitch"], ["Pages", "Multiples of 4"], ["Artwork", "Print-ready PDF"]]
@@ -120,18 +202,37 @@ const PRODUCTS = [
   /* ------------------------------------------------------- stickers ----- */
   {
     id: "stickers", name: "Stickers", cat: "stickers", photo: "photos/stickers.jpg",
+    customizable: true,
+    options: {
+      sizes: ['2" × 2"', '3" × 3"', '4" × 4"', "Custom die-cut"],
+      material: ["Indoor", "Weatherproof"]
+    },
+    pricing: null,
     blurb: "Die-cut to your shape, indoor or weatherproof.",
     copy: "Cut to the outline of your artwork rather than a rectangle. Weatherproof stock available for anything going on a truck, a laptop or a hard hat.",
     specs: [["Cut", "Die-cut to shape"], ["Stock", "Indoor or weatherproof"], ["Artwork", "Vector preferred"]]
   },
   {
     id: "labels", name: "Labels", cat: "stickers", photo: "photos/labels.jpg",
+    customizable: true,
+    options: {
+      sizes: ['2" × 3"', '3" × 4"', "Custom"],
+      material: ["Sheets", "Rolls"],
+      finish: ["Gloss", "Matte"]
+    },
+    pricing: null,
     blurb: "Product and packaging labels, sheets or rolls.",
     copy: "Product labels, packaging seals, jar and bottle wraps. Supplied on sheets or rolls depending on how you apply them.",
     specs: [["Format", "Sheets or rolls"], ["Finish", "Gloss or matte"], ["Artwork", "Vector preferred"]]
   },
   {
     id: "magnets", name: "Magnets", cat: "stickers", photo: "photos/magnets.jpg",
+    customizable: true,
+    options: {
+      sizes: ['12" × 6" vehicle', '4" × 6"', '3" × 3"'],
+      material: ["Vehicle grade", "Promotional"]
+    },
+    pricing: null,
     blurb: "Vehicle and fridge magnets that come off clean.",
     copy: "Vehicle door magnets that turn any car into a work vehicle and come off when you need it back, plus promotional fridge magnets that keep your number in the kitchen.",
     specs: [["Use", "Vehicle or promotional"], ["Removable", "Yes"], ["Artwork", "Vector preferred"]]

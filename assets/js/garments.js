@@ -360,10 +360,30 @@ function ensureGarmentDefs() {
   document.body.insertBefore(holder.firstElementChild, document.body.firstChild);
 }
 
-/* The print area for a product/side, falling back to the t-shirt's so a
+/* The print area for a product/side. This is the single geometry entry point
+   the whole customizer runs on — engine, quote and UI all ask here — which is
+   why flat products are resolved here rather than each caller having to know
+   the difference between a garment and a business card.
+
+   Flat surfaces (surfaces.js) answer first. Garments come from the table
+   above. Anything genuinely unknown falls back to the t-shirt so a
    half-configured product still renders something usable rather than
    throwing. */
 function printAreaFor(productId, side) {
+  if (typeof surfacePrintArea === "function") {
+    const flat = surfacePrintArea(productId, side);
+    if (flat) return flat;
+  }
   const areas = PRINT_AREAS[productId] || PRINT_AREAS["t-shirts"];
   return areas[side] || areas.front;
+}
+
+/* Which sides a product prints. Garments are always front/back; flat products
+   vary — a yard sign takes both, a banner takes one — so the UI asks rather
+   than assuming. */
+function sidesFor(productId) {
+  if (typeof surfaceSides === "function" && typeof isFlatSurface === "function" && isFlatSurface(productId)) {
+    return surfaceSides(productId);
+  }
+  return ["front", "back"];
 }

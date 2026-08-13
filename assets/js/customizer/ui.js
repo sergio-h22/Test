@@ -13,12 +13,15 @@
 
   const el = {
     canvas:      document.getElementById("designCanvas"),
+    art:         document.getElementById("garmentArt"),
     use:         document.getElementById("garmentUse"),
     stage:       document.getElementById("garmentStage"),
+    sides:       document.querySelector(".dz-sides"),
     area:        document.getElementById("printArea"),
     areaLabel:   document.getElementById("printAreaLabel"),
     hint:        document.getElementById("stageHint"),
     products:    document.getElementById("productPicker"),
+    options:     document.getElementById("productOptions"),
     colors:      document.getElementById("colorRow"),
     colorNote:   document.getElementById("colorNote"),
     drop:        document.getElementById("dropZone"),
@@ -65,11 +68,54 @@
 
   /* ------------------------------------------------------------ rendering */
 
-  function paintGarment() {
+  /* Draws whatever the customer is designing on. Two kinds of product exist
+     and they are drawn completely differently:
+
+       garment  a fixed SVG silhouette from GARMENT_SHAPES, recoloured per
+                fabric colour, with a small print panel on it
+       flat     a rectangle whose shape IS the product — a business card, a
+                banner, a yard sign — drawn by surfaces.js
+
+     Before this existed every product rendered through the garment path, so
+     a business card came out shirt-shaped. The branch is the whole fix; the
+     engine below it never learns the difference, because both kinds resolve
+     through the same printAreaFor(). */
+  function paintProduct() {
     const side = CustomizerEngine.getSide();
-    el.use.setAttribute("href", "#garment-" + current.art[side]);
-    applyGarmentColor(el.stage, CustomizerEngine.getColor());
+    const flat = typeof isFlatSurface === "function" && isFlatSurface(current.id);
+
+    if (flat) {
+      /* Replacing the <use> wholesale rather than re-pointing it: a flat
+         product is several shapes (stock, shadow, grommets), not one symbol. */
+      el.art.innerHTML = surfaceArtwork(current.id, side) + surfaceGuides(current.id);
+      el.stage.classList.add("is-flat");
+      el.stage.style.removeProperty("--cloth-fill");
+    } else {
+      el.art.innerHTML = '<use id="garmentUse" href="#garment-' + esc(current.art[side]) + '"/>';
+      el.use = document.getElementById("garmentUse");
+      el.stage.classList.remove("is-flat");
+      applyGarmentColor(el.stage, CustomizerEngine.getColor());
+    }
     positionArea();
+  }
+
+  /* Kept under the old name so nothing else in this file has to change. */
+  function paintGarment() { paintProduct(); }
+
+  /* Front/back is not universal: a banner prints one side, a yard sign two.
+     Asking rather than assuming stops the UI offering a back that the shop
+     would have to explain does not exist. */
+  function renderSides() {
+    if (!el.sides) return;
+    const allowed = typeof sidesFor === "function" ? sidesFor(current.id) : ["front", "back"];
+    let visible = 0;
+    el.sides.querySelectorAll(".dz-side").forEach(function (b) {
+      const ok = allowed.indexOf(b.dataset.side) !== -1;
+      b.hidden = !ok;
+      if (ok) visible++;
+    });
+    /* One side means the control is noise. */
+    el.sides.hidden = visible < 2;
   }
 
   /* The print-area outline is a plain DOM box laid over the canvas, sized as
@@ -83,26 +129,55 @@
     el.areaLabel.textContent = a.label;
   }
 
+  /* One thumbnail. Garments draw their silhouette, flat products draw their
+     own shape, so the picker shows a card as a card and a banner as a banner
+     rather than 21 identical shirts. */
+  function productThumb(p) {
+    const flat = typeof isFlatSurface === "function" && isFlatSurface(p.id);
+    const inner = flat
+      ? surfaceArtwork(p.id, "front")
+      : '<use href="#garment-' + esc(p.art.front) + '"/>';
+    return '<button type="button" class="dz-product" data-id="' + esc(p.id) + '" ' +
+           'aria-pressed="' + (p.id === current.id) + '">' +
+             '<svg viewBox="0 0 600 620" aria-hidden="true">' + inner + "</svg>" +
+             "<span>" + esc(p.name) + "</span>" +
+           "</button>";
+  }
+
+  /* Grouped by catalogue category. With 5 products a flat list was fine; with
+     all 21 it becomes a wall, and the categories customers already know from
+     the catalogue are the obvious way to break it up. */
   function renderProducts() {
-    el.products.innerHTML = customizable.map(function (p) {
-      return '<button type="button" class="dz-product" data-id="' + esc(p.id) + '" ' +
-             'aria-pressed="' + (p.id === current.id) + '">' +
-               '<svg viewBox="0 0 600 620" aria-hidden="true">' +
-                 '<use href="#garment-' + esc(p.art.front) + '"/>' +
-               "</svg>" +
-               "<span>" + esc(p.name) + "</span>" +
-             "</button>";
+    const groups = CATEGORIES.map(function (c) {
+      const items = customizable.filter(function (p) { return p.cat === c.id; });
+      if (!items.length) return "";
+      return '<div class="dz-group">' +
+               '<p class="dz-group-h">' + esc(c.name) + "</p>" +
+               '<div class="dz-group-items">' + items.map(productThumb).join("") + "</div>" +
+             "</div>";
     }).join("");
 
-    /* Each thumbnail shows the garment in its own first colour — possible
-       only because fabric colour is a per-instance fill reference now. */
+    el.products.innerHTML = groups;
+
+    /* Garment thumbnails show their own first colour — possible only because
+       fabric colour is a per-instance fill reference. */
     el.products.querySelectorAll(".dz-product").forEach(function (b) {
       const p = productById(b.dataset.id);
-      if (p && p.colors) applyGarmentColor(b, p.colors[0]);
+      if (p && p.colors && p.art) applyGarmentColor(b, p.colors[0]);
     });
   }
 
+  /* Colour is a garment concept. A business card has a stock and a finish,
+     not a fabric colour, so the whole block hides rather than showing an
+     empty row of swatches. */
   function renderColors() {
+    const block = el.colors.closest(".dz-block");
+    if (!current.colors || !current.colors.length) {
+      if (block) block.hidden = true;
+      return;
+    }
+    if (block) block.hidden = false;
+
     const active = CustomizerEngine.getColor();
     el.colors.innerHTML = current.colors.map(function (c) {
       return '<button type="button" class="swatch" data-color="' + esc(c) + '" ' +
@@ -111,6 +186,49 @@
              'aria-label="' + esc(c) + '"></button>';
     }).join("");
     el.colorNote.textContent = active;
+  }
+
+  /* Size / material / finish, driven entirely by the product's own options
+     object. Products that define none get no controls — which is why a
+     banner shows material and a letterhead does not show a finish it has no
+     choices for. */
+  function renderOptions() {
+    if (!el.options) return;
+    const opts = current.options || {};
+    const keys = Object.keys(opts).filter(function (k) {
+      return Array.isArray(opts[k]) && opts[k].length;
+    });
+
+    if (!keys.length) { el.options.innerHTML = ""; el.options.hidden = true; return; }
+    el.options.hidden = false;
+
+    const LABELS = {
+      sizes: "Size", material: "Material", finish: "Finish",
+      sided: "Printed sides", orientation: "Orientation"
+    };
+
+    el.options.innerHTML = keys.map(function (k) {
+      const id = "opt-" + k;
+      return '<div class="field">' +
+               '<label for="' + id + '">' + esc(LABELS[k] || k) + "</label>" +
+               '<select id="' + id + '" data-opt="' + esc(k) + '">' +
+                 opts[k].map(function (v) {
+                   return '<option value="' + esc(v) + '">' + esc(v) + "</option>";
+                 }).join("") +
+               "</select>" +
+             "</div>";
+    }).join("");
+  }
+
+  /* What the customer has chosen, for the quote. Read straight off the DOM so
+     there is no second copy of this state to fall out of sync. */
+  function selectedOptions() {
+    if (!el.options) return {};
+    const out = {};
+    el.options.querySelectorAll("select[data-opt]").forEach(function (s) {
+      out[s.dataset.opt] = s.value;
+    });
+    return out;
   }
 
   /* Reflects whatever the canvas currently has selected. Called on every
@@ -174,13 +292,19 @@
 
   CustomizerEngine.init(el.canvas, {
     product: current,
-    color: current.colors[0],
-    side: "front",
+    /* Flat products have no fabric colour at all, so this cannot assume an
+       array exists — reading current.colors[0] unguarded threw the moment a
+       business card became customizable. */
+    color: (current.colors && current.colors[0]) || null,
+    /* Start on a side the product actually prints. */
+    side: (typeof sidesFor === "function" ? sidesFor(current.id)[0] : "front"),
     onChange: syncPanel
   });
 
   renderProducts();
   renderColors();
+  renderOptions();
+  renderSides();
   paintGarment();
   syncPanel();
 
@@ -202,8 +326,19 @@
       b.setAttribute("aria-pressed", String(b === btn));
     });
 
-    CustomizerEngine.setProduct(current).then(function (r) {
+    /* Switching to a product that does not print the current side would
+       otherwise leave the canvas on a side that no longer exists. */
+    const allowed = typeof sidesFor === "function" ? sidesFor(current.id) : ["front", "back"];
+    const sideFix = allowed.indexOf(CustomizerEngine.getSide()) === -1
+      ? CustomizerEngine.setSide(allowed[0])
+      : Promise.resolve();
+
+    sideFix.then(function () {
+      return CustomizerEngine.setProduct(current);
+    }).then(function (r) {
       renderColors();
+      renderOptions();
+      renderSides();
       paintGarment();
       syncPanel();
       /* Say what happened rather than silently changing things underneath
@@ -211,7 +346,7 @@
       if (r.colorChanged) {
         hint(current.name + " comes in " + r.color + " — colour updated.");
       } else if (r.skewed) {
-        hint("This garment's print area is a different shape. Check your design still sits how you want it.");
+        hint("This product's print area is a different shape. Check your design still sits how you want it.");
       }
     });
   });
