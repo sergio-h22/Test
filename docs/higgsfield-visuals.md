@@ -2,13 +2,98 @@
 
 Every visual the site would benefit from, with the prompt that makes it.
 
-## Status: all five stills generated
+## Status: complete photo set generated
 
-Generated 13 Aug 2026. **Total cost: 0.75 credits** — 0.15 each, far below the
-~6 I had budgeted. Balance went 8.91 → **8.16**, so there is plenty left.
+Generated 13 Aug 2026. **28 images, 4.20 credits total** — 0.15 each. Balance
+went 8.91 → **4.71**.
 
-| # | Visual | Size | Job ID |
-|---|---|---|---|
+Every one of the 21 products now has a photo, plus marketing shots and
+alternates for the six that carry the home page.
+
+### Marketing shots
+
+| Visual | Ratio | Job ID |
+|---|---|---|
+| Shop floor (hero) | 16:9 | `8246a021-12dd-48fe-a8c3-bfd9bedb1ced` |
+| Shop floor, alternate angle | 16:9 | `8728829b-379f-47be-9da7-ec4d2c83b3f1` |
+| Press close-up | 4:3 | `f8c2f02d-01a5-4c74-9149-0289bd032456` |
+
+### Product photos — save as `photos/<id>.jpg`
+
+| Product id | Job ID |
+|---|---|
+| `banners` | `bac9990c-f078-428a-bc24-70d1535e3aa6` |
+| `banners` (alt, flat) | `940d69d6-9959-432d-8258-2ae2d6ea9a75` |
+| `yard-signs` | `e11971da-351a-4567-a290-45aa4d974ce7` |
+| `yard-signs` (alt) | `4dc4bc36-3214-4a25-a249-3a5b8ac73d3a` |
+| `foam-boards` | `811b9be2-e51a-44aa-b6f9-1918e76ef426` |
+| `foam-boards` (alt) | `e5cedd0d-f68f-4346-a993-2154952b94a2` |
+| `window-vinyls` | `f5353315-dd53-48f5-bc8c-4a077b94ee57` |
+| `posters` | `4ce7d885-116f-4c8d-ba03-a02d6771bd7c` |
+| `signs` | `79e7f1af-6754-4645-a1a5-0918dbf584d3` |
+| `business-cards` | `c97160a7-3847-4471-8a56-3dce2a1fc2d5` |
+| `flyers` | `53f2113a-f657-4c13-8ffa-e09418b086cb` |
+| `postcards` | `63ad36de-89fb-4a96-83ba-a15e7a985742` |
+| `menus` | `6522fb06-5cda-4bfd-85fa-1fe3eee8fb45` |
+| `letterhead` | `1a101a0f-18e1-4023-a60b-82596f816aad` |
+| `envelopes` | `9fc90edf-c41b-4df8-9e7a-4cd88d32c141` |
+| `catalogs` | `83444196-5656-447a-ada7-8e5725243b07` |
+| `stickers` | `82298532-2fd9-4aa4-b3fd-3c0c6821cc07` |
+| `labels` | `70378789-66c2-46c6-9b60-b4ec80847fc6` |
+| `magnets` | `f113f5ac-02cd-4ef6-af29-48a8e9e5d6d0` |
+| `t-shirts` (folded stack) | `486ee868-e1cc-455d-9337-57ff95d8c1bf` |
+| `t-shirts` (alt, single flat) | `0d1ca177-fb9d-4d63-aa78-1471f169cda7` |
+| `hoodies` | `6b9e6098-2a12-4405-bffb-4bebb1d57554` |
+| `polos` | `dab441d7-26c1-4e58-ba66-978e33173ab2` |
+| `hi-vis` | `efd46365-e009-458b-b5d3-b2b539d53b42` |
+| `uniforms` | `cd562125-de64-4fa7-9a8d-a0731aed3f78` |
+
+All 2048px wide.
+
+### Three things worth knowing
+
+**Every product is shot blank.** No text, no logos, no branding anywhere. That
+is deliberate twice over: generated lettering comes out mangled, and a blank
+product reads as "your artwork here", which is what the shop actually sells.
+
+**They were generated blind.** This environment's network policy blocks
+Higgsfield's CDN, so images can be generated here but not downloaded or
+inspected. Nothing in this set has been reviewed. **Look at each one before
+you use it** — reject anything with warped geometry, stray lettering, or a
+plastic AI sheen. That is also why the six home-page products have a second
+take: you get a choice where it matters most.
+
+**Model:** `z_image`. Recraft V4.1 is the stronger photoreal model but returns
+`minimum_basic_plan_required` on a free plan whatever the credit balance.
+
+### Wiring them in
+
+Save into `photos/`, then set `photo:` on the matching product in
+`products.js`:
+
+```js
+{ id: "banners", ..., photo: "photos/banners.jpg" }
+```
+
+The `slot()` fallback switches from the drawing to the photo automatically —
+no layout changes. **Do not set the path before the file exists**, or you get
+a broken image where the drawing used to be.
+
+Resize to roughly 1200px wide and under 300 KB each before uploading; 2048px
+PNGs are far heavier than the page needs.
+
+### Video is not available on this plan
+
+Every video model prices at 7.5 credits or more, except Seedance Mini at 5 —
+which returns `minimum_basic_plan_required` like Recraft. So a clip is not
+reachable on a free account regardless of balance. The remaining **4.71
+credits** are left unspent rather than burned on images past a complete set,
+since each one is a manual download for you.
+
+The "watch it get printed" section runs on CSS animation meanwhile: free,
+instant, and incapable of showing anything untrue.
+
+---|---|---|---|
 | 1 | Shop floor | 2048×1152 | `8246a021-12dd-48fe-a8c3-bfd9bedb1ced` |
 | 2 | Folded stack | 2048×1536 | `486ee868-e1cc-455d-9337-57ff95d8c1bf` |
 | 3 | Press close-up | 2048×1536 | `f8c2f02d-01a5-4c74-9149-0289bd032456` |
