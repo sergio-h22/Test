@@ -93,7 +93,7 @@ const CustomizerQuote = (function () {
     if (extra.name)    parts.push("Name: " + extra.name);
     if (extra.contact) parts.push("Contact: " + extra.contact);
     parts.push("");
-    parts.push("— Designed at m-powerprint.com/design.html");
+    parts.push("— Designed at lacamisanegra.com/design.html");
 
     return parts.join("\n");
   }

@@ -37,8 +37,8 @@ At the top:
 ```js
 const CONFIG = {
   phone:     "(949) 228-1226",
-  email:     "sales@m-powerprint.com",
-  email2:    "mikey@m-powerprint.com",
+  email:     "sales@lacamisanegra.com",
+  email2:    "mikey@lacamisanegra.com",
   address:   "Southern California",
   instagram: "",
   hours:     ""
@@ -93,7 +93,7 @@ with your real turnaround and minimums — those two questions stall more orders
 than anything else on the site.
 
 **Your real domain.** `SITE_URL` at the top of `assets/js/site.js`, plus
-`sitemap.xml` and `robots.txt`, all assume `https://m-powerprint.com/`. If you
+`sitemap.xml` and `robots.txt`, all assume `https://lacamisanegra.com/`. If you
 deploy somewhere else, change it in those three places.
 
 **The original logo artwork.** The fist logo on the site was recovered from a
@@ -269,7 +269,7 @@ skipped entirely when the browser reports Save-Data or a 2G/3G connection. It
 used to download 2.6 MB on every visit before anything else loaded.
 
 **The quote form** opens the customer's email app with every field filled in,
-addressed to `sales@m-powerprint.com`. A "Get a quote for this" button on a
+addressed to `sales@lacamisanegra.com`. A "Get a quote for this" button on a
 product page carries that product through and preselects it. No server, no
 signup, nothing to maintain.
 
@@ -283,7 +283,7 @@ endpoint drops into `initQuoteForm()` in `assets/js/site.js`.
   drag the whole folder in. Live in seconds, free, HTTPS included.
 - **GitHub Pages** — Settings → Pages → deploy from branch, `/ (root)`.
 
-Both have a custom-domain setting for pointing `m-powerprint.com` at it.
+Both have a custom-domain setting for pointing `lacamisanegra.com` at it.
 
 Upload the **folder**, not just `index.html` — the catalog needs the `assets/`
 files alongside it.

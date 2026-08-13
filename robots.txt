@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://m-powerprint.com/sitemap.xml
+Sitemap: https://lacamisanegra.com/sitemap.xml
