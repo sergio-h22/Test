@@ -259,8 +259,14 @@ function initHeroVideo() {
   });
 
   /* Fetch only once the hero is actually on screen. Setting src at load time
-     pulled megabytes down ahead of everything that matters. */
-  function load() { if (!video.src) video.src = src; }
+     pulled megabytes down ahead of everything that matters.
+
+     The explicit .load() matters: this <video> starts with no src in the
+     markup, and Safari — unlike Chromium — won't pick up a .src assigned
+     after the element already exists in the page without being told to
+     re-run resource selection. Without it, the video silently never loads
+     on iOS Safari: no error, no loadeddata, just a static hero forever. */
+  function load() { if (!video.src) { video.src = src; video.load(); } }
 
   if (!("IntersectionObserver" in window)) { load(); return; }
 
