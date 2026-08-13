@@ -99,7 +99,7 @@ const PRODUCTS = [
     specs: [["Formats", "Flat or folded"], ["Finish", "Gloss, matte or laminated"], ["Artwork", "PDF preferred"]]
   },
   {
-    id: "letterhead", name: "Letterhead", cat: "print", photo: "",
+    id: "letterhead", name: "Letterhead", cat: "print", photo: "photos/letterhead.jpg",
     blurb: "Branded letterhead on quality stock.",
     copy: "Your logo and details on proper paper. Quotes, invoices and letters that look like they came from an established business.",
     specs: [["Stock", "Bond or premium"], ["Sides", "Single"], ["Artwork", "PDF or AI"]]
@@ -119,7 +119,7 @@ const PRODUCTS = [
 
   /* ------------------------------------------------------- stickers ----- */
   {
-    id: "stickers", name: "Stickers", cat: "stickers", photo: "",
+    id: "stickers", name: "Stickers", cat: "stickers", photo: "photos/stickers.jpg",
     blurb: "Die-cut to your shape, indoor or weatherproof.",
     copy: "Cut to the outline of your artwork rather than a rectangle. Weatherproof stock available for anything going on a truck, a laptop or a hard hat.",
     specs: [["Cut", "Die-cut to shape"], ["Stock", "Indoor or weatherproof"], ["Artwork", "Vector preferred"]]
@@ -139,7 +139,7 @@ const PRODUCTS = [
 
   /* -------------------------------------------------------- apparel ----- */
   {
-    id: "t-shirts", name: "T-Shirts", cat: "apparel", photo: "",
+    id: "t-shirts", name: "T-Shirts", cat: "apparel", photo: "photos/t-shirts.jpg",
     blurb: "Custom printed tees for crews, teams and events.",
     copy: "Your logo or artwork on shirts for staff, teams, events and merch. Full colour artwork and photographs handled as easily as a single-colour logo.",
     specs: [["Sizes", "Youth through 5XL"], ["Placement", "Front, back, sleeve"], ["Artwork", "High-res PNG, AI or SVG"]],
@@ -149,7 +149,7 @@ const PRODUCTS = [
     pricing: null
   },
   {
-    id: "hoodies", name: "Hoodies & Sweatshirts", cat: "apparel", photo: "",
+    id: "hoodies", name: "Hoodies & Sweatshirts", cat: "apparel", photo: "photos/hoodies.jpg",
     blurb: "Pullovers and zip hoodies, printed or embroidered.",
     copy: "Heavier pieces for cold mornings on site and for merch people actually keep. Printed or embroidered depending on the look you want.",
     specs: [["Styles", "Pullover or full zip"], ["Decoration", "Print or embroidery"], ["Artwork", "High-res PNG, AI or SVG"]],
@@ -169,7 +169,7 @@ const PRODUCTS = [
     pricing: null
   },
   {
-    id: "hi-vis", name: "Hi-Vis & Workwear", cat: "apparel", photo: "",
+    id: "hi-vis", name: "Hi-Vis & Workwear", cat: "apparel", photo: "photos/hi-vis.jpg",
     blurb: "Safety vests and jackets with your company branding.",
     copy: "Hi-vis vests and jackets branded with your company name so a crew reads as a crew on site. Reflective striping kept clear of the print area.",
     specs: [["Use", "Job site"], ["Decoration", "Print or embroidery"], ["Artwork", "Vector preferred"]],
@@ -181,7 +181,7 @@ const PRODUCTS = [
     pricing: null
   },
   {
-    id: "uniforms", name: "Uniforms", cat: "apparel", photo: "",
+    id: "uniforms", name: "Uniforms", cat: "apparel", photo: "photos/uniforms.jpg",
     blurb: "Full staff uniform programmes, names and numbers.",
     copy: "Kitting out a whole team, including individual names and numbers. Set the artwork up once and reorder as staff change.",
     specs: [["Personalisation", "Names and numbers"], ["Reorders", "Artwork kept on file"], ["Artwork", "Vector preferred"]],

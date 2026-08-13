@@ -115,8 +115,11 @@ const SCENES = [
     label: "Large format",
     ink: "Press red",
     chip: "#E31B23",
-    tone: "dark",
-    photo: "",
+    /* Real photography now: a blank vinyl banner, grommeted, hung on a site
+       fence. Bright overcast sky and white vinyl read closer to the light
+       palette than the drawing's saturated red vinyl did. */
+    tone: "light",
+    photo: "photos/scene-largeformat.jpg",
     art: function () {
       /* Grommets march along the top and bottom edges of the banner. The edges
          are not horizontal, so each one is interpolated along its own edge. */
@@ -183,7 +186,10 @@ const SCENES = [
     ink: "Bone stock",
     chip: "#EDE9E3",
     tone: "light",
-    photo: "",
+    /* Real photography: plain white tees on a garment rail — the same
+       composition the drawing below approximates, so the swap changes
+       nothing about how the plate reads. */
+    photo: "photos/scene-apparel.jpg",
     art: function () {
       /* A garment on a hanger, drawn once in a 200×230 box and reused. The
          collar is a curve rather than a notch, which is the difference
@@ -317,8 +323,11 @@ const SCENES = [
     label: "Finishing",
     ink: "Graphite",
     chip: "#5C626B",
-    tone: "dark",
-    photo: "",
+    /* Real photography: the actual large-format printer with vinyl rolls and
+       a trimmed stack of rigid stock — a lighter scene than the drawing's
+       dark cutting-mat close-up, so tone flips to match. */
+    tone: "light",
+    photo: "photos/scene-finishing.jpg",
     art: function () {
       /* The cutting mat. Majors every 200 so the grid reads as a measuring
          surface rather than as graph paper. */
