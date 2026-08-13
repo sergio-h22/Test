@@ -246,6 +246,130 @@
   </div>
 </section>
 
+<!-- ========================================================== THE PRESS RUN -->
+<!-- The full-bleed picture behind this section changes as you scroll past
+     each panel, one plate at a time.
+
+     Three files, one job:
+       assets/js/scenes.js    the artwork, and whether a plate is light or dark
+       assets/js/pressrun.js  swaps the backdrop as each panel arrives
+       .press in site.css     the sticky stage and the type
+
+     The copy lives here rather than in the JavaScript so it can be edited
+     without touching code, and so it is still readable if the script never
+     loads. Each panel names its scene with data-scene; the ids come from
+     scenes.js. To reorder the run, move the panels — the plate numbers and
+     the counter follow the markup. -->
+<section class="press" id="press" data-tone="dark">
+
+  <div class="press-sticky">
+    <div class="press-scenes"></div>
+    <div class="press-scrim"></div>
+    <div class="press-grain"></div>
+    <p class="press-readout" aria-hidden="true"></p>
+  </div>
+
+  <div class="press-panels">
+
+    <article class="press-panel" data-scene="pressroom">
+      <div class="wrap">
+        <div class="press-copy">
+          <p class="press-eyebrow">Plate 01 — The pressroom</p>
+          <h2 class="press-h">Everything runs through one shop</h2>
+          <p class="press-p">
+            Banners, cards and shirts on the same order sheet. One job, one
+            quote, one pickup — instead of chasing three suppliers to finish
+            one project.
+          </p>
+          <a class="press-link" href="products.html">
+            Browse products
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="M4 12h15M13 6l6 6-6 6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="press-panel" data-scene="largeformat">
+      <div class="wrap">
+        <div class="press-copy">
+          <p class="press-eyebrow">Plate 02 — Large format</p>
+          <h2 class="press-h">Made to be read across a parking lot</h2>
+          <p class="press-p">
+            Vinyl banners, yard signs, window graphics and rigid board — cut
+            to the wall, the fence or the storefront it is going on.
+          </p>
+          <a class="press-link" href="products.html?q=banner">
+            See signs &amp; banners
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="M4 12h15M13 6l6 6-6 6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="press-panel" data-scene="apparel">
+      <div class="wrap">
+        <div class="press-copy">
+          <p class="press-eyebrow">Plate 03 — Apparel</p>
+          <h2 class="press-h">Your logo, on the whole crew</h2>
+          <p class="press-p">
+            Shirts, hoodies, polos, hi-vis and uniforms. Upload your artwork
+            once and we keep it on file — reorder it as staff change.
+          </p>
+          <a class="press-link" href="design.html?flow=business">
+            Brand my business
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="M4 12h15M13 6l6 6-6 6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="press-panel" data-scene="ink">
+      <div class="wrap">
+        <div class="press-copy">
+          <p class="press-eyebrow">Plate 04 — Ink &amp; colour</p>
+          <h2 class="press-h">Nothing prints until you say yes</h2>
+          <p class="press-p">
+            Every job gets a digital proof and a firm price before it goes on
+            the press. Changes at that stage are free.
+          </p>
+          <a class="press-link" href="#how">
+            How it works
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="M4 12h15M13 6l6 6-6 6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="press-panel" data-scene="finishing">
+      <div class="wrap">
+        <div class="press-copy">
+          <p class="press-eyebrow">Plate 05 — Finishing</p>
+          <h2 class="press-h">Collect it, or we ship it</h2>
+          <p class="press-p">
+            Trimmed, counted and boxed. Pick it up from the shop or we will
+            send it to you — your call when you order.
+          </p>
+          <a class="press-link" href="#quote">
+            Get a quote
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+              <path d="M4 12h15M13 6l6 6-6 6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+</section>
+
 <!-- ========================================================= DESIGN IDEAS -->
 <!-- Most people arrive knowing the occasion, not the product. Built by
      initIdeas() so every tile points at a page that actually exists. -->
@@ -519,6 +643,10 @@
 <script src="assets/js/illustrations.js"></script>
 <script src="assets/js/garments.js"></script>
 <script src="assets/js/site.js"></script>
+<!-- The press run: artwork, then the controller that swaps it. Home page
+     only — no other page has a .press section for it to bind to. -->
+<script src="assets/js/scenes.js"></script>
+<script src="assets/js/pressrun.js"></script>
 
 <!-- Sticky tap-to-call bar. Phones only; see .callbar in site.css. -->
 <div class="callbar">

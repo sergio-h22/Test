@@ -34,7 +34,12 @@ body{
   font-size:16px;
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
+  /* `clip` rather than `hidden`: hidden turns the body into a scroll
+     container, which breaks position:sticky for the press run. `clip` stops
+     the same sideways overflow without creating one. The hidden line stays
+     underneath it as the fallback for browsers without `clip`. */
   overflow-x:hidden;
+  overflow-x:clip;
 }
 
 img{max-width:100%;display:block}
@@ -1007,4 +1012,209 @@ a.contact-row:hover span{color:var(--red)}
 @media (max-width:560px){
   .bizband{grid-template-columns:1fr}
   .bizcta .btn{flex:1 1 100%}
+}
+
+/* ==========================================================================
+   THE PRESS RUN — the scrolling backdrop on the home page
+   --------------------------------------------------------------------------
+   A sticky full-height stage with the panels pulled up over it, so the
+   picture behind the copy changes as you scroll. Markup in index.html,
+   artwork in assets/js/scenes.js, wiring in assets/js/pressrun.js.
+
+   Everything here is namespaced `press-` so it cannot collide with the rest
+   of the design system.
+   ========================================================================== */
+
+:root{
+  --obsidian:#0B0C0E;
+  --bone:#EDE9E3;
+  --brass:#C9A961;
+
+  /* A didone for the press-run headlines only. High-contrast hairlines read
+     as apparel rather than as industrial, which is the register this section
+     is going for. Georgia carries it where Didot and Bodoni are absent. */
+  --f-display:"Didot","Bodoni MT","Playfair Display",Georgia,"Times New Roman",serif;
+}
+
+.press{
+  position:relative;
+  background:var(--obsidian);
+  border-block:1px solid rgba(201,169,97,.28);
+}
+
+.press-sticky{
+  position:sticky;top:0;
+  height:100vh;height:100svh;   /* svh so mobile browser chrome cannot clip it */
+  overflow:hidden;
+}
+
+/* ------------------------------------------------------------------ scenes */
+.press-scenes{position:absolute;inset:0}
+
+.press-scene{
+  position:absolute;inset:0;
+  opacity:0;
+  transition:opacity .9s cubic-bezier(.4,0,.2,1);
+  will-change:opacity;
+}
+.press-scene.is-live{opacity:1}
+
+.press-scene svg,
+.press-scene img,
+.press-scene video{
+  width:100%;height:100%;display:block;object-fit:cover;
+}
+
+/* The slow push-in that keeps a still backdrop from reading as a flat block.
+   Added by pressrun.js only when reduced motion is not requested. */
+.press-drift .press-scene.is-live svg,
+.press-drift .press-scene.is-live img,
+.press-drift .press-scene.is-live video{
+  animation:pressDrift 20s cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes pressDrift{
+  from{transform:scale(1.07)}
+  to{transform:scale(1)}
+}
+
+/* ------------------------------------------------------------------- scrim
+   Two jobs: hold the copy legible, and keep the artwork from competing with
+   it. The gradient runs across on desktop, where the copy sits in the left
+   column, and down on mobile, where it does not. */
+.press-scrim{
+  position:absolute;inset:0;
+  transition:background .9s ease;
+}
+.press[data-tone="dark"] .press-scrim{
+  background:linear-gradient(100deg,
+    rgba(11,12,14,.94) 0%, rgba(11,12,14,.82) 30%,
+    rgba(11,12,14,.16) 52%, rgba(11,12,14,.32) 100%);
+}
+.press[data-tone="light"] .press-scrim{
+  background:linear-gradient(100deg,
+    rgba(237,233,227,.94) 0%, rgba(237,233,227,.78) 26%,
+    rgba(237,233,227,.22) 55%, rgba(237,233,227,.48) 100%);
+}
+
+/* Press stock is never perfectly smooth. A little tooth stops the flat fills
+   looking like a screenshot of a gradient. */
+.press-grain{
+  position:absolute;inset:0;pointer-events:none;
+  opacity:.42;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.38'/%3E%3C/svg%3E");
+}
+
+/* ----------------------------------------------------------------- readout
+   The registration mark and plate label. This is the section's structural
+   device and it encodes something true: a press run is ordered, and each
+   plate lays down one colour. */
+.press-readout{
+  position:absolute;left:0;right:0;bottom:clamp(16px,3vh,32px);z-index:4;
+  width:min(var(--shell),100% - clamp(24px,4vw,64px));margin-inline:auto;
+  display:flex;align-items:center;gap:clamp(10px,1.6vw,20px);
+  font-family:var(--f-mono);font-size:.6rem;letter-spacing:.22em;
+  text-transform:uppercase;pointer-events:none;
+  transition:color .9s ease;
+}
+.press[data-tone="dark"]  .press-readout{color:rgba(237,233,227,.62)}
+.press[data-tone="light"] .press-readout{color:rgba(11,12,14,.58)}
+
+.press-reg{width:15px;height:15px;flex:none;color:var(--brass)}
+.press-reg svg{width:100%;height:100%;display:block}
+.press-plate{color:var(--brass);font-weight:700}
+.press-label{font-weight:700}
+.press-ink{display:inline-flex;align-items:center;gap:7px}
+.press-chip{
+  width:9px;height:9px;border-radius:50%;display:inline-block;flex:none;
+  box-shadow:0 0 0 1px rgba(0,0,0,.3);
+  transition:background .9s ease;
+}
+.press-count{margin-left:auto;letter-spacing:.18em}
+
+/* ------------------------------------------------------------------ panels
+   Pulled up over the sticky stage. Each is a viewport tall, which is what
+   gives the backdrop room to change one plate at a time. */
+.press-panels{position:relative;z-index:3;margin-top:-100vh;margin-top:-100svh}
+
+.press-panel{
+  min-height:100vh;min-height:100svh;
+  display:grid;align-content:center;
+  padding-block:clamp(72px,11vh,132px);
+  transition:color .9s ease;
+}
+.press[data-tone="dark"]  .press-panel{color:var(--bone)}
+.press[data-tone="light"] .press-panel{color:var(--ink)}
+
+/* The reveal. Transform and opacity only, so it stays on the compositor. */
+.press-panel > .wrap{
+  opacity:0;transform:translateY(28px);
+  transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.3,1);
+}
+.press-panel.is-in > .wrap{opacity:1;transform:none}
+
+.press-copy{max-width:46ch}
+
+.press-eyebrow{
+  display:flex;align-items:center;gap:14px;
+  font-family:var(--f-mono);font-size:.62rem;letter-spacing:.3em;
+  text-transform:uppercase;font-weight:700;
+  color:var(--brass);margin:0 0 20px;
+}
+.press[data-tone="light"] .press-eyebrow{color:#8A6A28}
+.press-eyebrow::after{
+  content:"";height:1px;flex:1;max-width:110px;
+  background:currentColor;opacity:.45;
+}
+
+.press-h{
+  font-family:var(--f-display);font-weight:400;
+  font-size:clamp(2.5rem,6.2vw,5rem);
+  line-height:.98;letter-spacing:-.015em;
+  margin:0 0 22px;color:inherit;
+}
+
+.press-p{
+  font-size:clamp(1rem,1.3vw,1.14rem);line-height:1.7;
+  margin:0 0 30px;max-width:44ch;
+  transition:color .9s ease;
+}
+.press[data-tone="dark"]  .press-p{color:rgba(237,233,227,.76)}
+.press[data-tone="light"] .press-p{color:#4A4F57}
+
+/* A hairline-underscored link, which suits the register better than another
+   filled button in a section that already has plenty of them elsewhere. */
+.press-link{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.16em;
+  text-transform:uppercase;font-weight:700;text-decoration:none;
+  color:inherit;padding-bottom:7px;
+  border-bottom:1px solid currentColor;
+  transition:gap .25s ease,color .25s ease,border-color .25s ease;
+}
+.press-link:hover{gap:16px;color:var(--red);border-color:var(--red)}
+.press[data-tone="light"] .press-link:hover{color:var(--red)}
+.press-link svg{width:14px;height:14px;flex:none}
+
+/* ------------------------------------------------------------- responsive */
+@media (max-width:760px){
+  /* The copy runs full width here, so the scrim has to come down the page
+     rather than across it. */
+  .press[data-tone="dark"] .press-scrim{
+    background:linear-gradient(180deg,rgba(11,12,14,.70),rgba(11,12,14,.93));
+  }
+  .press[data-tone="light"] .press-scrim{
+    background:linear-gradient(180deg,rgba(237,233,227,.74),rgba(237,233,227,.94));
+  }
+  .press-count{display:none}
+  .press-readout{font-size:.55rem;letter-spacing:.18em}
+  .press-h{font-size:clamp(2.1rem,9vw,3rem)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .press-scene{transition:none}
+  .press-drift .press-scene.is-live svg,
+  .press-drift .press-scene.is-live img,
+  .press-drift .press-scene.is-live video{animation:none}
+  .press-panel > .wrap{opacity:1;transform:none;transition:none}
+  .press-link{transition:none}
 }
