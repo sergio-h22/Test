@@ -1267,3 +1267,89 @@ a.contact-row:hover span{color:var(--red)}
   #productOptions select{height:46px}
   .dz-group-items{grid-template-columns:repeat(auto-fit,minmax(78px,1fr))}
 }
+
+/* ==========================================================================
+   CUSTOMIZER — editor depth
+   Elements, layer list, alignment, design warnings, save/cart.
+   Same palette and controls as the rest of the site: white ground, ink text,
+   red for the one accent, square corners, mono micro-labels.
+   ========================================================================== */
+
+.dz-sub{
+  font-family:var(--f-mono);font-size:.58rem;letter-spacing:.18em;
+  text-transform:uppercase;color:#8A9098;margin:16px 0 8px;
+}
+
+/* -------------------------------------------------------------- elements */
+.dz-elements{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.dz-el{
+  aspect-ratio:1;display:grid;place-items:center;cursor:pointer;
+  background:#fff;border:1px solid var(--line);color:var(--head);
+  transition:border-color .15s,color .15s;
+}
+.dz-el svg{width:20px;height:20px}
+.dz-el:hover{border-color:var(--red);color:var(--red)}
+
+/* ---------------------------------------------------------------- layers */
+.dz-layers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.dz-layer{
+  display:flex;align-items:stretch;gap:1px;
+  background:var(--line);border:1px solid var(--line);
+}
+.dz-layer.is-active{border-color:var(--red)}
+.dz-layer.is-hidden .dz-layer-name{opacity:.45;text-decoration:line-through}
+.dz-layer-pick{
+  flex:1;min-width:0;display:flex;align-items:center;gap:9px;
+  background:#fff;border:0;cursor:pointer;padding:9px 11px;text-align:left;
+}
+.dz-layer-kind{
+  font-family:var(--f-mono);font-size:.52rem;letter-spacing:.14em;
+  text-transform:uppercase;color:#9AA0A7;flex:none;
+}
+.dz-layer-name{
+  font-size:.86rem;color:var(--head);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.dz-layer-eye{
+  flex:none;background:#fff;border:0;cursor:pointer;padding:0 11px;
+  font-family:var(--f-mono);font-size:.55rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--body);
+}
+.dz-layer-eye:hover{color:var(--red)}
+
+/* ------------------------------------------------------------- alignment */
+.dz-align{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.dz-row-seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+
+/* -------------------------------------------------------------- warnings */
+.dz-warns{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.dz-warn{
+  font-size:.86rem;line-height:1.5;padding:10px 12px;
+  border-left:3px solid var(--line);background:var(--mist);color:var(--body);
+}
+/* Amber for "this will probably cause a problem", grey for "worth a look". */
+.dz-warn-warn{border-left-color:#C9821B;background:#FDF6EC;color:#6A4A12}
+.dz-warn-note{border-left-color:#9AA0A7}
+
+/* ---------------------------------------------------------- save + cart */
+.dz-link{
+  background:none;border:0;padding:0;cursor:pointer;
+  color:var(--red);font:inherit;text-decoration:underline;
+}
+#saveNote.is-error{color:#B8141B}
+
+/* Range inputs, matched to the site's square, minimal controls. */
+.dz-panel input[type="range"]{
+  width:100%;height:26px;accent-color:var(--red);cursor:pointer;
+}
+
+/* ------------------------------------------------------------ responsive */
+@media (max-width:560px){
+  /* Touch targets: the 44px floor the rest of the site holds to. */
+  .dz-el{min-height:46px}
+  .dz-layer-pick{padding:12px 11px}
+  .dz-layer-eye{padding:0 14px}
+  .dz-align{grid-template-columns:repeat(3,1fr);gap:5px}
+  .dz-align .dz-chip,.dz-row-seg .dz-chip{min-height:44px}
+  .dz-panel input[type="range"]{height:34px}
+}

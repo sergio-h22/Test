@@ -37,6 +37,26 @@
     bold:        document.getElementById("boldBtn"),
     italic:      document.getElementById("italicBtn"),
     textColor:   document.getElementById("textColor"),
+    under:       document.getElementById("underBtn"),
+    fontSel:     document.getElementById("fontSelect"),
+    spacing:     document.getElementById("spacingRange"),
+    leading:     document.getElementById("leadingRange"),
+    opacity:     document.getElementById("opacityRange"),
+    imageCtl:    document.getElementById("imageControls"),
+    shapeCtl:    document.getElementById("shapeControls"),
+    shapeColor:  document.getElementById("shapeColor"),
+    flipH:       document.getElementById("flipHBtn"),
+    flipV:       document.getElementById("flipVBtn"),
+    forward:     document.getElementById("forwardBtn"),
+    backward:    document.getElementById("backwardBtn"),
+    elements:    document.getElementById("elementRow"),
+    layersBlock: document.getElementById("layersBlock"),
+    layerList:   document.getElementById("layerList"),
+    warnBlock:   document.getElementById("warnBlock"),
+    warnList:    document.getElementById("warnList"),
+    save:        document.getElementById("saveBtn"),
+    cart:        document.getElementById("cartBtn"),
+    saveNote:    document.getElementById("saveNote"),
     dup:         document.getElementById("dupBtn"),
     del:         document.getElementById("delBtn"),
     qty:         document.getElementById("qtyInput"),
@@ -231,12 +251,120 @@
     return out;
   }
 
+  /* ------------------------------------------------------------- fonts
+     Web-safe faces first: they need no download and render immediately, so
+     the menu works even if the font CDN is blocked or slow. The rest are
+     loaded by the stylesheet in design.html.
+
+     `web:true` marks the ones that must be awaited before Fabric draws with
+     them — canvas does not re-render itself when a font finishes loading, so
+     without that wait the first render silently falls back to a default. */
+  const FONTS = [
+    { name: "Helvetica",       stack: "Helvetica, Arial, sans-serif" },
+    { name: "Arial",           stack: "Arial, Helvetica, sans-serif" },
+    { name: "Georgia",         stack: "Georgia, serif" },
+    { name: "Times New Roman", stack: '"Times New Roman", Times, serif' },
+    { name: "Impact",          stack: "Impact, Haettenschweiler, sans-serif" },
+    { name: "Courier New",     stack: '"Courier New", Courier, monospace' },
+    { name: "Montserrat",      stack: "Montserrat, sans-serif", web: true },
+    { name: "Roboto",          stack: "Roboto, sans-serif",     web: true },
+    { name: "Open Sans",       stack: '"Open Sans", sans-serif', web: true },
+    { name: "Oswald",          stack: "Oswald, sans-serif",     web: true },
+    { name: "Poppins",         stack: "Poppins, sans-serif",    web: true }
+  ];
+
+  function fontByStack(stack) {
+    return FONTS.find(function (f) { return f.stack === stack; }) || FONTS[0];
+  }
+
+  /* Resolves once the face is actually usable on canvas. */
+  function ensureFont(stack) {
+    const f = fontByStack(stack);
+    if (!f.web || !document.fonts || !document.fonts.load) return Promise.resolve();
+    return document.fonts.load('700 32px "' + f.name + '"')
+      .then(function () { return document.fonts.load('400 32px "' + f.name + '"'); })
+      .catch(function () { /* fall back to whatever the stack resolves to */ });
+  }
+
+  function renderFonts() {
+    if (!el.fontSel) return;
+    el.fontSel.innerHTML = FONTS.map(function (f) {
+      return '<option value="' + esc(f.stack) + '" style="font-family:' + esc(f.stack) + '">' +
+               esc(f.name) + "</option>";
+    }).join("");
+  }
+
+  /* ---------------------------------------------------------- elements */
+  const ELEMENTS = [
+    { kind: "rect",     label: "Rectangle", icon: '<rect x="4" y="7" width="16" height="10" rx="1"/>' },
+    { kind: "circle",   label: "Circle",    icon: '<circle cx="12" cy="12" r="7"/>' },
+    { kind: "triangle", label: "Triangle",  icon: '<path d="M12 5 20 19H4z"/>' },
+    { kind: "star",     label: "Star",      icon: '<path d="m12 4 2.4 5.3 5.6.6-4.2 3.8 1.2 5.5L12 16.4 6.9 19.2l1.2-5.5L4 9.9l5.6-.6z"/>' },
+    { kind: "line",     label: "Line",      icon: '<rect x="3" y="11" width="18" height="2.4" rx="1.2"/>' },
+    { kind: "arrow",    label: "Arrow",     icon: '<path d="M3 10h10V6l8 6-8 6v-4H3z"/>' }
+  ];
+
+  function renderElements() {
+    if (!el.elements) return;
+    el.elements.innerHTML = ELEMENTS.map(function (e) {
+      return '<button type="button" class="dz-el" data-shape="' + esc(e.kind) + '" ' +
+             'aria-label="Add ' + esc(e.label) + '" title="' + esc(e.label) + '">' +
+               '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">' + e.icon + "</svg>" +
+             "</button>";
+    }).join("");
+  }
+
+  /* ------------------------------------------------------------ layers
+     Listed top of stack first, because that is how a customer sees them —
+     the thing in front is the thing they are looking at. The engine's array
+     is bottom-first, so this reverses for display only. */
+  function renderLayers() {
+    if (!el.layersBlock) return;
+    const layers = CustomizerEngine.getLayers();
+    el.layersBlock.hidden = layers.length === 0;
+    if (!layers.length) { el.layerList.innerHTML = ""; return; }
+
+    const active = CustomizerEngine.getActiveLayer();
+    el.layerList.innerHTML = layers.slice().reverse().map(function (l) {
+      const label = l.type === "text"  ? (l.text || "Text")
+                  : l.type === "shape" ? (l.shape.charAt(0).toUpperCase() + l.shape.slice(1))
+                  : "Artwork";
+      return '<li class="dz-layer' + (active && active.id === l.id ? " is-active" : "") +
+                 (l.hidden ? " is-hidden" : "") + '">' +
+               '<button type="button" class="dz-layer-pick" data-pick="' + esc(l.id) + '">' +
+                 '<span class="dz-layer-kind">' + esc(l.type) + "</span>" +
+                 '<span class="dz-layer-name">' + esc(label.slice(0, 24)) + "</span>" +
+               "</button>" +
+               '<button type="button" class="dz-layer-eye" data-eye="' + esc(l.id) + '" ' +
+                 'aria-pressed="' + String(!l.hidden) + '" ' +
+                 'aria-label="' + (l.hidden ? "Show" : "Hide") + ' this layer">' +
+                 (l.hidden ? "Show" : "Hide") +
+               "</button>" +
+             "</li>";
+    }).join("");
+  }
+
+  /* ---------------------------------------------------------- warnings */
+  function renderWarnings() {
+    if (!el.warnBlock) return;
+    const list = CustomizerEngine.validate();
+    el.warnBlock.hidden = list.length === 0;
+    if (!list.length) { el.warnList.innerHTML = ""; return; }
+
+    el.warnList.innerHTML = list.map(function (w) {
+      return '<li class="dz-warn dz-warn-' + esc(w.level) + '">' + esc(w.message) + "</li>";
+    }).join("");
+  }
+
   /* Reflects whatever the canvas currently has selected. Called on every
      engine change so the panel can never disagree with the canvas. */
   function syncPanel() {
     el.undo.disabled = !CustomizerEngine.canUndo();
     el.redo.disabled = !CustomizerEngine.canRedo();
     renderAlso();
+
+    renderLayers();
+    renderWarnings();
 
     const layer = CustomizerEngine.getActiveLayer();
     el.layerBlock.hidden = !layer;
@@ -245,15 +373,49 @@
     /* The boundary is guidance while editing, clutter otherwise. */
     el.area.hidden = false;
 
-    const isText = layer.type === "text";
-    el.layerTitle.textContent = isText ? "Text" : "Artwork";
-    el.textCtl.hidden = !isText;
+    const isText  = layer.type === "text";
+    const isShape = layer.type === "shape";
+    const isImage = layer.type === "image";
+
+    el.layerTitle.textContent = isText ? "Text" : isShape ? "Element" : "Artwork";
+    el.textCtl.hidden  = !isText;
+    if (el.imageCtl) el.imageCtl.hidden = !isImage;
+    if (el.shapeCtl) el.shapeCtl.hidden = !isShape;
 
     if (isText) {
       if (document.activeElement !== el.textValue) el.textValue.value = layer.text || "";
       el.bold.setAttribute("aria-pressed", String(Boolean(layer.bold)));
       el.italic.setAttribute("aria-pressed", String(Boolean(layer.italic)));
+      if (el.under) el.under.setAttribute("aria-pressed", String(Boolean(layer.underline)));
       el.textColor.value = layer.fill || "#16181B";
+      if (el.fontSel)  el.fontSel.value = layer.font || FONTS[0].stack;
+      if (el.spacing)  el.spacing.value = layer.spacing || 0;
+      if (el.leading)  el.leading.value = layer.leading == null ? 1.16 : layer.leading;
+
+      root.querySelectorAll("[data-align]").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.dataset.align === (layer.align || "center")));
+      });
+    }
+
+    if (isShape && el.shapeColor) el.shapeColor.value = layer.fill || "#E31B23";
+    if (el.opacity) el.opacity.value = layer.opacity == null ? 1 : layer.opacity;
+  }
+
+  /* Everything a save or a cart line needs that lives outside the engine. */
+  function extras() {
+    return {
+      qty: parseInt(el.qty.value, 10) || 1,
+      options: selectedOptions()
+    };
+  }
+
+  function note(msg, isError) {
+    if (!el.saveNote) return;
+    el.saveNote.textContent = msg || "";
+    el.saveNote.classList.toggle("is-error", Boolean(isError));
+    if (msg) {
+      window.clearTimeout(note._t);
+      note._t = window.setTimeout(function () { el.saveNote.textContent = ""; }, 6000);
     }
   }
 
@@ -305,8 +467,34 @@
   renderColors();
   renderOptions();
   renderSides();
+  renderFonts();
+  renderElements();
   paintGarment();
   syncPanel();
+  updateCartCount();
+
+  /* Restore whatever was in progress on this product. Offered rather than
+     applied silently: someone arriving to start something new should not
+     find last week's design already on the garment. */
+  CustomizerStore.loadDesign(current.id).then(function (saved) {
+    if (!saved || !saved.designs) return;
+    const hasAny = (saved.designs.front || []).length || (saved.designs.back || []).length;
+    if (!hasAny) return;
+
+    el.saveNote.innerHTML =
+      'You have a saved design for this product. ' +
+      '<button type="button" class="dz-link" id="restoreBtn">Restore it</button>';
+
+    const btn = document.getElementById("restoreBtn");
+    btn.addEventListener("click", function () {
+      CustomizerEngine.loadDesigns(saved.designs).then(function () {
+        if (saved.color) { CustomizerEngine.setColor(saved.color); renderColors(); paintGarment(); }
+        if (saved.qty && el.qty) el.qty.value = saved.qty;
+        syncPanel();
+        note("Saved design restored.");
+      });
+    });
+  }).catch(function () { /* storage unavailable — nothing to restore */ });
 
   if (business) {
     /* A crew is not one shirt. Starting at 12 saves the customer correcting a
@@ -350,6 +538,131 @@
       }
     });
   });
+
+  /* ------------------------------------------------- elements and layers */
+
+  el.elements.addEventListener("click", function (e) {
+    const btn = e.target.closest(".dz-el");
+    if (!btn) return;
+    CustomizerEngine.addShape(btn.dataset.shape).then(syncPanel);
+  });
+
+  el.layerList.addEventListener("click", function (e) {
+    const pick = e.target.closest("[data-pick]");
+    if (pick) { CustomizerEngine.selectById(pick.dataset.pick); syncPanel(); return; }
+    const eye = e.target.closest("[data-eye]");
+    if (eye) CustomizerEngine.toggleVisible(eye.dataset.eye).then(syncPanel);
+  });
+
+  /* ------------------------------------------------------ layer controls */
+
+  function activeId() {
+    const l = CustomizerEngine.getActiveLayer();
+    return l ? l.id : null;
+  }
+
+  function patch(props) {
+    const id = activeId();
+    if (id) CustomizerEngine.updateLayer(id, props).then(syncPanel);
+  }
+
+  if (el.fontSel) {
+    el.fontSel.addEventListener("change", function () {
+      const stack = el.fontSel.value;
+      /* Wait for the face before redrawing, or canvas silently renders the
+         previous font and the menu appears not to work. */
+      ensureFont(stack).then(function () { patch({ font: stack }); });
+    });
+  }
+
+  if (el.under) {
+    el.under.addEventListener("click", function () {
+      const l = CustomizerEngine.getActiveLayer();
+      if (l) patch({ underline: !l.underline });
+    });
+  }
+
+  root.querySelectorAll("[data-align]").forEach(function (b) {
+    b.addEventListener("click", function () { patch({ align: b.dataset.align }); });
+  });
+
+  root.querySelectorAll("[data-move]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      const id = activeId();
+      if (id) CustomizerEngine.align(id, b.dataset.move).then(syncPanel);
+    });
+  });
+
+  if (el.spacing) el.spacing.addEventListener("input", function () {
+    patch({ spacing: parseInt(el.spacing.value, 10) || 0 });
+  });
+  if (el.leading) el.leading.addEventListener("input", function () {
+    patch({ leading: parseFloat(el.leading.value) || 1.16 });
+  });
+  if (el.opacity) el.opacity.addEventListener("input", function () {
+    patch({ opacity: parseFloat(el.opacity.value) });
+  });
+  if (el.shapeColor) el.shapeColor.addEventListener("input", function () {
+    patch({ fill: el.shapeColor.value });
+  });
+  if (el.flipH) el.flipH.addEventListener("click", function () {
+    const l = CustomizerEngine.getActiveLayer();
+    if (l) patch({ flipX: !l.flipX });
+  });
+  if (el.flipV) el.flipV.addEventListener("click", function () {
+    const l = CustomizerEngine.getActiveLayer();
+    if (l) patch({ flipY: !l.flipY });
+  });
+  if (el.forward) el.forward.addEventListener("click", function () {
+    const id = activeId();
+    if (id) CustomizerEngine.reorder(id, "up").then(syncPanel);
+  });
+  if (el.backward) el.backward.addEventListener("click", function () {
+    const id = activeId();
+    if (id) CustomizerEngine.reorder(id, "down").then(syncPanel);
+  });
+
+  /* ------------------------------------------------------ save and cart */
+
+  if (el.save) {
+    el.save.addEventListener("click", function () {
+      CustomizerStore.saveDesign(CustomizerEngine.getState(), extras())
+        .then(function () {
+          note("Design saved to this browser. It will be here when you come back.");
+        })
+        .catch(function (err) {
+          note(err.message || "That design could not be saved.", true);
+        });
+    });
+  }
+
+  if (el.cart) {
+    el.cart.addEventListener("click", function () {
+      if (!CustomizerEngine.hasAnyDesign()) {
+        note("Add some artwork or text before adding this to your cart.", true);
+        return;
+      }
+      const extra = extras();
+      extra.preview = CustomizerEngine.exportDesignPNG();
+      CustomizerStore.addToCart(CustomizerEngine.getState(), extra)
+        .then(function () {
+          note("Added to your cart with this design attached.");
+          updateCartCount();
+        })
+        .catch(function (err) {
+          note(err.message || "That could not be added to your cart.", true);
+        });
+    });
+  }
+
+  function updateCartCount() {
+    CustomizerStore.cartCount().then(function (n) {
+      document.querySelectorAll("[data-cart-count]").forEach(function (node) {
+        node.textContent = n ? String(n) : "";
+        node.hidden = !n;
+      });
+    }).catch(function () {});
+  }
 
   el.colors.addEventListener("click", function (e) {
     const btn = e.target.closest(".swatch");

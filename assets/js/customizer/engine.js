@@ -81,6 +81,24 @@ const CustomizerEngine = (function () {
     };
   }
 
+  /* A layer's on-screen height as a fraction of the print area.
+
+     Read from the live canvas object when there is one, because only Fabric
+     knows how tall a given string in a given font actually rendered. The
+     fallback covers the moment before a layer has been drawn — align() can
+     be called on a freshly added layer — and is deliberately rough, since
+     the next render corrects it. */
+  function estimateNormalHeight(layer) {
+    const a = area();
+    if (canvas) {
+      const obj = canvas.getObjects().find(function (o) { return o.layerId === layer.id; });
+      if (obj) return obj.getScaledHeight() / a.h;
+    }
+    if (layer.h) return layer.h;
+    if (layer.type === "text") return (layer.w || 0.5) * 0.32;
+    return layer.w || 0.4;
+  }
+
   /* ------------------------------------------------------------- history */
 
   function snapshot() {
@@ -149,6 +167,9 @@ const CustomizerEngine = (function () {
         left: c.left, top: c.top,
         originX: "center", originY: "center",
         angle: layer.angle || 0,
+        opacity: layer.opacity == null ? 1 : layer.opacity,
+        flipX: Boolean(layer.flipX),
+        flipY: Boolean(layer.flipY),
         layerId: layer.id,
         clipPath: clipRect()
       });
@@ -168,7 +189,13 @@ const CustomizerEngine = (function () {
       fontFamily: layer.font || "Helvetica",
       fontWeight: layer.bold ? "700" : "400",
       fontStyle: layer.italic ? "italic" : "normal",
+      underline: Boolean(layer.underline),
       textAlign: layer.align || "center",
+      /* Fabric measures letter spacing in 1/1000 em, which is the unit the
+         UI slider works in too so the two never need converting. */
+      charSpacing: layer.spacing || 0,
+      lineHeight: layer.leading == null ? 1.16 : layer.leading,
+      opacity: layer.opacity == null ? 1 : layer.opacity,
       fill: layer.fill || "#16181B",
       layerId: layer.id,
       clipPath: clipRect()
@@ -177,19 +204,91 @@ const CustomizerEngine = (function () {
     return Promise.resolve(t);
   }
 
-  /* Draws the current side's layers. Async because images load async, and
-     the order of the returned array is the layer order, so a Promise.all
-     keeps stacking deterministic rather than "whichever image decoded
-     first". */
+  /* ---------------------------------------------------------------- shapes
+     Vector elements the customer can add without uploading anything. Drawn
+     from the normalised box like every other layer, so they move, scale and
+     survive a product switch identically.
+
+     `h` is carried only by shapes. Text and images derive their height from
+     their own content and aspect ratio; a rectangle does not have one to
+     derive, so it needs its own. */
+
+  function starPoints(spikes, outer, inner) {
+    const pts = [];
+    const step = Math.PI / spikes;
+    for (let i = 0; i < spikes * 2; i++) {
+      const r = i % 2 === 0 ? outer : inner;
+      const a = i * step - Math.PI / 2;
+      pts.push({ x: Math.cos(a) * r, y: Math.sin(a) * r });
+    }
+    return pts;
+  }
+
+  const ARROW_POINTS = [
+    { x: -50, y: -12 }, { x: 14, y: -12 }, { x: 14, y: -30 }, { x: 50, y: 0 },
+    { x: 14, y: 30 },   { x: 14, y: 12 },  { x: -50, y: 12 }
+  ];
+
+  function buildShape(layer) {
+    const c = toCanvas(layer);
+    const common = {
+      left: c.left, top: c.top,
+      originX: "center", originY: "center",
+      angle: layer.angle || 0,
+      fill: layer.fill || "#E31B23",
+      opacity: layer.opacity == null ? 1 : layer.opacity,
+      layerId: layer.id,
+      clipPath: clipRect()
+    };
+
+    let obj;
+    switch (layer.shape) {
+      case "circle":
+        obj = new fabric.Circle(Object.assign({ radius: 50 }, common));
+        break;
+      case "line":
+        /* A line has no fill — colour lives on the stroke, so the shared
+           `fill` would silently do nothing. */
+        obj = new fabric.Line([-50, 0, 50, 0], Object.assign({}, common, {
+          fill: null, stroke: layer.fill || "#E31B23", strokeWidth: 8, strokeLineCap: "round"
+        }));
+        break;
+      case "star":
+        obj = new fabric.Polygon(starPoints(5, 50, 21), common);
+        break;
+      case "arrow":
+        obj = new fabric.Polygon(ARROW_POINTS, common);
+        break;
+      case "triangle":
+        obj = new fabric.Triangle(Object.assign({ width: 100, height: 88 }, common));
+        break;
+      default: /* rect */
+        obj = new fabric.Rect(Object.assign({ width: 100, height: 70, rx: 0 }, common));
+    }
+
+    obj.scaleToWidth(c.scaleW);
+    /* Shapes keep an independent height, so a divider line or a banner block
+       can be wide and thin rather than locked to one ratio. */
+    if (layer.h) {
+      const a = area();
+      obj.set("scaleY", (layer.h * a.h) / (obj.height || 1));
+    }
+    return Promise.resolve(obj);
+  }
   function renderSide() {
     if (!canvas) return Promise.resolve();
     canvas.remove.apply(canvas, canvas.getObjects());
 
-    const layers = designs[side];
+    /* Hidden layers stay in the design but off the canvas — the layer panel
+       toggles them so a customer can check what sits underneath something
+       without deleting it. */
+    const layers = designs[side].filter(function (l) { return !l.hidden; });
     if (!layers.length) { canvas.requestRenderAll(); return Promise.resolve(); }
 
     return Promise.all(layers.map(function (l) {
-      return l.type === "text" ? buildText(l) : buildImage(l);
+      if (l.type === "text")  return buildText(l);
+      if (l.type === "shape") return buildShape(l);
+      return buildImage(l);
     })).then(function (objs) {
       objs.forEach(function (o) { canvas.add(o); });
       canvas.requestRenderAll();
@@ -210,21 +309,30 @@ const CustomizerEngine = (function () {
       reader.onerror = function () { reject(new Error("That file could not be read.")); };
       reader.onload = function () {
         /* SVG is already resolution-independent — downscaling it through a
-           canvas would rasterise it and throw away the reason to use it. */
-        if (file.type === "image/svg+xml") { resolve(reader.result); return; }
+           canvas would rasterise it and throw away the reason to use it.
+           natural:0 marks it as "never warn about resolution". */
+        if (file.type === "image/svg+xml") {
+          resolve({ src: reader.result, natural: 0 });
+          return;
+        }
 
         const img = new Image();
         img.onerror = function () { reject(new Error("That image could not be decoded.")); };
         img.onload = function () {
           const big = Math.max(img.width, img.height);
-          if (big <= MAX_UPLOAD_PX) { resolve(reader.result); return; }
+          if (big <= MAX_UPLOAD_PX) {
+            resolve({ src: reader.result, natural: img.width });
+            return;
+          }
           const k = MAX_UPLOAD_PX / big;
           const c = document.createElement("canvas");
           c.width = Math.round(img.width * k);
           c.height = Math.round(img.height * k);
           c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-          /* PNG keeps transparency, which matters for a logo on a garment. */
-          resolve(c.toDataURL("image/png"));
+          /* PNG keeps transparency, which matters for a logo on a garment.
+             `natural` records the post-downscale width — the pixels actually
+             available to print, which is what the warning should judge. */
+          resolve({ src: c.toDataURL("image/png"), natural: c.width });
         };
         img.src = reader.result;
       };
@@ -303,12 +411,12 @@ const CustomizerEngine = (function () {
     /* ------------------------------------------------------------ layers */
 
     addImage: function (file) {
-      return readImageFile(file).then(function (src) {
+      return readImageFile(file).then(function (res) {
         const layer = {
-          id: makeId(), type: "image", src: src,
+          id: makeId(), type: "image", src: res.src, natural: res.natural,
           /* Centred, 60% of the print area's width — big enough to see, small
              enough to leave obvious room to resize. */
-          x: 0.5, y: 0.5, w: 0.6, angle: 0
+          x: 0.5, y: 0.5, w: 0.6, angle: 0, opacity: 1
         };
         designs[side].push(layer);
         return renderSide().then(function () {
@@ -333,11 +441,88 @@ const CustomizerEngine = (function () {
       });
     },
 
+    /* A vector element. Sized so it lands clearly visible but obviously
+       resizable, same reasoning as an uploaded image. */
+    addShape: function (kind) {
+      const layer = {
+        id: makeId(), type: "shape", shape: kind || "rect",
+        x: 0.5, y: 0.5, w: 0.45, angle: 0,
+        fill: "#E31B23", opacity: 1
+      };
+      /* A line is a rule, not a block — it wants to be thin. */
+      if (kind === "line") layer.h = 0.03;
+      designs[side].push(layer);
+      return renderSide().then(function () {
+        selectLayer(layer.id);
+        pushHistory();
+        return layer.id;
+      });
+    },
+
+    /* ------------------------------------------------------- layer order
+       Array order IS stacking order (renderSide adds in sequence and the
+       canvas has preserveObjectStacking), so reordering is an array move
+       rather than anything Fabric has to be told about. */
+    reorder: function (id, dir) {
+      const list = designs[side];
+      const i = list.findIndex(function (l) { return l.id === id; });
+      if (i === -1) return Promise.resolve();
+      const j = dir === "up" ? i + 1 : i - 1;
+      if (j < 0 || j >= list.length) return Promise.resolve();
+      const tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+      return renderSide().then(function () {
+        selectLayer(id);
+        pushHistory();
+      });
+    },
+
+    toggleVisible: function (id) {
+      const layer = designs[side].find(function (l) { return l.id === id; });
+      if (!layer) return Promise.resolve();
+      layer.hidden = !layer.hidden;
+      return renderSide().then(function () { pushHistory(); });
+    },
+
+    /* Alignment works on the normalised box, which is why it needs no canvas
+       measurement: "centre horizontally" is x = 0.5 by definition, whatever
+       product or print area is underneath. */
+    align: function (id, how) {
+      const layer = designs[side].find(function (l) { return l.id === id; });
+      if (!layer) return Promise.resolve();
+
+      /* Half the layer's own size, so edge alignment sits the object flush
+         inside the area rather than centring it on the boundary. */
+      const halfW = (layer.w || 0) / 2;
+      const halfH = estimateNormalHeight(layer) / 2;
+
+      switch (how) {
+        case "center-h": layer.x = 0.5; break;
+        case "center-v": layer.y = 0.5; break;
+        case "left":     layer.x = halfW; break;
+        case "right":    layer.x = 1 - halfW; break;
+        case "top":      layer.y = halfH; break;
+        case "bottom":   layer.y = 1 - halfH; break;
+      }
+      return renderSide().then(function () {
+        selectLayer(id);
+        pushHistory();
+      });
+    },
+
+    selectById: function (id) { selectLayer(id); },
+
     updateLayer: function (id, props) {
       const layer = designs[side].find(function (l) { return l.id === id; });
       if (!layer) return Promise.resolve();
       Object.assign(layer, props);
-      return renderSide().then(function () { pushHistory(); });
+      /* renderSide() rebuilds every object from scratch, which throws away
+         the canvas selection. Without re-selecting, changing a font or
+         dragging a slider would close the very panel the customer is
+         working in. */
+      return renderSide().then(function () {
+        if (!layer.hidden) selectLayer(id);
+        pushHistory();
+      });
     },
 
     removeActive: function () {
@@ -444,7 +629,87 @@ const CustomizerEngine = (function () {
       return designs[side].find(function (l) { return l.id === obj.layerId; }) || null;
     },
 
+    /* -------------------------------------------------------- validation
+       Problems worth telling a customer about before the job reaches the
+       press. All warnings, never blockers: a design that bleeds off the edge
+       is usually deliberate, and refusing to accept it would be wrong. The
+       shop still sees the artwork either way.
+
+       Returns [{ level, layerId, message }]. */
+    validate: function () {
+      syncFromCanvas();
+      const out = [];
+      const a = area();
+
+      designs[side].forEach(function (l) {
+        if (l.hidden) return;
+        const hN = estimateNormalHeight(l);
+        const halfW = (l.w || 0) / 2, halfH = hN / 2;
+        const name = l.type === "text" ? '"' + (l.text || "").slice(0, 18) + '"'
+                   : l.type === "shape" ? "A shape" : "Your artwork";
+
+        /* Outside the safe area entirely, or crossing it. */
+        if (l.x - halfW < -0.02 || l.x + halfW > 1.02 ||
+            l.y - halfH < -0.02 || l.y + halfH > 1.02) {
+          out.push({
+            level: "warn", layerId: l.id,
+            message: name + " runs outside the printable area. Anything past the edge may be trimmed off."
+          });
+        } else if (l.x - halfW < 0.04 || l.x + halfW > 0.96 ||
+                   l.y - halfH < 0.04 || l.y + halfH > 0.96) {
+          out.push({
+            level: "note", layerId: l.id,
+            message: name + " sits very close to the edge. Move it in a little to be safe."
+          });
+        }
+
+        /* Upload resolution. The stored src is already downscaled to at most
+           MAX_UPLOAD_PX, so this checks the pixels actually available against
+           the size it is being printed at — which is the question that
+           matters, not the raw file size. */
+        if (l.type === "image" && l.natural) {
+          const printedPx = l.natural * (1 / Math.max(l.w, 0.01));
+          if (printedPx < 900) {
+            out.push({
+              level: "warn", layerId: l.id,
+              message: "Your artwork may print blurry at this size. A larger file, or a smaller placement, will print sharper."
+            });
+          }
+        }
+
+        /* Very small text. Below roughly 4% of the print area's height, type
+           stops being reliably readable once printed. */
+        if (l.type === "text" && hN < 0.04) {
+          out.push({
+            level: "note", layerId: l.id,
+            message: "That text is very small and may be hard to read once printed."
+          });
+        }
+      });
+
+      return out;
+    },
+
     getLayers: function () { return designs[side]; },
+    getAllDesigns: function () { return { front: serializeSide("front"), back: serializeSide("back") }; },
+
+    /* Replaces the whole design — used by save/restore and by templates. */
+    loadDesigns: function (data) {
+      if (!data) return Promise.resolve();
+      SIDES.forEach(function (s) {
+        designs[s] = Array.isArray(data[s]) ? data[s] : [];
+      });
+      /* Ids must not collide with anything added afterwards. */
+      let max = 0;
+      SIDES.forEach(function (s) {
+        designs[s].forEach(function (l) {
+          const n = parseInt(String(l.id).replace(/\D/g, ""), 10);
+          if (n > max) max = n;
+        });
+      });
+      nextId = max + 1;
+      return renderSide().then(function () { pushHistory(); });
+    },
     getArea: function () { return area(); },
     getSide: function () { return side; },
     getColor: function () { return color; },
