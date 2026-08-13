@@ -1,0 +1,50 @@
+# Publishes the site to GitHub Pages on every push to the default branch.
+#
+# The site is plain static files at the repo root, so there is nothing to
+# build — the whole folder is uploaded as-is. Every asset path in the HTML is
+# relative, which is what lets it serve correctly from a subpath
+# (username.github.io/Test/) rather than a domain root.
+#
+# To point a real domain at it later: add a CNAME file with the domain, then
+# set the DNS record. SITE_URL in assets/js/site.js, sitemap.xml and robots.txt
+# already assume m-powerprint.com.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [claude/plugins-marketplace-setup-n5191p]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; queue instead of cancelling, so a push during a
+# deploy still ships rather than being dropped.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # enablement: true turns Pages on the first time this runs, so the
+      # repository does not have to be configured by hand beforehand.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
