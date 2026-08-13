@@ -63,12 +63,33 @@
       <a href="design.html" aria-current="page">Design your own</a>
       <a href="products.html?q=sticker">Stickers</a>
       <a href="products.html?q=shirt">Apparel</a>
+      <a href="cart.html">Cart<span class="cart-count" data-cart-count hidden></span></a>
       <a href="index.html#quote">Contact</a>
     </div>
   </div>
 </nav>
 
 <main id="main">
+
+<!-- Shown when someone arrives at "Design your own" without having picked a
+     product yet. Filled and wired by ui.js from the same catalogue data the
+     in-editor picker uses, so the two can never list different products.
+     Arriving with ?product= skips this entirely. -->
+<section class="dz-launch" id="dzLaunch" hidden>
+  <div class="wrap">
+    <div class="head-block">
+      <p class="eyebrow">Design your own</p>
+      <h1 class="h2">What do you want to design?</h1>
+      <p class="lede">
+        Pick a product and we'll open it in the designer, set up and ready to
+        customise. You can switch to something else at any point without
+        losing your work.
+      </p>
+    </div>
+    <div id="launchGrid"></div>
+  </div>
+</section>
+
 <div class="dz" id="designer">
 
   <!-- ------------------------------------------------------------ stage -->
@@ -115,6 +136,17 @@
          letterhead does not offer a finish it has no choices for. Hidden
          entirely for products that define no options. -->
     <div class="dz-block" id="productOptions" hidden></div>
+
+    <!-- Design library. Built by renderTemplates() from templates.js, filtered
+         to whatever suits the current product. Hidden when none do. -->
+    <div class="dz-block" id="templateBlock" hidden>
+      <p class="eyebrow">Start from</p>
+      <h2 class="dz-h">A ready-made design</h2>
+      <p class="dz-sub-note">
+        Pick one and edit it, or skip this and start from scratch.
+      </p>
+      <div class="dz-templates" id="templateGrid"></div>
+    </div>
 
     <div class="dz-block">
       <p class="eyebrow">Step 3</p>
@@ -325,6 +357,7 @@
 <!-- Fabric is ~316KB, so it loads only on this page — never on the home page
      or the catalogue. See assets/vendor/fabric.LICENSE.txt (MIT). -->
 <script src="assets/vendor/fabric.min.js"></script>
+<script src="assets/js/templates.js"></script>
 <script src="assets/js/customizer/engine.js"></script>
 <script src="assets/js/customizer/storage.js"></script>
 <script src="assets/js/customizer/quote.js"></script>

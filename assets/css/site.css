@@ -1353,3 +1353,128 @@ a.contact-row:hover span{color:var(--red)}
   .dz-align .dz-chip,.dz-row-seg .dz-chip{min-height:44px}
   .dz-panel input[type="range"]{height:34px}
 }
+
+/* ==========================================================================
+   CART + LAUNCH SCREEN
+   ========================================================================== */
+
+.dz-launch{padding-block:clamp(32px,5vw,64px)}
+.dz-launch .dz-group + .dz-group{margin-top:28px}
+.dz-launch .dz-group-items{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.dz-launch .dz-product{padding:16px 10px}
+.dz-launch .dz-product svg{max-height:110px}
+
+.cart-empty{
+  border:1px solid var(--line);background:var(--mist);
+  padding:clamp(28px,5vw,52px);text-align:center;
+}
+.cart-empty p{margin:0 0 18px;color:var(--body)}
+
+.cart-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.cart-item{
+  display:grid;grid-template-columns:120px 1fr auto;gap:18px;align-items:center;
+  border:1px solid var(--line);padding:14px;background:#fff;
+}
+.cart-thumb{
+  width:120px;aspect-ratio:1;display:grid;place-items:center;
+  background:var(--mist);border:1px solid var(--line);overflow:hidden;
+}
+.cart-thumb img{width:100%;height:100%;object-fit:contain}
+.cart-thumb-none{
+  font-family:var(--f-mono);font-size:.55rem;letter-spacing:.14em;
+  text-transform:uppercase;color:#9AA0A7;
+}
+.cart-body{min-width:0}
+.cart-body h3{margin:0 0 4px;font-size:1.05rem;color:var(--head)}
+.cart-opts{
+  margin:0 0 6px;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.12em;
+  text-transform:uppercase;color:#8A9098;
+}
+.cart-desc{margin:0 0 4px;font-size:.9rem;color:var(--body)}
+.cart-qty{margin:0;font-size:.9rem;color:var(--body)}
+.cart-qty b{color:var(--head)}
+.cart-actions{display:flex;flex-direction:column;gap:8px}
+
+.cart-foot{
+  margin-top:20px;padding-top:20px;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;
+}
+.cart-foot-btns{display:flex;gap:10px;flex-wrap:wrap}
+.cart-note{margin:0;font-size:.9rem;color:var(--body);max-width:46ch}
+
+/* A count beside the cart link, hidden at zero rather than showing "0". */
+.cart-count{
+  display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;
+  background:var(--red);color:#fff;border-radius:9px;
+  font-family:var(--f-mono);font-size:.58rem;font-weight:700;margin-left:6px;
+}
+
+@media (max-width:700px){
+  .cart-item{grid-template-columns:84px 1fr;gap:12px}
+  .cart-thumb{width:84px}
+  /* Actions drop to their own full-width row so the buttons stay tappable. */
+  .cart-actions{grid-column:1/-1;flex-direction:row}
+  .cart-actions .btn{flex:1;justify-content:center;min-height:44px}
+  .cart-foot{flex-direction:column;align-items:stretch}
+  .cart-foot-btns .btn{flex:1;justify-content:center;min-height:46px}
+  .dz-launch .dz-group-items{grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px}
+}
+
+/* ==========================================================================
+   CUSTOMIZER — mobile
+   --------------------------------------------------------------------------
+   A significant share of customers design on a phone, so this is not a
+   scaled-down desktop editor: the preview stays put while the controls
+   scroll under it, and every control clears the 44px touch floor.
+   ========================================================================== */
+
+@media (max-width:760px){
+  /* The product is the thing being worked on — it should not scroll away the
+     moment you reach for a control. Sticky rather than fixed so it still
+     releases at the end of the panel instead of covering the quote button. */
+  .dz-stage{
+    position:sticky;top:0;z-index:20;
+    background:var(--paper);
+    box-shadow:0 6px 16px -12px rgba(10,10,11,.5);
+  }
+  .dz-stage-in{padding-block:10px}
+  /* Capped so the controls below are always reachable without a long scroll. */
+  .dz-garment{max-height:46svh}
+  .dz-garment-art,.dz-garment canvas{max-height:46svh}
+
+  /* Every control in the editor clears the touch floor. .btn-sm is 32px by
+     default, which is fine for a mouse and not for a thumb. */
+  .dz-panel .btn-sm{min-height:44px;padding-inline:14px}
+  .dz-panel .dz-chip{min-height:44px}
+  .dz-side{min-height:46px}
+  .dz-drop{padding-block:22px}
+
+  /* Two per row rather than three: full words stay readable at this width. */
+  .dz-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .dz-row .btn{width:100%}
+  .dz-elements{grid-template-columns:repeat(3,1fr);gap:8px}
+}
+
+/* The phone call bar is fixed to the bottom on small screens and would sit on
+   top of the last control in the panel. */
+@media (max-width:760px){
+  body[data-page="design"] .dz-panel,
+  body[data-page="cart"] main{padding-bottom:76px}
+}
+
+/* The picker used to hold product tiles directly, so it was a grid. It now
+   holds category groups, each with its own tile grid inside — leaving the
+   outer grid in place laid the categories out as side-by-side columns. */
+.dz-products{display:flex;flex-direction:column;gap:16px}
+
+/* --------------------------------------------------------------- templates */
+.dz-sub-note{margin:0 0 12px;font-size:.86rem;color:var(--body)}
+.dz-tgroup + .dz-tgroup{margin-top:12px}
+.dz-tgroup-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:6px}
+.dz-template{
+  padding:11px 10px;cursor:pointer;text-align:left;
+  background:#fff;border:1px solid var(--line);color:var(--head);
+  font-size:.84rem;transition:border-color .15s,color .15s;
+}
+.dz-template:hover{border-color:var(--red);color:var(--red)}
+@media (max-width:560px){.dz-template{min-height:46px}}

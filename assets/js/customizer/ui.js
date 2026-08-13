@@ -84,6 +84,11 @@
   const wanted = params.get("product") || (business ? "polos" : null);
   let current = customizable.find(function (p) { return p.id === wanted; }) || customizable[0];
 
+  /* With no product named, the editor would otherwise open on whatever
+     happens to be first in the catalogue — which is a decision made for the
+     customer rather than by them. Ask instead. */
+  const needsPick = !wanted;
+
   ensureGarmentDefs();
 
   /* ------------------------------------------------------------ rendering */
@@ -344,6 +349,35 @@
     }).join("");
   }
 
+  /* --------------------------------------------------------- templates
+     Grouped by the template's own category string, so adding a new category
+     in templates.js needs no change here. */
+  function renderTemplates() {
+    const block = document.getElementById("templateBlock");
+    const grid = document.getElementById("templateGrid");
+    if (!block || !grid || typeof templatesFor !== "function") return;
+
+    const list = templatesFor(current);
+    block.hidden = list.length === 0;
+    if (!list.length) { grid.innerHTML = ""; return; }
+
+    const cats = [];
+    list.forEach(function (t) { if (cats.indexOf(t.category) === -1) cats.push(t.category); });
+
+    grid.innerHTML = cats.map(function (c) {
+      return '<div class="dz-tgroup">' +
+               '<p class="dz-group-h">' + esc(c) + "</p>" +
+               '<div class="dz-tgroup-items">' +
+                 list.filter(function (t) { return t.category === c; }).map(function (t) {
+                   return '<button type="button" class="dz-template" data-tpl="' + esc(t.id) + '">' +
+                            esc(t.name) +
+                          "</button>";
+                 }).join("") +
+               "</div>" +
+             "</div>";
+    }).join("");
+  }
+
   /* ---------------------------------------------------------- warnings */
   function renderWarnings() {
     if (!el.warnBlock) return;
@@ -469,9 +503,66 @@
   renderSides();
   renderFonts();
   renderElements();
+  renderTemplates();
   paintGarment();
   syncPanel();
   updateCartCount();
+
+  /* ------------------------------------------------------ launch screen */
+
+  const launch = document.getElementById("dzLaunch");
+  const launchGrid = document.getElementById("launchGrid");
+
+  function selectProduct(p) {
+    if (!p || p.id === current.id) return Promise.resolve();
+    current = p;
+    el.products.querySelectorAll(".dz-product").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.dataset.id === p.id));
+    });
+    const allowed = typeof sidesFor === "function" ? sidesFor(p.id) : ["front", "back"];
+    const fix = allowed.indexOf(CustomizerEngine.getSide()) === -1
+      ? CustomizerEngine.setSide(allowed[0]) : Promise.resolve();
+    return fix.then(function () { return CustomizerEngine.setProduct(p); })
+      .then(function () {
+        renderColors(); renderOptions(); renderSides(); renderTemplates();
+        paintGarment(); syncPanel();
+      });
+  }
+
+  if (launch && launchGrid && needsPick) {
+    /* Same grouped markup as the in-editor picker, so there is one way a
+       product is presented rather than two that can drift apart. */
+    launchGrid.innerHTML = CATEGORIES.map(function (c) {
+      const items = customizable.filter(function (p) { return p.cat === c.id; });
+      if (!items.length) return "";
+      return '<div class="dz-group">' +
+               '<p class="dz-group-h">' + esc(c.name) + "</p>" +
+               '<div class="dz-group-items">' + items.map(productThumb).join("") + "</div>" +
+             "</div>";
+    }).join("");
+
+    launchGrid.querySelectorAll(".dz-product").forEach(function (b) {
+      const p = productById(b.dataset.id);
+      if (p && p.colors && p.art) applyGarmentColor(b, p.colors[0]);
+      b.setAttribute("aria-pressed", "false");
+    });
+
+    root.hidden = true;
+    launch.hidden = false;
+
+    launchGrid.addEventListener("click", function (e) {
+      const btn = e.target.closest(".dz-product");
+      if (!btn) return;
+      selectProduct(productById(btn.dataset.id)).then(function () {
+        launch.hidden = true;
+        root.hidden = false;
+        /* The canvas was laid out while hidden, so it has to be told the
+           stage now has a real size. */
+        CustomizerEngine.resize();
+        window.scrollTo(0, 0);
+      });
+    });
+  }
 
   /* Restore whatever was in progress on this product. Offered rather than
      applied silently: someone arriving to start something new should not
@@ -527,6 +618,7 @@
       renderColors();
       renderOptions();
       renderSides();
+      renderTemplates();
       paintGarment();
       syncPanel();
       /* Say what happened rather than silently changing things underneath
@@ -546,6 +638,36 @@
     if (!btn) return;
     CustomizerEngine.addShape(btn.dataset.shape).then(syncPanel);
   });
+
+  const templateGrid = document.getElementById("templateGrid");
+  if (templateGrid) {
+    templateGrid.addEventListener("click", function (e) {
+      const btn = e.target.closest(".dz-template");
+      if (!btn) return;
+
+      /* Replacing work already done is destructive and not obviously
+         undoable to a customer mid-design, so it gets a confirm. Undo still
+         covers it either way. */
+      if (CustomizerEngine.hasAnyDesign() &&
+          !window.confirm("Start from this design? What you have now will be replaced. You can undo afterwards.")) {
+        return;
+      }
+
+      const design = templateDesign(btn.dataset.tpl);
+      if (!design) return;
+
+      /* Templates use the display faces — wait for them, or the first render
+         draws in a fallback and the template looks wrong. */
+      const webFonts = FONTS.filter(function (f) { return f.web; })
+                            .map(function (f) { return ensureFont(f.stack); });
+      Promise.all(webFonts)
+        .then(function () { return CustomizerEngine.loadDesigns(design); })
+        .then(function () {
+          syncPanel();
+          hint("Template applied — edit any part of it.");
+        });
+    });
+  }
 
   el.layerList.addEventListener("click", function (e) {
     const pick = e.target.closest("[data-pick]");
