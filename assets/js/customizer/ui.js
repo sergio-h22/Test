@@ -47,9 +47,18 @@
   const customizable = PRODUCTS.filter(function (p) { return p.customizable; });
   if (!customizable.length) return;
 
+  const params = new URLSearchParams(window.location.search);
+
+  /* The business flow arrives from the "Get your business branded" band. It
+     is not a separate page — it just starts the same customizer somewhere
+     more useful for staff kit: on polos, which is the default staff shirt and
+     the one whose print area is already a left-chest logo, at a crew-sized
+     quantity rather than one. */
+  const business = params.get("flow") === "business";
+
   /* Arriving from a product page preselects that garment, so "Customise this"
      lands on the thing the customer was already looking at. */
-  const wanted = new URLSearchParams(window.location.search).get("product");
+  const wanted = params.get("product") || (business ? "polos" : null);
   let current = customizable.find(function (p) { return p.id === wanted; }) || customizable[0];
 
   ensureGarmentDefs();
@@ -174,6 +183,13 @@
   renderColors();
   paintGarment();
   syncPanel();
+
+  if (business) {
+    /* A crew is not one shirt. Starting at 12 saves the customer correcting a
+       default that was never right for them. */
+    el.qty.value = 12;
+    hint("Upload your logo — we'll place it left chest, the way staff shirts print.");
+  }
 
   /* ------------------------------------------------------------- events */
 
