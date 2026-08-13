@@ -37,37 +37,37 @@ const CATEGORIES = [
 const PRODUCTS = [
   /* ---------------------------------------------------------- signs ----- */
   {
-    id: "banners", name: "Vinyl Banners", cat: "signs", photo: "",
+    id: "banners", name: "Vinyl Banners", cat: "signs", photo: "photos/banners.jpg",
     blurb: "Heavy vinyl banners for storefronts, events and job sites.",
     copy: "Printed on heavy vinyl and finished with hemmed edges and grommets so they hang flat and survive weather. Sized to whatever the space needs — grand openings, sponsorships, construction fencing, trade show backdrops.",
     specs: [["Material", "Heavy vinyl"], ["Finishing", "Hemmed edges, grommets"], ["Use", "Indoor or outdoor"], ["Artwork", "PDF, AI, EPS or SVG"]]
   },
   {
-    id: "yard-signs", name: "Yard Signs", cat: "signs", photo: "",
+    id: "yard-signs", name: "Yard Signs", cat: "signs", photo: "photos/yard-signs.jpg",
     blurb: "Coroplast signs with stakes — real estate, elections, events.",
     copy: "Lightweight corrugated plastic that stands up to sun and sprinklers. Single or double sided, with H-stakes included. The workhorse of local advertising.",
     specs: [["Material", "Coroplast"], ["Sides", "Single or double"], ["Includes", "H-stakes"], ["Artwork", "PDF, AI or SVG"]]
   },
   {
-    id: "foam-boards", name: "Foam Boards", cat: "signs", photo: "",
+    id: "foam-boards", name: "Foam Boards", cat: "signs", photo: "photos/foam-boards.jpg",
     blurb: "Rigid mounted boards for presentations and displays.",
     copy: "Prints mounted to rigid foam core — clean, light and easy to stand on an easel. Good for presentations, directional signage, photo displays and event backdrops.",
     specs: [["Material", "Foam core"], ["Use", "Indoor"], ["Mounting", "Easel or wall"], ["Artwork", "PDF or high-res JPG"]]
   },
   {
-    id: "window-vinyls", name: "Window Vinyls", cat: "signs", photo: "",
+    id: "window-vinyls", name: "Window Vinyls", cat: "signs", photo: "photos/window-vinyls.jpg",
     blurb: "Storefront window graphics, lettering and full wraps.",
     copy: "Cut vinyl lettering or full printed window graphics. Turns your glass into signage — hours, phone number, logo, promotions, or a full frosted privacy treatment.",
     specs: [["Type", "Cut vinyl or printed"], ["Surface", "Glass"], ["Removable", "Yes"], ["Artwork", "Vector preferred"]]
   },
   {
-    id: "posters", name: "Posters", cat: "signs", photo: "",
+    id: "posters", name: "Posters", cat: "signs", photo: "photos/posters.jpg",
     blurb: "Large format posters in gloss or matte.",
     copy: "Big, sharp and colour-accurate. Events, promotions, menus, wayfinding, or anything that needs to read from a distance.",
     specs: [["Finish", "Gloss or matte"], ["Use", "Indoor"], ["Artwork", "PDF, AI or high-res JPG"]]
   },
   {
-    id: "signs", name: "Rigid Signs", cat: "signs", photo: "",
+    id: "signs", name: "Rigid Signs", cat: "signs", photo: "photos/signs.jpg",
     blurb: "Durable panel signs for permanent installation.",
     copy: "Rigid panel signage built to stay up. Parking and safety notices, business identification, directional signs and site boards.",
     specs: [["Use", "Indoor or outdoor"], ["Mounting", "Wall, post or frame"], ["Artwork", "Vector preferred"]]
@@ -75,7 +75,7 @@ const PRODUCTS = [
 
   /* ---------------------------------------------------------- print ----- */
   {
-    id: "business-cards", name: "Business Cards", cat: "print", photo: "",
+    id: "business-cards", name: "Business Cards", cat: "print", photo: "photos/business-cards.jpg",
     blurb: "Gloss, matte or spot UV — the card that brought you here.",
     copy: "The card in your hand came off our press. Heavy stock, tight registration, and a choice of gloss laminate, soft matte, or spot UV where you want a raised shine against a flat ground.",
     specs: [["Finishes", "Gloss, matte, spot UV"], ["Sides", "Single or double"], ["Artwork", "PDF with bleed preferred"]]
@@ -87,13 +87,13 @@ const PRODUCTS = [
     specs: [["Sides", "Single or double"], ["Stock", "Text or card weight"], ["Artwork", "PDF, AI or PSD"]]
   },
   {
-    id: "postcards", name: "Postcards", cat: "print", photo: "",
+    id: "postcards", name: "Postcards", cat: "print", photo: "photos/postcards.jpg",
     blurb: "Card stock postcards for promotions and direct mail.",
     copy: "Heavier than a flyer and built to survive the mail. Promotions, appointment reminders, save-the-dates and new-location announcements.",
     specs: [["Stock", "Card weight"], ["Finish", "Gloss or matte"], ["Mailable", "Yes"]]
   },
   {
-    id: "menus", name: "Menus", cat: "print", photo: "",
+    id: "menus", name: "Menus", cat: "print", photo: "photos/menus.jpg",
     blurb: "Single sheet or folded menus, wipeable finishes available.",
     copy: "Printed to survive service. Single sheet, folded, or laminated so they can be wiped down between customers.",
     specs: [["Formats", "Flat or folded"], ["Finish", "Gloss, matte or laminated"], ["Artwork", "PDF preferred"]]
@@ -105,7 +105,7 @@ const PRODUCTS = [
     specs: [["Stock", "Bond or premium"], ["Sides", "Single"], ["Artwork", "PDF or AI"]]
   },
   {
-    id: "envelopes", name: "Envelopes", cat: "print", photo: "",
+    id: "envelopes", name: "Envelopes", cat: "print", photo: "photos/envelopes.jpg",
     blurb: "Printed envelopes to match your letterhead.",
     copy: "Branded envelopes in standard business sizes, printed to match your letterhead so the whole set arrives looking deliberate.",
     specs: [["Sizes", "Standard business"], ["Windowed", "Available"], ["Artwork", "PDF or AI"]]
@@ -131,7 +131,7 @@ const PRODUCTS = [
     specs: [["Format", "Sheets or rolls"], ["Finish", "Gloss or matte"], ["Artwork", "Vector preferred"]]
   },
   {
-    id: "magnets", name: "Magnets", cat: "stickers", photo: "",
+    id: "magnets", name: "Magnets", cat: "stickers", photo: "photos/magnets.jpg",
     blurb: "Vehicle and fridge magnets that come off clean.",
     copy: "Vehicle door magnets that turn any car into a work vehicle and come off when you need it back, plus promotional fridge magnets that keep your number in the kitchen.",
     specs: [["Use", "Vehicle or promotional"], ["Removable", "Yes"], ["Artwork", "Vector preferred"]]
