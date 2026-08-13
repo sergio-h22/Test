@@ -81,7 +81,7 @@ const PRODUCTS = [
     specs: [["Finishes", "Gloss, matte, spot UV"], ["Sides", "Single or double"], ["Artwork", "PDF with bleed preferred"]]
   },
   {
-    id: "flyers", name: "Flyers", cat: "print", photo: "",
+    id: "flyers", name: "Flyers", cat: "print", photo: "photos/flyers.jpg",
     blurb: "Full colour flyers for handouts, mailers and counters.",
     copy: "Full colour both sides on your choice of stock. The cheapest way to put something physical in a lot of hands at once.",
     specs: [["Sides", "Single or double"], ["Stock", "Text or card weight"], ["Artwork", "PDF, AI or PSD"]]
@@ -111,7 +111,7 @@ const PRODUCTS = [
     specs: [["Sizes", "Standard business"], ["Windowed", "Available"], ["Artwork", "PDF or AI"]]
   },
   {
-    id: "catalogs", name: "Catalogs", cat: "print", photo: "",
+    id: "catalogs", name: "Catalogs", cat: "print", photo: "photos/catalogs.jpg",
     blurb: "Multi-page booklets, saddle stitched.",
     copy: "Multi-page booklets bound and trimmed. Product ranges, programmes, lookbooks and service guides.",
     specs: [["Binding", "Saddle stitch"], ["Pages", "Multiples of 4"], ["Artwork", "Print-ready PDF"]]
@@ -125,7 +125,7 @@ const PRODUCTS = [
     specs: [["Cut", "Die-cut to shape"], ["Stock", "Indoor or weatherproof"], ["Artwork", "Vector preferred"]]
   },
   {
-    id: "labels", name: "Labels", cat: "stickers", photo: "",
+    id: "labels", name: "Labels", cat: "stickers", photo: "photos/labels.jpg",
     blurb: "Product and packaging labels, sheets or rolls.",
     copy: "Product labels, packaging seals, jar and bottle wraps. Supplied on sheets or rolls depending on how you apply them.",
     specs: [["Format", "Sheets or rolls"], ["Finish", "Gloss or matte"], ["Artwork", "Vector preferred"]]
@@ -159,7 +159,7 @@ const PRODUCTS = [
     pricing: null
   },
   {
-    id: "polos", name: "Polos", cat: "apparel", photo: "",
+    id: "polos", name: "Polos", cat: "apparel", photo: "photos/polos.jpg",
     blurb: "Embroidered polos for staff and business wear.",
     copy: "The default staff shirt. Embroidered left chest logo reads as more permanent and more professional than a print, and survives commercial washing.",
     specs: [["Decoration", "Embroidery"], ["Placement", "Left chest standard"], ["Artwork", "Vector for embroidery"]],
