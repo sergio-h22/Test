@@ -279,7 +279,10 @@
       <p class="dz-price" id="priceNote">Quote on request — we price every job individually.</p>
 
       <div class="dz-row">
+        <button type="button" class="btn btn-white btn-sm" id="previewBtn">Preview</button>
         <button type="button" class="btn btn-white btn-sm" id="saveBtn">Save design</button>
+      </div>
+      <div class="dz-row">
         <button type="button" class="btn btn-white btn-sm" id="cartBtn">Add to cart</button>
       </div>
 
@@ -308,6 +311,22 @@
   </section>
 </div>
 </main>
+
+<!-- Preview. The finished product with none of the editing furniture — no
+     handles, no print-area box, no guides. Filled by showPreview() in ui.js.
+     A <dialog> so the browser handles focus trapping, Escape and the
+     backdrop rather than this reimplementing all three. -->
+<dialog class="dz-preview" id="previewDialog" aria-label="Design preview">
+  <div class="dz-preview-head">
+    <p class="eyebrow" id="previewTitle">Preview</p>
+    <button type="button" class="dz-preview-x" id="previewClose" aria-label="Close preview">&times;</button>
+  </div>
+  <div class="dz-preview-body" id="previewBody"></div>
+  <p class="dz-preview-note">
+    This is your artwork placed on the product. We'll send a full proof before
+    anything goes to the press.
+  </p>
+</dialog>
 
 <footer class="foot">
   <div class="wrap">

@@ -727,6 +727,31 @@ const CustomizerEngine = (function () {
       return canvas.toDataURL({ format: "png", multiplier: 2 });
     },
 
+    /* A flattened PNG per side that actually carries artwork, for the preview
+       screen. Rendering a side means making it the live one, so this walks
+       them in sequence and puts the original side back afterwards — the
+       customer must not find themselves on the back of the shirt because
+       they opened a preview. */
+    exportSides: function () {
+      const original = side;
+      const withArt = SIDES.filter(function (s) { return designs[s].length; });
+      const out = {};
+
+      return withArt.reduce(function (chain, s) {
+        return chain.then(function () {
+          side = s;
+          return renderSide().then(function () {
+            canvas.discardActiveObject();
+            canvas.requestRenderAll();
+            out[s] = canvas.toDataURL({ format: "png", multiplier: 2 });
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        side = original;
+        return renderSide();
+      }).then(function () { return out; });
+    },
+
     resize: function () { if (canvas) canvas.requestRenderAll(); },
 
     CANVAS_W: CANVAS_W,

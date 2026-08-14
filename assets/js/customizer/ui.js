@@ -777,6 +777,73 @@
     });
   }
 
+  /* ---------------------------------------------------------- preview
+     Composites each side the same way the editor stage does: the product
+     artwork underneath, the flattened design PNG on top, positioned as a
+     percentage of the shared 600x620 box. Reusing that geometry is what
+     guarantees the preview matches what the customer was just looking at
+     rather than being a second, subtly different rendering. */
+  function previewPane(side, png) {
+    const flat = typeof isFlatSurface === "function" && isFlatSurface(current.id);
+    const art = flat
+      ? surfaceArtwork(current.id, side)
+      : '<use href="#garment-' + esc(current.art[side]) + '"/>';
+
+    /* The design PNG is exported at canvas size, so it overlays the whole
+       box — no per-side positioning maths needed. */
+    return '<figure class="dz-preview-pane">' +
+             '<div class="dz-preview-stage' + (flat ? " is-flat" : "") + '">' +
+               '<svg viewBox="0 0 600 620" aria-hidden="true">' + art + "</svg>" +
+               (png ? '<img src="' + esc(png) + '" alt="Your design, ' + esc(side) + '">' : "") +
+             "</div>" +
+             "<figcaption>" + esc(side.charAt(0).toUpperCase() + side.slice(1)) + "</figcaption>" +
+           "</figure>";
+  }
+
+  const dlg = document.getElementById("previewDialog");
+  const dlgBody = document.getElementById("previewBody");
+  const dlgTitle = document.getElementById("previewTitle");
+
+  function showPreview() {
+    if (!dlg || !dlgBody) return;
+    if (!CustomizerEngine.hasAnyDesign()) {
+      note("Add some artwork or text first — there is nothing to preview yet.", true);
+      return;
+    }
+
+    CustomizerEngine.exportSides().then(function (pngs) {
+      const sides = Object.keys(pngs);
+      dlgTitle.textContent = current.name + " — preview";
+      dlgBody.innerHTML = sides.map(function (s) { return previewPane(s, pngs[s]); }).join("");
+      dlgBody.classList.toggle("is-two", sides.length > 1);
+
+      /* Garment colour is six custom properties, not one — so it is applied
+         by the same function the editor stage uses rather than reconstructed
+         here, which is how the preview stays in step when a colour is added. */
+      if (current.art) {
+        dlgBody.querySelectorAll(".dz-preview-stage").forEach(function (stage) {
+          applyGarmentColor(stage, CustomizerEngine.getColor());
+        });
+      }
+      /* showModal rather than show: it gives focus trapping, Escape-to-close
+         and an inert background for free. */
+      if (typeof dlg.showModal === "function") dlg.showModal();
+      else dlg.setAttribute("open", "");
+      syncPanel();
+    });
+  }
+
+  const previewBtn = document.getElementById("previewBtn");
+  const previewClose = document.getElementById("previewClose");
+  if (previewBtn) previewBtn.addEventListener("click", showPreview);
+  if (previewClose) previewClose.addEventListener("click", function () {
+    if (typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open");
+  });
+  /* Clicking the backdrop closes it, which is what the gesture means. */
+  if (dlg) dlg.addEventListener("click", function (e) {
+    if (e.target === dlg) dlg.close();
+  });
+
   function updateCartCount() {
     CustomizerStore.cartCount().then(function (n) {
       document.querySelectorAll("[data-cart-count]").forEach(function (node) {
