@@ -937,7 +937,10 @@
     const qty = Math.max(1, parseInt(el.qty.value, 10) || 1);
 
     el.quote.disabled = true;
-    CustomizerQuote.send(state, { qty: qty }, png)
+    /* extras() carries the size/material/finish the customer chose. Sending
+       only the quantity meant those never reached the shop — someone picking
+       18oz vinyl got quoted without anyone knowing they had. */
+    CustomizerQuote.send(state, { qty: qty, options: selectedOptions() }, png)
       .then(function (r) { el.quoteNote.textContent = r.message; })
       .catch(function () {
         el.quoteNote.textContent = "Something went wrong sending that. Call us on " +

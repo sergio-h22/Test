@@ -70,11 +70,28 @@ const CustomizerQuote = (function () {
   function buildSpec(state, extra) {
     const parts = [
       "PRODUCT",
-      "  " + state.product.name,
-      "  Colour: " + state.color,
-      "  Quantity: " + extra.qty,
-      ""
+      "  " + state.product.name
     ];
+
+    /* Colour is a garment concept. Flat products (cards, banners, signs) have
+       none, and printing "Colour: null" into a quote the shop reads is worse
+       than saying nothing. */
+    if (state.color) parts.push("  Colour: " + state.color);
+
+    /* Size, material, finish — whatever this product actually offered. These
+       come straight off the controls the customer used, so the shop sees the
+       same choices they made rather than having to ask. */
+    const opts = extra.options || {};
+    const LABELS = {
+      sizes: "Size", material: "Material", finish: "Finish",
+      sided: "Printed sides", orientation: "Orientation"
+    };
+    Object.keys(opts).forEach(function (k) {
+      if (opts[k]) parts.push("  " + (LABELS[k] || k) + ": " + opts[k]);
+    });
+
+    parts.push("  Quantity: " + extra.qty);
+    parts.push("");
 
     const sides = ["front", "back"]
       .map(function (s) { return describeSide(state, s); })
@@ -99,8 +116,10 @@ const CustomizerQuote = (function () {
   }
 
   function subjectFor(state, extra) {
-    return "Design request — " + state.product.name +
-           " (" + state.color + ", " + extra.qty + ")";
+    /* Same reasoning as the spec body: a flat product has no colour, and
+       "(null, 24)" in a subject line reads as a bug. */
+    const bits = [state.color, extra.qty].filter(Boolean);
+    return "Design request — " + state.product.name + " (" + bits.join(", ") + ")";
   }
 
   /* Downloads the flattened artwork so the customer has a file to attach.
@@ -145,8 +164,13 @@ const CustomizerQuote = (function () {
       const form = new FormData();
       form.append("subject", subjectFor(state, extra));
       form.append("product", state.product.name);
-      form.append("color", state.color);
+      if (state.color) form.append("color", state.color);
       form.append("quantity", extra.qty);
+      /* Flattened so a form backend receives them as ordinary fields rather
+         than one opaque blob it has to parse. */
+      Object.keys(extra.options || {}).forEach(function (k) {
+        if (extra.options[k]) form.append("option_" + k, extra.options[k]);
+      });
       if (extra.name)    form.append("name", extra.name);
       if (extra.contact) form.append("contact", extra.contact);
       form.append("spec", buildSpec(state, extra));
