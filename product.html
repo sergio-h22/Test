@@ -51,12 +51,17 @@
     <div class="nav-links" id="navLinks">
       <a href="index.html">Home</a>
       <a href="shop.html">Shop</a>
-      <a href="products.html">All products</a>
+      <div class="nav-drop">
+        <button type="button" class="nav-drop-btn" id="navProductsBtn" aria-expanded="false" aria-controls="navProductsMenu">Products <svg class="nav-chev" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="nav-drop-menu class="is-open"" id="navProductsMenu" aria-labelledby="navProductsBtn">
+          <a href="products.html">All products</a>
+          <a href="products.html?q=banner">Signs &amp; banners</a>
+          <a href="products.html?q=card">Business print</a>
+          <a href="products.html?q=sticker">Stickers &amp; labels</a>
+          <a href="products.html?q=shirt">Apparel</a>
+        </div>
+      </div>
       <a href="design.html">Design your own</a>
-      <a href="products.html?q=banner">Signs &amp; banners</a>
-      <a href="products.html?q=card">Business print</a>
-      <a href="products.html?q=sticker">Stickers</a>
-      <a href="products.html?q=shirt">Apparel</a>
       <a href="cart.html">Cart<span class="cart-count" data-cart-count hidden></span></a>
       <a href="index.html#quote">Contact</a>
     </div>

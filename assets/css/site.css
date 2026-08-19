@@ -1872,3 +1872,68 @@ a.contact-row:hover span{color:var(--red)}
 @media (prefers-reduced-motion:reduce){
   .skel::after{animation:none}
 }
+
+/* ================================================= navigation dropdown ====
+   The nav carried ten flat links and wrapped to two rows at 768, 1024 and
+   1440, and to three rows on the product page. Every category shortcut was
+   competing with "All products" for the same horizontal space.
+
+   Grouping the five catalogue routes under one control takes the top level
+   from ten items to six, which fits on one line at every breakpoint, and
+   gives the categories more room to be readable than they had squeezed into
+   the bar. The menu opens on click rather than hover: hover menus have no
+   equivalent on a touchscreen, and this nav is used on phones.
+   ========================================================================= */
+.nav-drop{position:relative}
+.nav-drop-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:none;border:0;cursor:pointer;
+  font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;
+  text-transform:uppercase;color:#B6BBC1;
+  padding:12px 16px;
+  transition:color var(--t-fast),background var(--t-fast);
+}
+.nav-drop-btn:hover{color:#fff;background:#22262B}
+.nav-drop-btn:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
+.nav-chev{transition:transform var(--t-fast) var(--ease)}
+.nav-drop-btn[aria-expanded="true"] .nav-chev{transform:rotate(180deg)}
+.nav-drop-btn[aria-expanded="true"]{color:#fff;background:#22262B}
+/* Marks the catalogue group when the current page lives inside it, without
+   forcing the menu open on arrival. */
+.nav-drop:has(a[aria-current="page"]) .nav-drop-btn{color:#fff}
+.nav-drop:has(a[aria-current="page"]) .nav-drop-btn::after{
+  content:"";position:absolute;left:16px;right:16px;bottom:6px;height:2px;background:var(--red);
+}
+
+.nav-drop-menu{
+  display:none;
+  position:absolute;top:100%;left:0;z-index:60;
+  min-width:210px;
+  background:var(--ink-2);
+  border:1px solid #2C3037;
+  border-top:0;
+  box-shadow:0 14px 34px rgba(0,0,0,.4);
+}
+.nav-drop-menu.is-open{display:block}
+.nav-in .nav-drop-menu a{display:block;padding:11px 16px;white-space:nowrap}
+
+/* 760px, matching the breakpoint where .nav-toggle takes over. Picking a
+   different number here put the static, vertical menu inside a still
+   horizontal bar between 761 and 860 and pushed the nav to four rows. */
+@media (max-width:760px){
+  /* Inside the hamburger panel there is no bar to hang a menu off, so the
+     group becomes a plain indented list and the button stops being a
+     disclosure. Nesting a popover inside an already-open drawer would be two
+     layers of hiding for one decision. */
+  .nav-drop{width:100%}
+  .nav-drop-btn{display:none}
+  /* 13px of padding round a 16px line lands at 42px, just under the 44px
+     minimum touch target. The drawer is the primary way this site is
+     navigated on a phone, so every row in it clears the bar. */
+  .nav-in a{min-height:44px;display:flex;align-items:center}
+  .nav-drop-menu{
+    display:block;position:static;min-width:0;
+    border:0;box-shadow:none;background:transparent;
+  }
+  .nav-in .nav-drop-menu a{padding-left:32px}
+}

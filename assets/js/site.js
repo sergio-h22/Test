@@ -216,6 +216,32 @@ function initNav() {
     toggle.setAttribute("aria-expanded", String(open));
     toggle.textContent = open ? "Close" : "Menu";
   });
+
+  /* Catalogue group. Click rather than hover, so it works the same on a
+     touchscreen, and it closes on Escape and on any click outside it. */
+  const dropBtn = document.getElementById("navProductsBtn");
+  const dropMenu = document.getElementById("navProductsMenu");
+  if (!dropBtn || !dropMenu) return;
+
+  function setDrop(open) {
+    dropMenu.classList.toggle("is-open", open);
+    dropBtn.setAttribute("aria-expanded", String(open));
+  }
+
+  dropBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    setDrop(dropMenu.classList.contains("is-open") ? false : true);
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!dropMenu.contains(e.target) && e.target !== dropBtn) setDrop(false);
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape" || !dropMenu.classList.contains("is-open")) return;
+    setDrop(false);
+    dropBtn.focus();
+  });
 }
 
 /* Header search on any page sends you to the catalogue with the query. */
