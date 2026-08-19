@@ -1589,8 +1589,18 @@ a.contact-row:hover span{color:var(--red)}
   margin:0 0 26px;
 }
 .shopHero-cta{display:flex;gap:12px;flex-wrap:wrap}
-.shopHero-art{display:block}
-.shopHero-art .shop-svg{width:100%;height:auto;max-height:62vh;display:block}
+/* The garment is drawn by JavaScript, so without a reserved box the hero grew
+   by 523px at desktop and 371px on a phone the moment it arrived, taking the
+   whole page with it. Holding the SVG's own 600x620 proportion here means the
+   space exists on the first frame and the drawing lands inside it. */
+.shopHero-art{
+  display:block;
+  width:100%;
+  aspect-ratio:600/620;
+  max-height:62vh;
+  margin-inline:auto;
+}
+.shopHero-art .shop-svg{width:100%;height:100%;display:block}
 
 /* ---------------------------------------------------------------- grid --- */
 .shopLine{padding:64px 0}
@@ -1760,8 +1770,7 @@ a.contact-row:hover span{color:var(--red)}
 /* ------------------------------------------------------------- responsive - */
 @media (max-width:900px){
   .shopHero-in{grid-template-columns:1fr;gap:26px}
-  .shopHero-art{order:-1}
-  .shopHero-art .shop-svg{max-height:44vh;margin:0 auto}
+  .shopHero-art{order:-1;max-height:44vh}
   .shopHow-in{grid-template-columns:1fr;gap:26px}
   .shopPick-body{grid-template-columns:1fr}
   .shopPick-form{border-left:0;border-top:1px solid var(--shop-line)}
@@ -1936,4 +1945,42 @@ a.contact-row:hover span{color:var(--red)}
     border:0;box-shadow:none;background:transparent;
   }
   .nav-in .nav-drop-menu a{padding-left:32px}
+}
+
+/* ============================================== font fallback metrics =====
+   Oswald is condensed. When it has not arrived yet the browser draws the
+   headline in a much wider fallback, and the swap changes the height of the
+   block, which moves everything below it. On the shop page that measured as
+   the single largest remaining layout shift.
+
+   size-adjust and the override descriptors scale a locally available face so
+   its line box is close to Oswald's. The text still changes appearance when
+   the real font lands, but the box it occupies does not change size, so
+   nothing below it moves.
+
+   The numbers are chosen to narrow a generic sans toward Oswald's condensed
+   proportions rather than measured from the font binary, which is not
+   available to read here; they are a large improvement over an unadjusted
+   fallback, not a perfect metric match.
+   ========================================================================= */
+@font-face{
+  font-family:"Oswald Fallback";
+  src:local("Arial Narrow"), local("Helvetica Neue Condensed"), local("Liberation Sans Narrow"), local("Arial");
+  size-adjust:87%;
+  ascent-override:106%;
+  descent-override:26%;
+  line-gap-override:0%;
+}
+@font-face{
+  font-family:"Montserrat Fallback";
+  src:local("Helvetica Neue"), local("Arial");
+  size-adjust:97%;
+  ascent-override:99%;
+  descent-override:25%;
+  line-gap-override:0%;
+}
+
+/* Applied wherever the shop page sets a display face. */
+.shopHero-h,.shopLine-h,.shopHow-h,.shopCustom-h,.shopCard-name,.shopPick-h,.shopHow-list dt{
+  font-family:Oswald,"Oswald Fallback",var(--f-body);
 }

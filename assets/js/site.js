@@ -21,8 +21,12 @@ const CONFIG = {
    you have one. See docs/hero-video-brief.md.                             */
 const HERO_VIDEO = {
   desktop: "video/hero.mp4",
+  /* video/README.md specifies a separate 9:16 hero-mobile.mp4 that was never
+     produced, so phones currently pull the full 2.75MB desktop file. The
+     poster below is what stops that being a blank hero while it downloads;
+     adding the mobile encode is the remaining half of the fix. */
   mobile:  "video/hero.mp4",
-  poster:  ""
+  poster:  "video/hero-poster.jpg"
 };
 
 /* The address the site is published at. Used for canonical URLs, the sitemap
@@ -160,7 +164,19 @@ function slot(photo, label, classes, id, cat) {
   const cls = "slot " + (classes || "");
 
   if (photo) {
-    return '<div class="' + cls + '"><img src="' + esc(photo) + '" alt="' + esc(label) + '" loading="lazy"></div>';
+    /* Every product photograph on the site is emitted from here, so this is
+       the one place that has to know about formats. The WebP copies are
+       generated from the same JPEGs and total 0.73MB against 2.28MB, a 68%
+       saving on what is by far the heaviest category of asset. The <img>
+       keeps the JPEG, so a browser without WebP support loses nothing but
+       the saving. */
+    const webp = photo.replace(/\.jpe?g$/i, ".webp");
+    const img = '<img src="' + esc(photo) + '" alt="' + esc(label) + '" loading="lazy" decoding="async">';
+    return '<div class="' + cls + '">' +
+             (webp !== photo
+               ? '<picture><source srcset="' + esc(webp) + '" type="image/webp">' + img + "</picture>"
+               : img) +
+           "</div>";
   }
 
   const art = typeof ILLUSTRATIONS !== "undefined"
@@ -275,7 +291,22 @@ function initHeroVideo() {
     return;
   }
 
-  if (HERO_VIDEO.poster) video.poster = HERO_VIDEO.poster;
+  /* The poster has to be on screen to be worth having. Waiting for
+     loadeddata to reveal the layer meant it stayed hidden until the whole
+     2.75MB clip was decodable, which is precisely the wait it exists to
+     cover. With a poster set the layer can be shown straight away, because
+     it already has something to draw; the video then swaps in behind it.
+     Without a poster the old behaviour is right: an empty visible layer is
+     worse than a late one. */
+  /* The markup already carries the poster and shows the layer, which is what
+     lets it paint on the first frame. This keeps the class in sync for the
+     case where the poster is configured here rather than in the HTML. */
+  if (HERO_VIDEO.poster) {
+    if (!video.getAttribute("poster")) video.poster = HERO_VIDEO.poster;
+    layer.hidden = false;
+    document.getElementById("hero").classList.add("has-video");
+  }
+
   video.addEventListener("error", function () { layer.remove(); });
   video.addEventListener("loadeddata", function () {
     layer.hidden = false;
@@ -667,6 +698,7 @@ function initCatalog() {
   if (query) searchInput.value = query;
 
   /* Category buttons, with a live count against each. */
+    clearSkeleton(filterWrap);
   filterWrap.innerHTML =
     '<button class="filter-btn" data-cat="all" aria-pressed="true">All products <i>' + PRODUCTS.length + '</i></button>' +
     CATEGORIES.map(function (c) {
