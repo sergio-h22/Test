@@ -508,6 +508,39 @@
   syncPanel();
   updateCartCount();
 
+  /* ------------------------------------------------- arriving from the shop */
+
+  /* "Edit this design" on shop.html hands over the design it was showing, so
+     the customer lands on their graphic rather than an empty garment. The
+     colour rides along because a shop design resolves its ink against the
+     garment colour: loading the design without its colour would put bone ink
+     on a white shirt. */
+  const shopWanted = params.get("shop");
+  if (shopWanted && typeof shopDesignFor === "function") {
+    const shopColor = params.get("color") ||
+      (current.colors && current.colors[0]) || null;
+    const shopDesigns = shopDesignFor(shopWanted, shopColor);
+    if (shopDesigns) {
+      const seed = shopColor
+        ? CustomizerEngine.setColor(shopColor)
+        : Promise.resolve();
+      /* Shop designs are set in the display faces, same as templates, so the
+         fonts have to land before the first render or the layout is measured
+         against a fallback. */
+      const shopFonts = FONTS.filter(function (f) { return f.web; })
+                             .map(function (f) { return ensureFont(f.stack); });
+      Promise.all([seed].concat(shopFonts))
+        .then(function () { return CustomizerEngine.loadDesigns(shopDesigns); })
+        .then(function () {
+          renderColors();
+          syncPanel();
+          const entry = typeof shopDesign === "function" ? shopDesign(shopWanted) : null;
+          hint(entry ? "Editing " + entry.name + ". Change anything you like."
+                     : "Design loaded. Change anything you like.");
+        });
+    }
+  }
+
   /* ------------------------------------------------------ launch screen */
 
   const launch = document.getElementById("dzLaunch");
