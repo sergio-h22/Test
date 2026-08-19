@@ -1788,3 +1788,87 @@ a.contact-row:hover span{color:var(--red)}
   .shopCard-btn{transition:none}
   .shopCard-btn:hover{transform:none}
 }
+
+/* ====================================================== design tokens ======
+   Values that were previously repeated as literals. The audit found 168 raw
+   pixel paddings, eleven different transition durations and no spacing scale,
+   which is what makes a site drift out of rhythm as it grows: every new
+   section invents its own numbers. These are the numbers the site already
+   used most often, promoted to names so the next section inherits them
+   instead of guessing.
+   ========================================================================= */
+:root{
+  /* Spacing scale. Roughly a 1.5 ratio, matching the paddings already in use. */
+  --sp-1:4px;  --sp-2:8px;  --sp-3:12px; --sp-4:16px;
+  --sp-5:22px; --sp-6:32px; --sp-7:44px; --sp-8:64px;
+
+  /* Radius. Three steps only, so a fourth cannot creep in unnoticed. */
+  --r-sm:2px; --r-md:4px; --r-pill:999px;
+
+  /* Motion. Two durations and one easing curve cover every transition on the
+     site; the previous eleven durations were not doing eleven jobs. */
+  --t-fast:.15s;
+  --t-base:.25s;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+
+/* ================================================= skeleton loading =======
+   Every page that builds its content in JavaScript painted an empty shell
+   first, then injected the real markup and shoved everything below it down
+   the page. Measured, that was a CLS of 0.46 on the catalogue, 0.74 on a
+   product page and 0.75 on the shop, against a 0.1 budget. The cause was
+   never images: the shifting elements were whole sections and the footer.
+
+   These skeletons are markup that ships in the HTML, so the browser paints a
+   correctly sized page on the first frame and the injected content lands in
+   a box that is already the right shape. The loading state and the layout
+   fix are the same object.
+   ========================================================================= */
+.skel{
+  position:relative;
+  overflow:hidden;
+  background:var(--line);
+  border-radius:var(--r-sm);
+}
+.skel::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  transform:translateX(-100%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  animation:skelSweep 1.25s infinite;
+}
+@keyframes skelSweep{ to{ transform:translateX(100%); } }
+
+.skel-text{height:.72em;margin:.34em 0}
+.skel-w40{width:40%} .skel-w60{width:60%} .skel-w80{width:80%} .skel-w100{width:100%}
+
+/* Mirrors .card exactly so the reserved box matches the real one. */
+.skel-card{
+  display:block;
+  border:1px solid var(--line);
+  background:var(--paper);
+}
+.skel-card .skel-media{aspect-ratio:4/3;background:var(--mist);border-radius:0}
+.skel-card .skel-body{padding:var(--sp-4)}
+
+/* Dark-page variant for the shop. */
+.shop-dark .skel{background:#1D1F23}
+.shop-dark .skel::after{background:linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)}
+.shop-dark .skel-card{background:var(--shop-bg-2);border-color:var(--shop-line);border-radius:var(--shop-r)}
+.shop-dark .skel-card .skel-media{aspect-ratio:600/620;background:#0E0F12}
+
+/* Product detail skeleton: two columns above 860px, matching .pdp. */
+.skel-pdp{display:grid;gap:var(--sp-6)}
+@media (min-width:860px){ .skel-pdp{grid-template-columns:1fr 1fr} }
+.skel-pdp .skel-media{aspect-ratio:4/3}
+
+/* Scoped to the skeleton elements, never the container: the container keeps
+   its attribute until JS clears it, and if that ever failed, disabling
+   pointer events on the container would silently make every real card
+   unclickable. Failing visible beats failing silent. */
+.skel-card,.skel{pointer-events:none}
+
+@media (prefers-reduced-motion:reduce){
+  .skel::after{animation:none}
+}

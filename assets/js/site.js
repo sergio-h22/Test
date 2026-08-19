@@ -395,6 +395,13 @@ function productStructuredData(p) {
 }
 
 /* ------------------------------------------------------------- card HTML */
+/* Skeletons ship in the HTML to reserve layout space. Once the real markup
+   replaces them the container should stop advertising that it is loading, for
+   assistive tech as much as for styling. */
+function clearSkeleton(node) {
+  if (node && node.hasAttribute("data-skeleton")) node.removeAttribute("data-skeleton");
+}
+
 function cardHTML(p) {
   return '' +
     '<a class="card" href="product.html?id=' + encodeURIComponent(p.id) + '">' +
@@ -653,6 +660,7 @@ function initCatalog() {
     const hits = PRODUCTS.filter(matches);
     countEl.textContent = hits.length + (hits.length === 1 ? " product" : " products");
 
+    clearSkeleton(grid);
     grid.innerHTML = hits.length
       ? hits.map(cardHTML).join("")
       : '<div class="empty"><b>Nothing matches "' + esc(query) + '"</b>' +
@@ -771,6 +779,7 @@ function initProductPage() {
   const p = id ? productById(id) : null;
 
   if (!p) {
+    clearSkeleton(root);
     root.innerHTML =
       '<div class="empty" style="grid-column:1/-1"><b>That product is not in the catalogue</b>' +
       '<p>It may have been renamed. <a href="products.html" style="color:var(--red)">Browse everything</a> ' +
@@ -782,9 +791,29 @@ function initProductPage() {
   const desc = document.querySelector('meta[name="description"]');
   if (desc) desc.setAttribute("content", p.blurb);
 
+  /* Every product is served from the same product.html, so the canonical and
+     the social tags baked into that file describe the file rather than the
+     product. Left alone, all 21 products ship the identical canonical, which
+     tells search engines they are 21 copies of one page and collapses the
+     whole catalogue to a single result. The title was already being set per
+     product here; these are the rest of the same job. */
+  const productUrl = SITE_URL + "product.html?id=" + encodeURIComponent(p.id);
+  const setMeta = function (selector, attr, value) {
+    const node = document.querySelector(selector);
+    if (node) node.setAttribute(attr, value);
+  };
+  setMeta('link[rel="canonical"]', "href", productUrl);
+  setMeta('meta[property="og:url"]', "content", productUrl);
+  setMeta('meta[property="og:title"]', "content", p.name + " — M-Power Print");
+  setMeta('meta[property="og:description"]', "content", p.blurb);
+  if (p.photo) {
+    setMeta('meta[property="og:image"]', "content", SITE_URL + p.photo);
+  }
+
   const hasColors = Array.isArray(p.colors) && p.colors.length > 0;
   const isShirt = p.id === "t-shirts";
 
+  clearSkeleton(root);
   root.innerHTML =
     '<div>' +
       '<div id="garmentPreview">' + (isShirt ? shirtPreviewHTML(p) : slot(p.photo, p.name, "slot-wide", p.id, p.cat)) + '</div>' +
@@ -823,6 +852,7 @@ function initProductPage() {
   const rel = document.getElementById("related");
   if (rel) {
     const others = recommendFor(p, 4);
+    clearSkeleton(rel);
     if (others.length) rel.innerHTML = others.map(cardHTML).join("");
     else rel.closest("section").remove();
   }

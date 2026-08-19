@@ -87,9 +87,14 @@
 
   function paintGrid() {
     if (typeof SHOP_DESIGNS === "undefined" || !SHOP_DESIGNS.length) {
+      /* Clear the placeholder too, or a failed load leaves eight shimmering
+         boxes that look like they are still working. */
+      grid.removeAttribute("data-skeleton");
+      grid.innerHTML = "";
       if (empty) empty.hidden = false;
       return;
     }
+    if (grid.hasAttribute("data-skeleton")) grid.removeAttribute("data-skeleton");
     grid.innerHTML = SHOP_DESIGNS.map(card).join("");
     /* Tint each preview's cloth. The garment SVG paints from custom properties,
        so the colour is applied to the wrapper rather than baked into the art. */

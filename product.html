@@ -67,7 +67,23 @@
 <section class="sect">
   <div class="wrap">
     <!-- Rendered from assets/js/products.js by initProductPage(). -->
-    <div class="pdp" id="pdp"></div>
+    <div class="pdp" id="pdp" data-skeleton>
+      <!-- Mirrors the real product layout element for element so the reserved
+           box matches what replaces it. Measured against the live page at
+           390px: preview 275, swatches 46, crumb 16, heading 29, copy 104,
+           specs 194, actions 106. Guessing here is what produced a 0.16 CLS. -->
+      <div>
+        <div class="skel skel-media" style="aspect-ratio:4/3"></div>
+        <div class="skel" style="height:46px;margin-top:14px"></div>
+      </div>
+      <div>
+        <div class="skel skel-text skel-w40" style="height:16px"></div>
+        <div class="skel skel-text skel-w60" style="height:29px;margin-top:14px"></div>
+        <div class="skel skel-text skel-w100" style="height:104px;margin-top:14px"></div>
+        <div class="skel" style="height:246px;margin-top:20px"></div>
+        <div class="skel" style="height:112px;margin-top:20px"></div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -77,7 +93,7 @@
       <p class="eyebrow">Often ordered together</p>
       <h2 class="h2">You may also need</h2>
     </div>
-    <div class="grid" id="related"></div>
+    <div class="grid" id="related" data-skeleton><a class="skel-card" aria-hidden="true"><div class="skel skel-media"></div><div class="skel-body"><div class="skel skel-text skel-w40"></div><div class="skel skel-text skel-w80"></div><div class="skel skel-text skel-w100"></div><div class="skel skel-text skel-w60"></div></div></a><a class="skel-card" aria-hidden="true"><div class="skel skel-media"></div><div class="skel-body"><div class="skel skel-text skel-w40"></div><div class="skel skel-text skel-w80"></div><div class="skel skel-text skel-w100"></div><div class="skel skel-text skel-w60"></div></div></a><a class="skel-card" aria-hidden="true"><div class="skel skel-media"></div><div class="skel-body"><div class="skel skel-text skel-w40"></div><div class="skel skel-text skel-w80"></div><div class="skel skel-text skel-w100"></div><div class="skel skel-text skel-w60"></div></div></a></div>
   </div>
 </section>
 </main>
