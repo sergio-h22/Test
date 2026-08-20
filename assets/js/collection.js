@@ -148,7 +148,7 @@ const COLLECTION = [
     garments: COLLECTION_GARMENTS,
     colors: ["White", "Heather Grey", "Black"],
     prices: null,
-    featured: false,
+    featured: true,
     published: true,
     displayOrder: 4,
     assets: { front: "", back: "", model: "" },
@@ -202,7 +202,7 @@ const COLLECTION = [
     garments: COLLECTION_GARMENTS,
     colors: ["Heather Grey", "Navy", "Black", "White"],
     prices: null,
-    featured: false,
+    featured: true,
     published: true,
     displayOrder: 6,
     assets: { front: "", back: "", model: "" },
@@ -253,7 +253,7 @@ const COLLECTION = [
     garments: COLLECTION_GARMENTS,
     colors: ["Black", "White", "Navy"],
     prices: null,
-    featured: false,
+    featured: true,
     published: true,
     displayOrder: 8,
     assets: { front: "", back: "", model: "" },
@@ -323,6 +323,241 @@ const COLLECTION = [
       back: [
         { type: "text", text: "SPIRIT", x: 0.5, y: 0.44, w: 0.92, angle: 0, font: COLLECTION_FONTS.heavy, fill: "@ink", bold: true, align: "center", spacing: 40 }
       ]
+    }
+  },
+
+  /* ---- The house line. Added to the same catalogue rather than kept in a
+     parallel one: two collections meant the Shop link showed eight designs
+     the homepage never mentioned. ---- */
+  {
+    id: "heavyweight-house",
+    slug: "heavyweight",
+    name: "Heavyweight",
+    description: "One word set wide across the chest. Single colour, heavy plate.",
+    category: "athletic",
+    tags: ["One colour", "Chest print"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["Black", "White", "Navy", "Heather Grey"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 11,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "text", text: "HEAVY", x: 0.5, y: 0.36, w: 0.94, angle: 0,
+          font: COLLECTION_FONTS.heavy, fill: "@ink", bold: true, align: "center", spacing: 40 },
+        { type: "text", text: "WEIGHT", x: 0.5, y: 0.56, w: 0.94, angle: 0,
+          font: COLLECTION_FONTS.heavy, fill: "@ink", bold: true, align: "center", spacing: 40 },
+        { type: "shape", shape: "rect", x: 0.5, y: 0.72, w: 0.34, h: 0.022, angle: 0,
+          fill: "@accent", opacity: 1 }
+      ],
+      back: []
+    }
+  },
+  {
+    id: "press-room-house",
+    slug: "press-room",
+    name: "Press Room",
+    description: "Stacked shop type with a rule under it. Reads as workwear.",
+    category: "vintage",
+    tags: ["Two colour", "Workwear"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["Black", "Navy", "Heather Grey"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 12,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "text", text: "PRESS ROOM", x: 0.5, y: 0.34, w: 0.82, angle: 0,
+          font: COLLECTION_FONTS.display, fill: "@ink", bold: true, align: "center", spacing: 90 },
+        { type: "shape", shape: "line", x: 0.5, y: 0.47, w: 0.62, h: 0.014, angle: 0,
+          fill: "@accent", opacity: 1 },
+        { type: "text", text: "SOUTHERN CALIFORNIA", x: 0.5, y: 0.57, w: 0.72, angle: 0,
+          font: COLLECTION_FONTS.clean, fill: "@ink", align: "center", spacing: 160 }
+      ],
+      back: []
+    }
+  },
+  {
+    id: "night-shift-house",
+    slug: "night-shift",
+    name: "Night Shift",
+    description: "Offset type with a block behind it. Bolder at a distance.",
+    category: "streetwear",
+    tags: ["Two colour", "Offset"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["Black", "Navy"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 13,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "shape", shape: "rect", x: 0.46, y: 0.44, w: 0.66, h: 0.2, angle: -3,
+          fill: "@accent", opacity: 1 },
+        { type: "text", text: "NIGHT", x: 0.5, y: 0.4, w: 0.7, angle: -3,
+          font: COLLECTION_FONTS.display, fill: "@ink", bold: true, align: "center", spacing: 60 },
+        { type: "text", text: "SHIFT", x: 0.54, y: 0.58, w: 0.7, angle: -3,
+          font: COLLECTION_FONTS.display, fill: "@ink", bold: true, align: "center", spacing: 60 }
+      ],
+      back: []
+    }
+  },
+  {
+    id: "run-the-press-house",
+    slug: "run-the-press",
+    name: "Run The Press",
+    description: "Small chest hit on the front, full call across the back.",
+    category: "athletic",
+    tags: ["Crew"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["Black", "White", "Navy", "Heather Grey"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 14,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "text", text: "RUN THE PRESS", x: 0.5, y: 0.5, w: 0.5, angle: 0,
+          font: COLLECTION_FONTS.clean, fill: "@ink", bold: true, align: "center", spacing: 120 }
+      ],
+      back: [
+        { type: "text", text: "RUN", x: 0.5, y: 0.3, w: 0.8, angle: 0,
+          font: COLLECTION_FONTS.heavy, fill: "@ink", bold: true, align: "center", spacing: 30 },
+        { type: "text", text: "THE", x: 0.5, y: 0.48, w: 0.5, angle: 0,
+          font: COLLECTION_FONTS.heavy, fill: "@accent", bold: true, align: "center", spacing: 30 },
+        { type: "text", text: "PRESS", x: 0.5, y: 0.66, w: 0.86, angle: 0,
+          font: COLLECTION_FONTS.heavy, fill: "@ink", bold: true, align: "center", spacing: 30 }
+      ]
+    }
+  },
+  {
+    id: "one-colour-house",
+    slug: "one-colour",
+    name: "One Colour, Done Right",
+    description: "A quiet line of type for people who do not want a logo on them.",
+    category: "vintage",
+    tags: ["One colour", "Minimal"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["White", "Heather Grey", "Black"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 15,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "text", text: "ONE COLOUR", x: 0.5, y: 0.44, w: 0.66, angle: 0,
+          font: COLLECTION_FONTS.clean, fill: "@ink", bold: true, align: "center", spacing: 200 },
+        { type: "text", text: "DONE RIGHT", x: 0.5, y: 0.56, w: 0.66, angle: 0,
+          font: COLLECTION_FONTS.clean, fill: "@ink", align: "center", spacing: 200 }
+      ],
+      back: []
+    }
+  },
+  {
+    id: "local-crew-house",
+    slug: "local-crew",
+    name: "Local Crew",
+    description: "Badge-style number stack. Swap the number for your own in the editor.",
+    category: "streetwear",
+    tags: ["Two colour", "Badge"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["Black", "Navy", "Heather Grey"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 16,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "shape", shape: "circle", x: 0.5, y: 0.46, w: 0.5, h: 0.5, angle: 0,
+          fill: "@accent", opacity: 1 },
+        { type: "text", text: "01", x: 0.5, y: 0.46, w: 0.3, angle: 0,
+          font: COLLECTION_FONTS.heavy, fill: "@ink", bold: true, align: "center" },
+        { type: "text", text: "LOCAL CREW", x: 0.5, y: 0.76, w: 0.7, angle: 0,
+          font: COLLECTION_FONTS.display, fill: "@ink", bold: true, align: "center", spacing: 120 }
+      ],
+      back: []
+    }
+  },
+  {
+    id: "ink-and-iron-house",
+    slug: "ink-and-iron",
+    name: "Ink & Iron",
+    description: "Two rules bracketing short type. Sits high on the chest.",
+    category: "vintage",
+    tags: ["One colour", "Chest print"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["Black", "White", "Navy"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 17,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "shape", shape: "line", x: 0.5, y: 0.36, w: 0.56, h: 0.01, angle: 0,
+          fill: "@ink", opacity: 1 },
+        { type: "text", text: "INK & IRON", x: 0.5, y: 0.48, w: 0.7, angle: 0,
+          font: COLLECTION_FONTS.display, fill: "@ink", bold: true, align: "center", spacing: 100 },
+        { type: "shape", shape: "line", x: 0.5, y: 0.6, w: 0.56, h: 0.01, angle: 0,
+          fill: "@ink", opacity: 1 }
+      ],
+      back: []
+    }
+  },
+  {
+    id: "short-run-house",
+    slug: "short-run",
+    name: "Short Run",
+    description: "Angled type with an underline. Works on a hoodie chest.",
+    category: "streetwear",
+    tags: ["Two colour", "Angled"],
+    garments: COLLECTION_GARMENTS,
+    colors: ["Black", "Navy", "Heather Grey"],
+    prices: null,
+    /* The house line is the shop's own workwear register. It is published and
+       buyable, but the homepage strip carries Drop 01, so these are not
+       featured. */
+    featured: false,
+    published: true,
+    displayOrder: 18,
+    assets: { front: "", back: "", model: "" },
+    design: {
+      front: [
+        { type: "text", text: "SHORT RUN", x: 0.5, y: 0.46, w: 0.8, angle: -6,
+          font: COLLECTION_FONTS.display, fill: "@ink", bold: true, align: "center", spacing: 70 },
+        { type: "shape", shape: "rect", x: 0.5, y: 0.58, w: 0.72, h: 0.018, angle: -6,
+          fill: "@accent", opacity: 1 }
+      ],
+      back: []
     }
   }
 ];

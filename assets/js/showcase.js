@@ -322,7 +322,9 @@
 
   if (typeof ensureGarmentDefs === "function") ensureGarmentDefs();
 
-  CatalogService.listDesigns().then(function (rows) {
+  /* Featured only. The shop page shows the whole catalogue; the homepage
+     shows the drop. */
+  CatalogService.listFeatured().then(function (rows) {
     designs = rows;
     if (!designs.length) {
       if (el.empty) el.empty.hidden = false;

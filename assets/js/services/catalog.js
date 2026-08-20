@@ -79,6 +79,15 @@ const CatalogService = (function () {
       return Promise.resolve(rows);
     },
 
+    /* The homepage strip carries the featured drop; the shop page carries
+       everything published. One catalogue, two views of it, rather than two
+       catalogues that can disagree. */
+    listFeatured: function () {
+      return this.listDesigns().then(function (rows) {
+        return rows.filter(function (d) { return d.featured; });
+      });
+    },
+
     getDesign: function (idOrSlug) {
       return this.listDesigns().then(function (rows) {
         return rows.filter(function (d) {
@@ -131,6 +140,7 @@ const CatalogService = (function () {
     useAdapter: function (next) { adapter = next || localAdapter; },
 
     listDesigns:  function () { return adapter.listDesigns(); },
+    listFeatured: function () { return adapter.listFeatured(); },
     getDesign:    function (id) { return adapter.getDesign(id); },
     listGarments: function (d) { return adapter.listGarments(d); },
     listColors:   function (d, g) { return adapter.listColors(d, g); },

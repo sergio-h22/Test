@@ -65,17 +65,39 @@
 
   /* ------------------------------------------------------------------ grid */
 
+  /* Draws a catalogue design on a garment.
+
+     shopPreviewSVG() in shop.js resolves artwork by looking the id up in
+     SHOP_DESIGNS, which no longer holds these designs: they live in the
+     shared catalogue now and carry different ids. This resolves through the
+     service instead, and reuses shopLayerSVG for the layer markup so there is
+     still only one implementation of that. */
+  function preview(design, productId, color, side) {
+    const product = productById(productId);
+    if (!design || !product || !product.art) return "";
+    const art = CatalogService.resolveArtwork(design, color);
+    const layers = art[side] || [];
+    const area = (typeof printAreaFor === "function")
+      ? printAreaFor(productId, side)
+      : { x: 218, y: 196, w: 164, h: 216 };
+    return '<svg class="shop-svg" viewBox="0 0 600 620" role="img" aria-label="' +
+      esc(design.name + " on a " + product.name.toLowerCase() + ", " + String(color).toLowerCase()) + '">' +
+      '<use href="#garment-' + esc(product.art[side]) + '"/>' +
+      layers.map(function (l) { return shopLayerSVG(l, area); }).join("") +
+      "</svg>";
+  }
+
   function card(design) {
     const productId = design.garments[0];
     const color = firstColor(design, productId);
-    const svg = shopPreviewSVG(design.id, productId, color, "front");
+    const svg = preview(design, productId, color, "front");
     const both = design.design.back && design.design.back.length;
     return '<article class="shopCard reveal" data-design="' + esc(design.id) + '">' +
         '<button class="shopCard-btn" type="button" data-open="' + esc(design.id) + '">' +
           '<span class="shopCard-art" data-color="' + esc(color) + '">' + svg + "</span>" +
           '<span class="shopCard-meta">' +
             '<span class="shopCard-name">' + esc(design.name) + "</span>" +
-            '<span class="shopCard-blurb">' + esc(design.blurb) + "</span>" +
+            '<span class="shopCard-blurb">' + esc(design.description) + "</span>" +
             '<span class="shopCard-tags">' +
               design.tags.map(function (t) { return '<span class="shopTag">' + esc(t) + "</span>"; }).join("") +
               (both ? '<span class="shopTag">Front and back</span>' : "") +
@@ -85,8 +107,13 @@
       "</article>";
   }
 
+  /* Populated from CatalogService on boot. The shop used to read its own
+     SHOP_DESIGNS array, which meant the Shop link showed eight designs the
+     homepage never mentioned and adding a design meant adding it twice. */
+  let designs = [];
+
   function paintGrid() {
-    if (typeof SHOP_DESIGNS === "undefined" || !SHOP_DESIGNS.length) {
+    if (!designs.length) {
       /* Clear the placeholder too, or a failed load leaves eight shimmering
          boxes that look like they are still working. */
       grid.removeAttribute("data-skeleton");
@@ -95,7 +122,7 @@
       return;
     }
     if (grid.hasAttribute("data-skeleton")) grid.removeAttribute("data-skeleton");
-    grid.innerHTML = SHOP_DESIGNS.map(card).join("");
+    grid.innerHTML = designs.map(card).join("");
     /* Tint each preview's cloth. The garment SVG paints from custom properties,
        so the colour is applied to the wrapper rather than baked into the art. */
     Array.prototype.forEach.call(grid.querySelectorAll(".shopCard-art"), function (node) {
@@ -106,11 +133,11 @@
 
   function paintHero() {
     if (!hero) return;
-    const d = shopDesign("heavyweight") || SHOP_DESIGNS[0];
+    const d = designs.filter(function (x) { return /-house$/.test(x.id); })[0] || designs[0];
     if (!d) return;
     const productId = d.garments[0];
     const color = firstColor(d, productId);
-    hero.innerHTML = shopPreviewSVG(d.id, productId, color, "front");
+    hero.innerHTML = preview(d, productId, color, "front");
     applyGarmentColor(hero, color);
   }
 
@@ -165,7 +192,7 @@
                            chip("Back",  "back",  sel.side === "back",  "data-side");
     }
 
-    el.stage.innerHTML = shopPreviewSVG(d.id, sel.product, sel.color, sel.side);
+    el.stage.innerHTML = preview(d, sel.product, sel.color, sel.side);
     applyGarmentColor(el.stage, sel.color);
 
     el.edit.href = "design.html?product=" + encodeURIComponent(sel.product) +
@@ -180,7 +207,7 @@
   }
 
   function openDialog(designId) {
-    const d = shopDesign(designId);
+    const d = designs.filter(function (x) { return x.id === designId; })[0];
     if (!d) return;
     sel.design  = d;
     sel.product = d.garments[0];
@@ -215,7 +242,7 @@
     const d = sel.design;
     const swatch = (typeof GARMENT_COLORS !== "undefined" && GARMENT_COLORS[sel.color])
       ? GARMENT_COLORS[sel.color].cloth[1] : "#2E3033";
-    const resolved = shopDesignFor(d.id, sel.color);
+    const resolved = CatalogService.resolveArtwork(d, sel.color);
     const layers = (resolved && resolved[sel.side]) || [];
     /* A square area matching the print-area proportions keeps the graphic at
        the same relative scale it has on the garment. */
@@ -235,7 +262,7 @@
     }
     const product = productById(sel.product);
     const qty = Math.max(1, parseInt(el.qty.value, 10) || 1);
-    const resolved = shopDesignFor(d.id, sel.color);
+    const resolved = CatalogService.resolveArtwork(d, sel.color);
 
     el.add.disabled = true;
     el.note.classList.remove("is-error");
@@ -309,7 +336,13 @@
   dlg.addEventListener("click", function (e) { if (e.target === dlg) closeDialog(); });
 
   if (typeof ensureGarmentDefs === "function") ensureGarmentDefs();
-  paintHero();
-  paintGrid();
   refreshCartBadge();
+
+  CatalogService.listDesigns().then(function (rows) {
+    designs = rows;
+    paintHero();
+    paintGrid();
+  }).catch(function () {
+    if (empty) empty.hidden = false;
+  });
 })();
