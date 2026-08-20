@@ -140,6 +140,16 @@ const CustomizerEngine = (function () {
 
   /* Reads the live canvas back into the normalised layer list. Called after
      any drag/scale/rotate so `designs` is always the source of truth. */
+  /* Copies geometry off the canvas and back into the design array.
+     
+     This must only ever run after the customer has actually transformed
+     something, which in practice means from the object:modified handler.
+     Calling it on a read is not harmless, because the round trip is lossy:
+     buildText asks Fabric for a given width with scaleToWidth(), and reading
+     getScaledWidth() back returns a consistently larger number. Feeding that
+     number into the design and rendering from it again compounds, measured at
+     +0.762% per cycle, so text grew about 10% over a dozen ordinary edits and
+     kept going. Reads must leave the design exactly as they found it. */
   function syncFromCanvas() {
     if (!canvas) return;
     canvas.getObjects().forEach(function (obj) {
@@ -275,21 +285,53 @@ const CustomizerEngine = (function () {
     }
     return Promise.resolve(obj);
   }
+  /* Every render is stamped, and only the newest one is allowed to touch the
+     canvas.
+
+     This function rebuilds the whole side from the design array, and building
+     an image goes through fabric.Image.fromURL, which is asynchronous. Text
+     and shapes resolve almost immediately. So two renders started close
+     together do not finish in the order they began, and the version that
+     cleared the canvas first was not necessarily the version that filled it
+     last.
+
+     Previously the canvas was cleared at the top and refilled in the callback,
+     which meant two overlapping renders each cleared once and each added once:
+     the canvas ended up holding both result sets. Uploading artwork and then
+     immediately adding text duplicated the artwork, and dragging a slider
+     could let an older render land last and silently undo the newest edit.
+     Both were reproducible.
+
+     Clearing now happens in the callback, next to the add, so the swap is one
+     uninterrupted step and a stale render leaves the canvas untouched. */
+  let renderToken = 0;
+
   function renderSide() {
     if (!canvas) return Promise.resolve();
-    canvas.remove.apply(canvas, canvas.getObjects());
+    const token = ++renderToken;
 
     /* Hidden layers stay in the design but off the canvas — the layer panel
        toggles them so a customer can check what sits underneath something
        without deleting it. */
     const layers = designs[side].filter(function (l) { return !l.hidden; });
-    if (!layers.length) { canvas.requestRenderAll(); return Promise.resolve(); }
+
+    if (!layers.length) {
+      if (token !== renderToken) return Promise.resolve();
+      canvas.remove.apply(canvas, canvas.getObjects());
+      canvas.requestRenderAll();
+      return Promise.resolve();
+    }
 
     return Promise.all(layers.map(function (l) {
       if (l.type === "text")  return buildText(l);
       if (l.type === "shape") return buildShape(l);
       return buildImage(l);
     })).then(function (objs) {
+      /* A newer render started while these were building. Its snapshot of the
+         design is the current one, so these objects are already out of date
+         and adding them is exactly the bug. Drop them. */
+      if (token !== renderToken) return;
+      canvas.remove.apply(canvas, canvas.getObjects());
       objs.forEach(function (o) { canvas.add(o); });
       canvas.requestRenderAll();
     });
@@ -586,7 +628,9 @@ const CustomizerEngine = (function () {
 
     setSide: function (s) {
       if (SIDES.indexOf(s) === -1) return Promise.resolve();
-      syncFromCanvas();
+      /* No sync here. Any transform the customer made was already captured by
+         object:modified, and syncing immediately before a re-render is the
+         exact cycle that made text creep wider on every side flip. */
       side = s;
       canvas.discardActiveObject();
       return renderSide();
@@ -614,7 +658,8 @@ const CustomizerEngine = (function () {
     /* ------------------------------------------------------------ reading */
 
     getState: function () {
-      syncFromCanvas();
+      /* A read. Geometry is already current: object:modified syncs it the
+         moment a transform finishes. */
       return {
         product: product,
         color: color,
@@ -637,7 +682,6 @@ const CustomizerEngine = (function () {
 
        Returns [{ level, layerId, message }]. */
     validate: function () {
-      syncFromCanvas();
       const out = [];
       const a = area();
 
@@ -720,6 +764,18 @@ const CustomizerEngine = (function () {
        no artwork. The garment sits behind the canvas as SVG rather than on
        it, so this exports what would actually be printed — which is what the
        shop needs — not a picture of a shirt. */
+    /* The design array is the source of truth and the canvas is meant to be a
+       mirror of it. Any difference between the two is a bug, so the count is
+       exposed rather than left to be guessed at from exported pixels. Used by
+       the customizer tests to assert that invariant directly. */
+    canvasObjectCount: function () {
+      return canvas ? canvas.getObjects().length : -1;
+    },
+
+    visibleLayerCount: function () {
+      return designs[side].filter(function (l) { return !l.hidden; }).length;
+    },
+
     exportDesignPNG: function () {
       if (!canvas) return null;
       canvas.discardActiveObject();
