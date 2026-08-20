@@ -75,6 +75,16 @@
   function preview(design, productId, color, side) {
     const product = productById(productId);
     if (!design || !product || !product.art) return "";
+
+    /* Same fork as showcase.js: a photo-first design (added through the admin
+       page) shows its photograph; a vector design draws on the garment. */
+    const photoKey = side === "back" ? "back" : "front";
+    const photo = design.assets && design.assets[photoKey];
+    if (photo) {
+      return '<img class="shop-photo" src="' + esc(photo) + '" ' +
+        'alt="' + esc(design.name + (side === "back" ? ", back" : "")) + '" loading="lazy" decoding="async">';
+    }
+
     const art = CatalogService.resolveArtwork(design, color);
     const layers = art[side] || [];
     const area = (typeof printAreaFor === "function")

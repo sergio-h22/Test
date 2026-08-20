@@ -58,6 +58,19 @@
       ? PRODUCTS.filter(function (p) { return p.id === garmentId; })[0] : null;
     if (!product || !product.art) return "";
 
+    /* Photo-first designs. A design added through the admin page has a real
+       photograph and no vector layers at all, and drawing an empty garment
+       silhouette for it would be strictly worse than just showing the photo
+       somebody actually took. Vector designs, which have layers and no photo,
+       keep drawing on the garment as before; a design cannot sensibly have
+       both, so this is a fork, not a fallback chain. */
+    const photoKey = side === "back" ? "back" : "front";
+    const photo = design.assets && design.assets[photoKey];
+    if (photo) {
+      return '<img class="custom-print-showcase__photo" src="' + esc(photo) + '" ' +
+        'alt="' + esc(design.name + (side === "back" ? ", back" : "")) + '" loading="lazy" decoding="async">';
+    }
+
     const art = CatalogService.resolveArtwork(design, color);
     const layers = art[side] || [];
     const area = (typeof printAreaFor === "function")
