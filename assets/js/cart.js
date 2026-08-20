@@ -160,7 +160,8 @@
     lines.push("Artwork for each design has been downloaded to my device.");
     lines.push("I will attach it to this email before sending.");
     lines.push("");
-    lines.push("— Designed at lacamisanegra.com/design.html");
+    const home = (typeof SITE_URL === "string" ? SITE_URL : "").replace(/^https?:\/\//, "").replace(/\/$/, "");
+    lines.push("— Designed at " + (home ? home + "/design.html" : "our design tool"));
     return lines.join("\n");
   }
 

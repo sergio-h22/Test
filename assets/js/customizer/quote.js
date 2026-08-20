@@ -110,7 +110,10 @@ const CustomizerQuote = (function () {
     if (extra.name)    parts.push("Name: " + extra.name);
     if (extra.contact) parts.push("Contact: " + extra.contact);
     parts.push("");
-    parts.push("— Designed at lacamisanegra.com/design.html");
+    /* Derived from SITE_URL rather than written out again, so changing the
+       site's address stays a one-line change. */
+    const home = (typeof SITE_URL === "string" ? SITE_URL : "").replace(/^https?:\/\//, "").replace(/\/$/, "");
+    parts.push("— Designed at " + (home ? home + "/design.html" : "our design tool"));
 
     return parts.join("\n");
   }

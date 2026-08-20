@@ -32,7 +32,7 @@ const HERO_VIDEO = {
 /* The address the site is published at. Used for canonical URLs, the sitemap
    and structured data — change it if you deploy somewhere else. Keep the
    trailing slash. */
-const SITE_URL = "https://lacamisanegra.com/";
+const SITE_URL = "https://sergio-h22.github.io/Test/";
 
 /* The home page FAQ. Also becomes the FAQPage structured data Google reads,
    so edit here and both update together.
@@ -982,7 +982,7 @@ function initQuoteForm() {
       "Details:",
       get("notes") || "None given.",
       "",
-      "— Sent from lacamisanegra.com"
+      "— Sent from " + SITE_URL.replace(/^https?:\/\//, "").replace(/\/$/, "")
     ];
 
     window.location.href = values.emailHref +
