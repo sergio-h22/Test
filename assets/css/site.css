@@ -1985,6 +1985,7 @@ a.contact-row:hover span{color:var(--red)}
   font-family:Oswald,"Oswald Fallback",var(--f-body);
 }
 
-/* Upload in progress. The dropzone stops inviting a second file while one is
-   being read, so two uploads cannot race into the same design. */
-.dz-drop.is-busy{opacity:.6;pointer-events:none;cursor:progress}
+/* Upload in progress. Purely a progress cue: the dropzone stays interactive,
+   because replacing an in-flight upload with a different file is a thing
+   people legitimately do and the engine handles it. */
+.dz-drop.is-busy{opacity:.65;cursor:progress}

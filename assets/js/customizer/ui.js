@@ -938,6 +938,73 @@
 
   /* ------------------------------------------------------------- upload */
 
+  /* Incremented for every upload; see the comment in handleFiles(). */
+  let uploadJob = 0;
+  let pdfTask = null;
+
+  /* Opens the PDF, asks which page if there is more than one, renders that
+     page and hands the pixels to the engine as ordinary artwork. */
+  function handlePDF(file, job, superseded) {
+    /* A render already running belongs to an upload the customer has
+       abandoned. Stop it before starting another. */
+    if (pdfTask) { pdfTask.cancel(); pdfTask = null; }
+
+    CustomizerPDF.open(file)
+      .then(function (info) {
+        if (superseded()) return null;
+        if (info.pages === 1) return { info: info, page: 1 };
+        return choosePage(info).then(function (page) {
+          return page ? { info: info, page: page } : null;
+        });
+      })
+      .then(function (choice) {
+        if (!choice || superseded()) return null;
+        hint("Rendering page " + choice.page + " of " + choice.info.name + "...");
+        pdfTask = CustomizerPDF.renderPage(choice.info.doc, choice.page);
+        return pdfTask.promise.then(function (res) {
+          if (superseded()) return null;
+          return CustomizerEngine.addRendered(res, {
+            source: "pdf", name: choice.info.name, pageNumber: choice.page
+          }).then(function () {
+            hint("Drag it to move, or use the corner handles to resize and rotate.");
+            syncPanel();
+          });
+        });
+      })
+      .catch(function (err) {
+        /* A cancelled render is an expected outcome, not a failure to report. */
+        if (err && (err.name === "RenderingCancelledException" || /cancel/i.test(err.message || ""))) return;
+        showError(err.message || "That PDF could not be used.");
+      })
+      .then(function () {
+        pdfTask = null;
+        if (!superseded()) {
+          el.drop.classList.remove("is-busy");
+          if (el.file) el.file.value = "";
+        }
+      });
+  }
+
+  /* Page picker. Resolves to a page number, or null if the customer backs
+     out, in which case nothing is added at all. */
+  function choosePage(info) {
+    return new Promise(function (resolve) {
+      const max = info.pages;
+      const answer = window.prompt(
+        info.name + " has " + max + " pages.\n\nWhich page should we print? (1 to " + max + ")",
+        "1"
+      );
+      if (answer === null) { resolve(null); return; }
+      const n = parseInt(answer, 10);
+      if (!n || n < 1 || n > max) {
+        showError("Page " + answer + " is not in that PDF. It has " + max + " pages.");
+        resolve(null);
+        return;
+      }
+      resolve(n);
+    });
+  }
+
   function handleFiles(files) {
     if (!files || !files.length) return;
 
@@ -946,12 +1013,35 @@
        and the dropzone stops accepting a second file until this one lands so
        two uploads cannot race each other into the same design. */
     const file = files[0];
-    if (el.drop.classList.contains("is-busy")) return;
+    /* Deliberately not refused while another upload is in flight. Somebody who
+       has just realised they picked the wrong file should not have to wait for
+       it to finish before picking the right one. The job number below is what
+       keeps that safe: the older upload is cancelled and forbidden from
+       touching the design, so superseding is correct rather than merely
+       tolerated. is-busy is a progress cue and nothing more. */
     el.drop.classList.add("is-busy");
     hint("Processing " + (file.name || "your artwork") + "...");
 
+    /* Every upload gets a number, and only the newest one is allowed to put
+       anything into the design.
+
+       This is the ordering problem a PDF makes real: rasterising a page takes
+       long enough that a customer can start a second upload before the first
+       has finished, and without this the slower one lands last and replaces
+       work the customer has already moved on from. The in-flight render is
+       cancelled outright rather than merely ignored, so it stops consuming a
+       worker as well. */
+    const job = ++uploadJob;
+    const superseded = function () { return job !== uploadJob; };
+
+    if (typeof CustomizerPDF !== "undefined" && CustomizerPDF.looksLikePDF(file)) {
+      handlePDF(file, job, superseded);
+      return;
+    }
+
     CustomizerEngine.addImage(file)
       .then(function () {
+        if (superseded()) return;
         hint("Drag it to move, or use the corner handles to resize and rotate.");
         /* A brief settle on the garment so the upload visibly lands rather
            than simply appearing. */

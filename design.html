@@ -166,9 +166,9 @@
           <path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/>
         </svg>
         <b>Drop your artwork here</b>
-        <span>or click to browse — PNG, JPG, WebP or SVG</span>
+        <span>or click to browse — PDF, PNG, JPG, WebP or SVG</span>
       </div>
-      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+      <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,image/svg+xml,application/pdf,.pdf" hidden>
 
       <div class="dz-row">
         <button type="button" class="btn btn-white btn-sm" id="addTextBtn">Add text</button>
@@ -388,6 +388,9 @@
 <script src="assets/js/templates.js"></script>
 <!-- Ready-made shop designs, so "Edit this design" can hand one over. -->
 <script src="assets/js/shop.js"></script>
+<!-- PDF artwork. The heavy pdf.js library is not loaded here; this module
+     fetches it on demand the first time somebody uploads a PDF. -->
+<script src="assets/js/customizer/pdf.js"></script>
 <script src="assets/js/customizer/engine.js"></script>
 <script src="assets/js/customizer/storage.js"></script>
 <script src="assets/js/customizer/quote.js"></script>

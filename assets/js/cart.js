@@ -32,8 +32,15 @@
       if (!layers.length) return;
       const texts = layers.filter(function (l) { return l.type === "text" && l.text; })
                           .map(function (l) { return '"' + l.text + '"'; });
-      const other = layers.length - texts.length;
-      const parts = texts.slice(0, 2);
+      /* Name the source file where there is one. "1 graphic" tells the shop
+         nothing; "artwork.pdf p3" tells them exactly which artwork to check
+         against if the print file ever needs regenerating. */
+      const named = layers.filter(function (l) { return l.sourceName; })
+                          .map(function (l) {
+                            return l.sourceName + (l.sourcePage ? " p" + l.sourcePage : "");
+                          });
+      const other = layers.length - texts.length - named.length;
+      const parts = texts.slice(0, 2).concat(named.slice(0, 2));
       if (other > 0) parts.push(other + (other === 1 ? " graphic" : " graphics"));
       bits.push(side.charAt(0).toUpperCase() + side.slice(1) + ": " + parts.join(", "));
     });

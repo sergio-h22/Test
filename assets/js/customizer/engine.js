@@ -476,6 +476,33 @@ const CustomizerEngine = (function () {
       });
     },
 
+    /* Adds artwork that has already been rasterised elsewhere, which is how a
+       rendered PDF page enters the design. It is deliberately the same layer
+       shape addImage() produces, so nothing downstream, not the canvas, not
+       undo, not the cart, not the production export, needs to know where the
+       pixels came from.
+
+       meta carries the provenance the shop needs on the order: which file and
+       which page this came from. */
+    addRendered: function (res, meta) {
+      if (!res || !res.src) return Promise.reject(new Error("That artwork could not be prepared."));
+      const layer = {
+        id: makeId(), type: "image", src: res.src, natural: res.natural || 0,
+        x: 0.5, y: 0.5, w: 0.6, angle: 0, opacity: 1
+      };
+      if (meta) {
+        layer.source = meta.source || null;       // "pdf"
+        layer.sourceName = meta.name || null;     // original filename
+        layer.sourcePage = meta.pageNumber || null;
+      }
+      designs[side].push(layer);
+      return renderSide().then(function () {
+        selectLayer(layer.id);
+        pushHistory();
+        return layer.id;
+      });
+    },
+
     addText: function (text) {
       const layer = {
         id: makeId(), type: "text", text: text || "Your text",
