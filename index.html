@@ -18,6 +18,12 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+<!-- The Drop 01 artwork is set in these faces. display=swap so the hero is
+     never held back waiting for them, and the metric-matched fallbacks in
+     site.css keep the swap from moving anything. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Oswald:wght@400;700&display=swap">
 <link rel="stylesheet" href="assets/css/site.css">
 </head>
 <body data-page="home">
@@ -132,6 +138,79 @@
     </div>
   </div>
 </section>
+
+<!-- ====================================================== M-POWER APPAREL -->
+<!-- Drop 01. Additive: it sits between the hero and the capability cards and
+     nothing below it was touched. Every design is read from collection.js
+     through CatalogService, so publishing an eleventh is a data change and
+     this markup does not move. Classes are namespaced custom-print-showcase__
+     so none of it can reach the rest of the page. -->
+<section class="custom-print-showcase" id="apparel" aria-labelledby="cpsHeading">
+  <div class="wrap custom-print-showcase__header">
+    <p class="custom-print-showcase__eyebrow">M-Power Apparel &middot; Drop 01</p>
+    <h2 class="custom-print-showcase__heading" id="cpsHeading">Custom Prints</h2>
+    <p class="custom-print-showcase__lede">
+      Premium custom apparel made for your brand, your team, and your next idea.
+      Ten designs, three garments, printed front and back.
+    </p>
+  </div>
+
+  <div class="custom-print-showcase__carousel">
+    <button class="custom-print-showcase__nav custom-print-showcase__nav--prev"
+            type="button" data-cps-nav="prev" aria-controls="cpsViewport" aria-label="Previous designs">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+
+    <div class="custom-print-showcase__viewport" id="cpsViewport"
+         tabindex="0" role="region" aria-label="Drop 01 designs, scrollable">
+      <ul class="custom-print-showcase__track" id="cpsTrack"></ul>
+    </div>
+
+    <button class="custom-print-showcase__nav custom-print-showcase__nav--next"
+            type="button" data-cps-nav="next" aria-controls="cpsViewport" aria-label="Next designs">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <p class="custom-print-showcase__empty" id="cpsEmpty" hidden>
+    The collection could not be loaded. <a href="products.html">Browse all products</a> instead.
+  </p>
+</section>
+
+<!-- Design detail. Opened from a card; shows front and back, the three
+     garments and the colours that garment is stocked in, then hands the whole
+     choice to the existing customizer. -->
+<dialog class="custom-print-showcase__modal" id="cpsModal" aria-labelledby="cpsTitle">
+  <div class="custom-print-showcase__modal-head">
+    <div>
+      <h3 class="custom-print-showcase__modal-title" id="cpsTitle"></h3>
+      <p class="custom-print-showcase__modal-desc" id="cpsDesc"></p>
+    </div>
+    <button class="custom-print-showcase__close" id="cpsClose" type="button" aria-label="Close">&times;</button>
+  </div>
+
+  <div class="custom-print-showcase__modal-body">
+    <div class="custom-print-showcase__modal-stage" id="cpsStage"></div>
+
+    <div class="custom-print-showcase__modal-form">
+      <div class="custom-print-showcase__field">
+        <span class="custom-print-showcase__label" id="cpsSidesLab">View</span>
+        <div class="custom-print-showcase__chips" id="cpsSides" role="group" aria-labelledby="cpsSidesLab"></div>
+      </div>
+      <div class="custom-print-showcase__field">
+        <span class="custom-print-showcase__label" id="cpsGarmentsLab">Choose your garment</span>
+        <div class="custom-print-showcase__chips" id="cpsGarments" role="group" aria-labelledby="cpsGarmentsLab"></div>
+      </div>
+      <div class="custom-print-showcase__field">
+        <span class="custom-print-showcase__label" id="cpsColorsLab">Colour</span>
+        <div class="custom-print-showcase__chips" id="cpsColors" role="group" aria-labelledby="cpsColorsLab"></div>
+      </div>
+
+      <p class="custom-print-showcase__price" id="cpsPrice"></p>
+      <a class="btn btn-red custom-print-showcase__go" id="cpsGo" href="design.html">Customize this design</a>
+    </div>
+  </div>
+</dialog>
 
 <!-- =================================================== CAPABILITY CARDS -->
 <div class="wrap">
@@ -660,6 +739,12 @@
 <script src="assets/js/surfaces.js"></script>
 <script src="assets/js/garments.js"></script>
 <script src="assets/js/site.js"></script>
+<!-- Drop 01. collection.js is the data, catalog.js is the seam Supabase will
+     slot into, shop.js supplies the shared layer-to-SVG renderer. -->
+<script src="assets/js/shop.js"></script>
+<script src="assets/js/collection.js"></script>
+<script src="assets/js/services/catalog.js"></script>
+<script src="assets/js/showcase.js"></script>
 <!-- The press run: artwork, then the controller that swaps it. Home page
      only — no other page has a .press section for it to bind to. -->
 <script src="assets/js/scenes.js"></script>

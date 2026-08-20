@@ -534,6 +534,34 @@
      colour rides along because a shop design resolves its ink against the
      garment colour: loading the design without its colour would put bone ink
      on a white shirt. */
+  /* ------------------------------------------- arriving from Drop 01 ---
+
+     The homepage collection hands over the design it was showing. What loads
+     is a COPY, produced by resolveArtwork(): the customer's edits belong to
+     their cart line and can never reach the master design in collection.js,
+     so one customer's changes cannot alter what another customer sees. The
+     design is a starting point, not a shared document. */
+  const collectionWanted = params.get("collection");
+  if (collectionWanted && typeof CatalogService !== "undefined") {
+    CatalogService.getDesign(collectionWanted).then(function (design) {
+      if (!design) return;
+      const colour = params.get("color") || (current.colors && current.colors[0]) || null;
+      const artwork = CatalogService.resolveArtwork(design, colour);
+      const seed = colour ? CustomizerEngine.setColor(colour) : Promise.resolve();
+      /* The artwork is set in the display faces; without waiting the first
+         render measures against a fallback and the layout is wrong. */
+      const webFonts = FONTS.filter(function (f) { return f.web; })
+                            .map(function (f) { return ensureFont(f.stack); });
+      return Promise.all([seed].concat(webFonts))
+        .then(function () { return CustomizerEngine.loadDesigns(artwork); })
+        .then(function () {
+          renderColors();
+          syncPanel();
+          hint("Editing " + design.name + ". Change anything you like, or add your own.");
+        });
+    });
+  }
+
   const shopWanted = params.get("shop");
   if (shopWanted && typeof shopDesignFor === "function") {
     const shopColor = params.get("color") ||

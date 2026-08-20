@@ -132,7 +132,43 @@ function collar(dip) {
    `details` is drawn over the cloth but under the outline: pockets, plackets,
    drawstrings, reflective striping. Anything that is part of the garment
    rather than part of the customer's design. */
+/* Long sleeve.
+ *
+ * The body is the tee's, unchanged and deliberately so: print areas are
+ * expressed as fractions of a print box that sits on the same body, so a
+ * design keeps its position when somebody switches between a tee and a long
+ * sleeve. Only the arms differ, and they are drawn as two shapes sitting
+ * behind the body rather than by editing the outline, which keeps the
+ * silhouette that every other calculation depends on identical.
+ */
+const LS_SLEEVES = `
+  <path d="M126 278 L112 468 C110 482 118 491 132 492 L168 495
+           C182 496 190 487 190 473 L186 314 L126 278 Z"
+        style="fill:var(--cloth-fill, url(#cloth-white))" stroke="#B9BFC5" stroke-width="1.8"/>
+  <path d="M474 278 L488 468 C490 482 482 491 468 492 L432 495
+           C418 496 410 487 410 473 L414 314 L474 278 Z"
+        style="fill:var(--cloth-fill, url(#cloth-white))" stroke="#B9BFC5" stroke-width="1.8"/>
+  <path d="M114 462 L189 467" stroke="#0E1013" stroke-width="1.4" fill="none" opacity=".2"/>
+  <path d="M486 462 L411 467" stroke="#0E1013" stroke-width="1.4" fill="none" opacity=".2"/>`;
+
 const GARMENT_SHAPES = {
+
+  longsleeveFront: {
+    outline: TEE_FRONT,
+    collarDip: 166,
+    under: LS_SLEEVES,
+    details: `
+      <path d="M208 534 Q300 543 392 534" stroke="#C9CED3" stroke-width="2.2" fill="none"/>`
+  },
+
+  longsleeveBack: {
+    outline: TEE_BACK,
+    collarDip: 130,
+    under: LS_SLEEVES,
+    details: `
+      <path d="M208 534 Q300 543 392 534" stroke="#C9CED3" stroke-width="2.2" fill="none"/>
+      <path d="M262 128 Q300 140 338 128" stroke="#C9CED3" stroke-width="1.8" fill="none" opacity=".7"/>`
+  },
 
   tshirtFront: {
     outline: TEE_FRONT,
@@ -291,6 +327,10 @@ const PRINT_AREAS = {
     front: { x: 218, y: 196, w: 164, h: 216, label: "Front print" },
     back:  { x: 212, y: 178, w: 176, h: 268, label: "Full back" }
   },
+  "long-sleeve": {
+    front: { x: 218, y: 196, w: 164, h: 216, label: "Front print" },
+    back:  { x: 212, y: 178, w: 176, h: 268, label: "Full back" }
+  },
   "hoodies": {
     /* Stops above the pocket at y=400. */
     front: { x: 228, y: 208, w: 144, h: 176, label: "Front chest" },
@@ -326,6 +366,7 @@ function garmentSymbol(key, spec) {
     <clipPath id="${clipId}"><path d="${spec.outline}"/></clipPath>
     <symbol id="garment-${key}" viewBox="0 0 600 620">
       <ellipse cx="300" cy="578" rx="140" ry="13" fill="#16181B" opacity=".17" filter="url(#ground)"/>
+      ${spec.under || ""}
       ${spec.hood || ""}
       <path d="${spec.outline}" style="fill:var(--cloth-fill, url(#cloth-white))"/>
       ${sharedShading(clipId, spec.sleeveless)}
@@ -380,6 +421,7 @@ function ensureGarmentDefs() {
  */
 const PRINT_PHYSICAL = {
   "t-shirts": { front: [12, 16], back: [12, 16] },
+  "long-sleeve": { front: [12, 16], back: [12, 16] },
   "hoodies":  { front: [11, 14], back: [12, 16] },
   "polos":    { front: [4, 4],   back: [10, 12] },
   "hi-vis":   { front: [8, 8],   back: [10, 8] },

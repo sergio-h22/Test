@@ -250,6 +250,16 @@ const PRODUCTS = [
     pricing: null
   },
   {
+    id: "long-sleeve", name: "Long Sleeve Tees", cat: "apparel", photo: "",
+    blurb: "Long sleeve tees for cooler days, printed front and back.",
+    copy: "The same heavyweight cotton as our tees with full-length sleeves. Prints on the chest and across the back, and the sleeves can carry a small hit as well.",
+    specs: [["Material", "Heavyweight cotton"], ["Sides", "Front and back"], ["Sizes", "S to 3XL"], ["Artwork", "Vector or high-res raster"]],
+    colors: ["White", "Black", "Red", "Navy", "Heather Grey"],
+    customizable: true,
+    art: { front: "longsleeveFront", back: "longsleeveBack" },
+    pricing: null
+  },
+  {
     id: "hoodies", name: "Hoodies & Sweatshirts", cat: "apparel", photo: "photos/hoodies.jpg",
     blurb: "Pullovers and zip hoodies, printed or embroidered.",
     copy: "Heavier pieces for cold mornings on site and for merch people actually keep. Printed or embroidered depending on the look you want.",
