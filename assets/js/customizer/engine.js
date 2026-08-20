@@ -35,6 +35,13 @@ const MAX_UPLOAD_PX = 1600;
 
 const CustomizerEngine = (function () {
 
+  /* Production output density. 300 is the standard for direct-to-garment and
+     screen print; 150 is the floor below which print shops reject artwork. */
+  const PRODUCTION_DPI = 300;
+  /* Ceiling on either dimension of a production export, so a large print area
+     cannot demand a canvas that exhausts memory on a phone. */
+  const PRODUCTION_MAX_PX = 6000;
+
   let canvas = null;          // the Fabric canvas
   let product = null;         // current product from PRODUCTS
   let color = null;           // current colour name
@@ -764,10 +771,99 @@ const CustomizerEngine = (function () {
        no artwork. The garment sits behind the canvas as SVG rather than on
        it, so this exports what would actually be printed — which is what the
        shop needs — not a picture of a shirt. */
+    /* ------------------------------------------------------- production ---
+       The preview and the production file are different products and must not
+       be the same bitmap.
+
+       exportDesignPNG() renders the whole 600x620 editor canvas at multiplier
+       2. For a t-shirt that puts the artwork itself at 328x432 pixels, which
+       across a 12 inch print is 27 DPI. Print wants 300, and will not accept
+       less than 150. Sending that file to a press produces visibly blocky
+       work, so it is fit for showing the customer and for nothing else.
+
+       This crops to the print area alone and scales by whatever it takes to
+       reach the target density. Text and shapes are vector objects, so Fabric
+       redraws them at the larger size and they come out genuinely sharp;
+       uploaded bitmaps cannot gain detail they never had, which is what the
+       low-resolution warning in validate() already tells the customer about.
+
+       The garment silhouette is SVG in the page behind the canvas, not a
+       canvas object, so it is absent from this export and the background is
+       transparent, which is what a press needs. */
+    exportProduction: function (which) {
+      if (!canvas) return null;
+
+      const target = which || side;
+      const original = side;
+      const restore = target === original ? null : original;
+
+      const run = function () {
+        const a = area();
+        const inches = typeof printPhysicalFor === "function"
+          ? printPhysicalFor(product.id, target)
+          : [12, 16];
+
+        /* Scale to hit PRODUCTION_DPI, then clamp so an unusually large print
+           area cannot ask for a canvas big enough to exhaust memory on a
+           phone. Clamping lowers density; it never crops the artwork. */
+        let multiplier = (inches[0] * PRODUCTION_DPI) / a.w;
+        const widest = a.w * multiplier;
+        const tallest = a.h * multiplier;
+        if (Math.max(widest, tallest) > PRODUCTION_MAX_PX) {
+          multiplier = PRODUCTION_MAX_PX / Math.max(a.w, a.h);
+        }
+
+        canvas.discardActiveObject();
+        canvas.requestRenderAll();
+
+        const png = canvas.toDataURL({
+          format: "png",
+          multiplier: multiplier,
+          left: a.x, top: a.y, width: a.w, height: a.h
+        });
+
+        return {
+          png: png,
+          side: target,
+          productId: product.id,
+          widthPx: Math.round(a.w * multiplier),
+          heightPx: Math.round(a.h * multiplier),
+          widthIn: inches[0],
+          heightIn: inches[1],
+          dpi: Math.round((a.w * multiplier) / inches[0]),
+          transparent: true
+        };
+      };
+
+      if (!restore) return Promise.resolve(run());
+      /* Exporting a side means making it the live one first. */
+      side = target;
+      return renderSide()
+        .then(run)
+        .then(function (out) {
+          side = restore;
+          return renderSide().then(function () { return out; });
+        });
+    },
+
     /* The design array is the source of truth and the canvas is meant to be a
        mirror of it. Any difference between the two is a bug, so the count is
        exposed rather than left to be guessed at from exported pixels. Used by
        the customizer tests to assert that invariant directly. */
+    /* Clears the design on both sides and starts the history over, so an
+       undo cannot walk back into work the customer asked to discard. The
+       product, colour and side selections are deliberately kept: resetting
+       the artwork is not the same as leaving the editor. */
+    resetDesign: function () {
+      designs.front.length = 0;
+      designs.back.length = 0;
+      history = [];
+      historyAt = -1;
+      return renderSide().then(function () {
+        pushHistory();
+      });
+    },
+
     canvasObjectCount: function () {
       return canvas ? canvas.getObjects().length : -1;
     },

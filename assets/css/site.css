@@ -1984,3 +1984,7 @@ a.contact-row:hover span{color:var(--red)}
 .shopHero-h,.shopLine-h,.shopHow-h,.shopCustom-h,.shopCard-name,.shopPick-h,.shopHow-list dt{
   font-family:Oswald,"Oswald Fallback",var(--f-body);
 }
+
+/* Upload in progress. The dropzone stops inviting a second file while one is
+   being read, so two uploads cannot race into the same design. */
+.dz-drop.is-busy{opacity:.6;pointer-events:none;cursor:progress}

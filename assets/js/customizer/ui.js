@@ -56,6 +56,7 @@
     warnList:    document.getElementById("warnList"),
     save:        document.getElementById("saveBtn"),
     cart:        document.getElementById("cartBtn"),
+    reset:       document.getElementById("resetBtn"),
     saveNote:    document.getElementById("saveNote"),
     dup:         document.getElementById("dupBtn"),
     del:         document.getElementById("delBtn"),
@@ -797,16 +798,39 @@
         note("Add some artwork or text before adding this to your cart.", true);
         return;
       }
+      /* Producing the print file takes a moment, and a second click during
+         that moment used to add the same design to the cart twice. The button
+         stays disabled until the write settles either way. */
+      if (el.cart.disabled) return;
+      el.cart.disabled = true;
+      note("Preparing your print file...");
+
       const extra = extras();
       extra.preview = CustomizerEngine.exportDesignPNG();
-      CustomizerStore.addToCart(CustomizerEngine.getState(), extra)
+
+      CustomizerEngine.exportProduction()
+        .then(function (prod) {
+          /* The preview is what the customer sees in the cart. The production
+             file is what the press needs, and it is a different render at a
+             different resolution: 300 DPI against the print area, transparent,
+             with no garment in it. Carrying only the preview would mean the
+             shop printing from a 27 DPI screenshot. */
+          extra.production = prod.png;
+          extra.productionMeta = {
+            widthPx: prod.widthPx, heightPx: prod.heightPx,
+            widthIn: prod.widthIn, heightIn: prod.heightIn,
+            dpi: prod.dpi, side: prod.side, transparent: prod.transparent
+          };
+          return CustomizerStore.addToCart(CustomizerEngine.getState(), extra);
+        })
         .then(function () {
           note("Added to your cart with this design attached.");
           updateCartCount();
         })
         .catch(function (err) {
           note(err.message || "That could not be added to your cart.", true);
-        });
+        })
+        .then(function () { el.cart.disabled = false; });
     });
   }
 
@@ -916,7 +940,17 @@
 
   function handleFiles(files) {
     if (!files || !files.length) return;
-    CustomizerEngine.addImage(files[0])
+
+    /* Reading, decoding and possibly downscaling a large upload takes long
+       enough to look like nothing happened. Saying so beats a silent pause,
+       and the dropzone stops accepting a second file until this one lands so
+       two uploads cannot race each other into the same design. */
+    const file = files[0];
+    if (el.drop.classList.contains("is-busy")) return;
+    el.drop.classList.add("is-busy");
+    hint("Processing " + (file.name || "your artwork") + "...");
+
+    CustomizerEngine.addImage(file)
       .then(function () {
         hint("Drag it to move, or use the corner handles to resize and rotate.");
         /* A brief settle on the garment so the upload visibly lands rather
@@ -926,7 +960,13 @@
           window.setTimeout(function () { el.stage.classList.remove("just-added"); }, 360);
         }
       })
-      .catch(function (err) { showError(err.message); });
+      .catch(function (err) { showError(err.message); })
+      .then(function () {
+        el.drop.classList.remove("is-busy");
+        /* Clearing the input matters: without it, choosing the same file
+           twice in a row fires no change event and looks broken. */
+        if (el.file) el.file.value = "";
+      });
   }
 
   el.drop.addEventListener("click", function () { el.file.click(); });
@@ -1002,6 +1042,22 @@
   });
   el.undo.addEventListener("click", function () { CustomizerEngine.undo(); });
   el.redo.addEventListener("click", function () { CustomizerEngine.redo(); });
+
+  /* Reset. Confirmation is asked for only when there is real work to lose,
+     because a dialog in front of an empty canvas is just an obstacle. */
+  if (el.reset) {
+    el.reset.addEventListener("click", function () {
+      if (!CustomizerEngine.hasAnyDesign()) {
+        note("There is nothing to reset yet.");
+        return;
+      }
+      if (!window.confirm("Remove everything from this design? This cannot be undone.")) return;
+      CustomizerEngine.resetDesign().then(function () {
+        syncPanel();
+        note("Design reset.");
+      });
+    });
+  }
 
   document.addEventListener("keydown", function (e) {
     /* Never steal a key while someone is typing into a field. */

@@ -369,6 +369,39 @@ function ensureGarmentDefs() {
    above. Anything genuinely unknown falls back to the t-shirt so a
    half-configured product still renders something usable rather than
    throwing. */
+/* Physical size of each print area, in inches, as [width, height].
+ *
+ * The production export is computed from these: pixels = inches x DPI. They
+ * are ordinary industry maximums for each garment, NOT measurements of this
+ * shop's equipment, and they must be checked against the actual platen and
+ * press sizes before any file produced from them is sent to production. A
+ * wrong number here does not distort the artwork, it only changes the output
+ * resolution, so erring large is safe and erring small costs sharpness.
+ */
+const PRINT_PHYSICAL = {
+  "t-shirts": { front: [12, 16], back: [12, 16] },
+  "hoodies":  { front: [11, 14], back: [12, 16] },
+  "polos":    { front: [4, 4],   back: [10, 12] },
+  "hi-vis":   { front: [8, 8],   back: [10, 8] },
+  "uniforms": { front: [4, 4],   back: [10, 12] }
+};
+
+/* Falls back to the t-shirt front, which is the largest common area, so an
+   unmapped product exports at more resolution than it needs rather than
+   less. */
+function printPhysicalFor(productId, side) {
+  const entry = PRINT_PHYSICAL[productId];
+  if (entry && entry[side]) return entry[side];
+  if (entry && entry.front) return entry.front;
+
+  /* Flat print surfaces carry their real trim size in surfaces.js. */
+  if (typeof surfaceFor === "function") {
+    const surf = surfaceFor(productId);
+    if (surf && surf.inches) return surf.inches;
+  }
+  return [12, 16];
+}
+
 function printAreaFor(productId, side) {
   if (typeof surfacePrintArea === "function") {
     const flat = surfacePrintArea(productId, side);

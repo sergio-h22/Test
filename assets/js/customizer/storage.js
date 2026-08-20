@@ -205,7 +205,16 @@ const CustomizerStore = (function () {
         designs: state.designs,
         /* A flattened preview so the cart can show the design without
            reloading Fabric and re-rendering every line. */
-        preview: (extra && extra.preview) || null
+        preview: (extra && extra.preview) || null,
+        /* The print file, which is a different render from the preview: the
+           print area alone, at 300 DPI, transparent, no garment. The cart
+           shows the preview and the shop prints from this. Kept beside the
+           design JSON rather than instead of it, because the JSON is what
+           makes the order reproducible if the file is ever lost. */
+        production: (extra && extra.production) || null,
+        productionMeta: (extra && extra.productionMeta) || null,
+        /* Lets a future version of the site read older cart records safely. */
+        schemaVersion: 1
       };
       return putInto(STORE_CART, LS_CART, record).then(function () { return record; });
     },

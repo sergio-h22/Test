@@ -77,6 +77,14 @@
               '<div class="cart-actions">' +
                 '<a class="btn btn-white btn-sm" href="design.html?product=' +
                   encodeURIComponent(it.productId) + '">Edit</a>' +
+                /* The print file, offered separately from the preview so
+                   nobody sends a screenshot to a press by mistake. Only shown
+                   when the item actually carries one: designs added before
+                   this existed do not. */
+                (it.production
+                  ? '<button type="button" class="btn btn-white btn-sm" data-print="' +
+                    esc(it.id) + '">Print file</button>'
+                  : "") +
                 '<button type="button" class="btn btn-white btn-sm" data-remove="' +
                   esc(it.id) + '">Remove</button>' +
               "</div>" +
@@ -110,6 +118,26 @@
   /* The quote body. Deliberately readable as an email rather than a data
      dump — whoever picks this up at the shop should be able to act on it
      without opening a tool. Same principle as customizer/quote.js. */
+  /* Hands over the production render rather than the preview. The filename
+     carries the product and the pixel size so the shop can tell at a glance
+     what it is looking at. */
+  function downloadProduction(item) {
+    if (!item || !item.production) return;
+    const m = item.productionMeta || {};
+    const a = document.createElement("a");
+    a.href = item.production;
+    a.download = [
+      "print",
+      (item.productId || "design"),
+      (m.side || "front"),
+      (m.widthPx && m.heightPx ? m.widthPx + "x" + m.heightPx : ""),
+      (m.dpi ? m.dpi + "dpi" : "")
+    ].filter(Boolean).join("-") + ".png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   function buildBody(items) {
     const lines = ["DESIGN REQUEST", ""];
     items.forEach(function (it, i) {
@@ -148,6 +176,14 @@
     const rm = e.target.closest("[data-remove]");
     if (rm) {
       CustomizerStore.removeFromCart(rm.dataset.remove).then(refresh);
+      return;
+    }
+
+    const pf = e.target.closest("[data-print]");
+    if (pf) {
+      CustomizerStore.listCart().then(function (items) {
+        downloadProduction(items.filter(function (i) { return i.id === pf.dataset.print; })[0]);
+      });
       return;
     }
 
