@@ -1989,3 +1989,17 @@ a.contact-row:hover span{color:var(--red)}
    because replacing an in-flight upload with a different file is a thing
    people legitimately do and the engine handles it. */
 .dz-drop.is-busy{opacity:.65;cursor:progress}
+
+/* Unfinished-design offer on the customizer. */
+.dz-recover{background:var(--ink-2);color:#fff;border-bottom:1px solid #2C3037}
+.dz-recover-in{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--sp-4);
+  flex-wrap:wrap;padding:var(--sp-3) 0;
+}
+.dz-recover-text{margin:0;font-size:.94rem;color:#DDE1E5}
+.dz-recover-text b{color:#fff}
+.dz-recover-act{display:flex;gap:var(--sp-2);flex-wrap:wrap}
+@media (max-width:560px){
+  .dz-recover-in{flex-direction:column;align-items:stretch}
+  .dz-recover-act .btn{flex:1}
+}

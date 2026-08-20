@@ -57,6 +57,10 @@
     save:        document.getElementById("saveBtn"),
     cart:        document.getElementById("cartBtn"),
     reset:       document.getElementById("resetBtn"),
+    recover:     document.getElementById("dzRecover"),
+    recoverText: document.getElementById("dzRecoverText"),
+    recoverYes:  document.getElementById("dzRecoverYes"),
+    recoverNo:   document.getElementById("dzRecoverNo"),
     saveNote:    document.getElementById("saveNote"),
     dup:         document.getElementById("dupBtn"),
     del:         document.getElementById("delBtn"),
@@ -70,6 +74,15 @@
 
   const customizable = PRODUCTS.filter(function (p) { return p.customizable; });
   if (!customizable.length) return;
+
+  /* Autosave state. Declared up here with the rest of the module's state
+     rather than beside the functions that use it: syncPanel() arms the save
+     and syncPanel() runs during boot, so a `let` sitting further down the file
+     is still in its temporal dead zone when the first call arrives, and the
+     whole editor fails to start. */
+  const AUTOSAVE_DELAY = 1200;
+  let autosaveTimer = null;
+  let lastSavedJSON = null;
 
   const params = new URLSearchParams(window.location.search);
 
@@ -394,6 +407,10 @@
   /* Reflects whatever the canvas currently has selected. Called on every
      engine change so the panel can never disagree with the canvas. */
   function syncPanel() {
+    /* Every meaningful change funnels through here, so this is where the
+       debounced save is armed. The debounce and the equality check inside
+       autosaveNow() are what stop a selection click becoming a write. */
+    scheduleAutosave();
     el.undo.disabled = !CustomizerEngine.canUndo();
     el.redo.disabled = !CustomizerEngine.canRedo();
     renderAlso();
@@ -508,6 +525,7 @@
   paintGarment();
   syncPanel();
   updateCartCount();
+  offerRecovery();
 
   /* ------------------------------------------------- arriving from the shop */
 
@@ -1133,6 +1151,104 @@
   el.undo.addEventListener("click", function () { CustomizerEngine.undo(); });
   el.redo.addEventListener("click", function () { CustomizerEngine.redo(); });
 
+  /* --------------------------------------------------------- autosave ---
+
+     Work is kept without anybody having to ask for it. Refreshing the page,
+     a phone putting the browser to sleep, or a tab closing by accident should
+     not cost a customer their design.
+
+     Saving is debounced rather than continuous: syncPanel() runs on selection
+     changes as well as real edits, and writing on every one of those would
+     mean a database write per click. The serialised design is also compared
+     against the last one written, so dragging something and putting it back
+     produces no write at all.
+
+     An empty design is never written over a saved one. Somebody who opens the
+     editor, and whose first render has not happened yet, must not silently
+     destroy the work they came back for. */
+  function autosaveNow() {
+    if (typeof CustomizerStore === "undefined") return Promise.resolve();
+    if (!CustomizerEngine.hasAnyDesign()) return Promise.resolve();
+    const state = CustomizerEngine.getState();
+    const json = JSON.stringify(state.designs);
+    if (json === lastSavedJSON) return Promise.resolve();
+    return CustomizerStore.saveDesign(state, extras())
+      .then(function () {
+        lastSavedJSON = json;
+        note("Saved");
+      })
+      .catch(function () {
+        /* A failed autosave must not interrupt anybody. The design is still in
+           memory and the next attempt will carry it. */
+      });
+  }
+
+  function scheduleAutosave() {
+    if (autosaveTimer) window.clearTimeout(autosaveTimer);
+    autosaveTimer = window.setTimeout(function () {
+      autosaveTimer = null;
+      autosaveNow();
+    }, AUTOSAVE_DELAY);
+  }
+
+  /* A phone suspending the page, or a tab closing, does not wait for a
+     debounce. Flush whatever is pending at the last moment the page is
+     guaranteed to still be running. */
+  ["pagehide", "visibilitychange"].forEach(function (ev) {
+    window.addEventListener(ev, function () {
+      if (ev === "visibilitychange" && document.visibilityState !== "hidden") return;
+      if (autosaveTimer) { window.clearTimeout(autosaveTimer); autosaveTimer = null; }
+      autosaveNow();
+    });
+  });
+
+  /* --------------------------------------------------------- recovery ---
+
+     Offered, never imposed. The saved record is keyed by product, so work
+     from one product can never appear on another, and the banner only shows
+     when the design actually has something in it. */
+  function offerRecovery() {
+    if (typeof CustomizerStore === "undefined" || !el.recover) return;
+    CustomizerStore.loadDesign(current.id).then(function (saved) {
+      if (!saved || !saved.designs) return;
+      const count = ["front", "back"].reduce(function (n, sideName) {
+        return n + ((saved.designs[sideName] || []).length);
+      }, 0);
+      if (!count) return;
+      /* Do not offer to restore what is already on screen. */
+      if (CustomizerEngine.hasAnyDesign()) return;
+
+      const when = saved.savedAt ? new Date(saved.savedAt) : null;
+      el.recoverText.innerHTML =
+        "You have an unfinished <b>" + esc(saved.productName || current.name) + "</b> design" +
+        (when ? " from " + esc(when.toLocaleDateString()) : "") + "." ;
+      el.recover.hidden = false;
+
+      el.recoverYes.addEventListener("click", function () {
+        const webFonts = FONTS.filter(function (f) { return f.web; })
+                              .map(function (f) { return ensureFont(f.stack); });
+        Promise.all(webFonts)
+          .then(function () {
+            if (saved.color) return CustomizerEngine.setColor(saved.color);
+          })
+          .then(function () { return CustomizerEngine.loadDesigns(saved.designs); })
+          .then(function () {
+            el.recover.hidden = true;
+            renderColors();
+            syncPanel();
+            hint("Picked up where you left off.");
+          });
+      });
+
+      el.recoverNo.addEventListener("click", function () {
+        el.recover.hidden = true;
+        /* Discarding means discarding. Leaving the record would make the offer
+           reappear on the next visit for work the customer already refused. */
+        CustomizerStore.clearDesign(current.id);
+      });
+    }).catch(function () { /* recovery is a convenience, never a blocker */ });
+  }
+
   /* Reset. Confirmation is asked for only when there is real work to lose,
      because a dialog in front of an empty canvas is just an obstacle. */
   if (el.reset) {
@@ -1143,6 +1259,10 @@
       }
       if (!window.confirm("Remove everything from this design? This cannot be undone.")) return;
       CustomizerEngine.resetDesign().then(function () {
+        /* The saved copy goes too. Leaving it would mean a reset design came
+           back the next time the page was opened. */
+        lastSavedJSON = null;
+        if (typeof CustomizerStore !== "undefined") CustomizerStore.clearDesign(current.id);
         syncPanel();
         note("Design reset.");
       });

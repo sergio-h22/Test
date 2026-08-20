@@ -167,7 +167,10 @@ const CustomizerStore = (function () {
         side: state.side,
         designs: state.designs,
         options: (extra && extra.options) || {},
-        qty: (extra && extra.qty) || null
+        qty: (extra && extra.qty) || null,
+        /* Lets a later version of the editor recognise, and if necessary
+           migrate, a design saved by this one. */
+        schemaVersion: 1
       };
       return putInto(STORE_DESIGNS, LS_DESIGNS, record).then(function () { return record; });
     },

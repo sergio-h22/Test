@@ -79,6 +79,21 @@
 
 <main id="main">
 
+  <!-- Recovery offer. Hidden until a saved design for this exact product is
+       found; never shown for work belonging to a different product. It is a
+       banner rather than a dialog on purpose: a modal in front of somebody who
+       just wanted to start something new is an obstacle, not a service. -->
+  <div class="dz-recover" id="dzRecover" hidden role="region" aria-label="Unfinished design">
+    <div class="wrap dz-recover-in">
+      <p class="dz-recover-text" id="dzRecoverText"></p>
+      <div class="dz-recover-act">
+        <button type="button" class="btn btn-red btn-sm" id="dzRecoverYes">Continue that design</button>
+        <button type="button" class="btn btn-white btn-sm" id="dzRecoverNo">Start fresh</button>
+      </div>
+    </div>
+  </div>
+
+
 <!-- Shown when someone arrives at "Design your own" without having picked a
      product yet. Filled and wired by ui.js from the same catalogue data the
      in-editor picker uses, so the two can never list different products.
