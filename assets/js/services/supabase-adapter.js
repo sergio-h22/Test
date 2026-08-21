@@ -79,14 +79,26 @@
         });
     },
 
+    /* idOrSlug reaches this straight from a URL — design.html?collection=...
+       is entirely attacker-controlled — and the previous version handed it
+       to PostgREST's .or() by concatenating it into filter syntax. A value
+       containing a comma or its own "column.op." fragment could rewrite the
+       filter into something other than what this code intended. Validating
+       the shape first and always calling .eq() with the raw string as a
+       plain value (never as part of a filter expression) closes that off:
+       whatever the string contains, PostgREST treats it as data to compare
+       against, not as syntax to parse. */
     getDesign: function (idOrSlug) {
-      return client.from("designs").select("*").eq("published", true)
-        .or("id.eq." + idOrSlug + ",slug.eq." + idOrSlug)
-        .maybeSingle()
-        .then(function (res) {
-          if (res.error || !res.data) return null;
-          return fromRow(res.data);
-        });
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug || "");
+      const isSlug = /^[a-z0-9-]{1,80}$/.test(idOrSlug || "");
+      if (!isUuid && !isSlug) return Promise.resolve(null);
+
+      const base = client.from("designs").select("*").eq("published", true);
+      const query = isUuid ? base.eq("id", idOrSlug) : base.eq("slug", idOrSlug);
+      return query.maybeSingle().then(function (res) {
+        if (res.error || !res.data) return null;
+        return fromRow(res.data);
+      });
     },
 
     /* Garment and colour logic is identical to the local adapter's: it reads
