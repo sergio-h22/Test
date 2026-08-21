@@ -53,42 +53,16 @@
   /* Draws a design on a garment as one SVG. The garment silhouette comes from
      the same symbol set the editor uses, so what a customer sees here is what
      the editor opens with. */
+  /* Photo-or-vector rendering lives in shop.js as shopRenderPreview() and is
+     shared with the shop page, rather than kept as two copies of the same
+     decision. */
   function preview(design, garmentId, color, side) {
-    const product = (typeof PRODUCTS !== "undefined")
-      ? PRODUCTS.filter(function (p) { return p.id === garmentId; })[0] : null;
-    if (!product || !product.art) return "";
-
-    /* Photo-first designs. A design added through the admin page has a real
-       photograph and no vector layers at all, and drawing an empty garment
-       silhouette for it would be strictly worse than just showing the photo
-       somebody actually took. Vector designs, which have layers and no photo,
-       keep drawing on the garment as before; a design cannot sensibly have
-       both, so this is a fork, not a fallback chain. */
-    const photoKey = side === "back" ? "back" : "front";
-    const photo = design.assets && design.assets[photoKey];
-    if (photo) {
-      return '<img class="custom-print-showcase__photo" src="' + esc(photo) + '" ' +
-        'alt="' + esc(design.name + (side === "back" ? ", back" : "")) + '" loading="lazy" decoding="async">';
-    }
-
-    const art = CatalogService.resolveArtwork(design, color);
-    const layers = art[side] || [];
-    const area = (typeof printAreaFor === "function")
-      ? printAreaFor(garmentId, side)
-      : { x: 218, y: 196, w: 164, h: 216 };
-
-    /* shopLayerSVG is a pure layer-to-markup function and already handles
-       every shape and text case; there is no reason for a second copy of it. */
-    const draw = (typeof shopLayerSVG === "function")
-      ? function (l) { return shopLayerSVG(l, area); }
-      : function () { return ""; };
-
-    return '<svg class="custom-print-showcase__svg" viewBox="0 0 600 620" role="img" aria-label="' +
-      esc(design.name + " on a " + product.name.toLowerCase() + ", " + String(color).toLowerCase()) + '">' +
-      '<use href="#garment-' + esc(product.art[side]) + '"/>' +
-      layers.map(draw).join("") +
-      "</svg>";
+    return (typeof shopRenderPreview === "function")
+      ? shopRenderPreview(design, garmentId, color, side,
+          "custom-print-showcase__svg", "custom-print-showcase__svg custom-print-showcase__photo")
+      : "";
   }
+
 
   function firstColor(design, garmentId) {
     const product = (typeof PRODUCTS !== "undefined")

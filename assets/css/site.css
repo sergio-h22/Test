@@ -2218,3 +2218,9 @@ a.contact-row:hover span{color:var(--red)}
   .custom-print-showcase__nav,
   .custom-print-showcase__chip{transition:none}
 }
+
+/* A photo-based design (added through the admin tool) inside the same box a
+   vector garment drawing fills. object-fit:cover keeps a photo of any real
+   aspect ratio from distorting; it is a no-op on the inline SVG case, which
+   is already sized exactly by its viewBox. */
+.custom-print-showcase__photo{object-fit:cover;object-position:center}

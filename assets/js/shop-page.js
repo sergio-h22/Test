@@ -1,7 +1,7 @@
 /* Storefront for the ready-made designs.
  *
  * Browsing is deliberately independent of the customizer: this page never
- * loads Fabric. Previews are SVG (see shopPreviewSVG in shop.js), so a
+ * loads Fabric. Previews are drawn by shopRenderPreview() in shop.js, so a
  * customer can look through the whole line on a phone without paying for the
  * editor runtime. The editor is only reached by choosing to edit a design.
  */
@@ -72,30 +72,14 @@
      shared catalogue now and carry different ids. This resolves through the
      service instead, and reuses shopLayerSVG for the layer markup so there is
      still only one implementation of that. */
+  /* Shared with the homepage strip: shopRenderPreview() in shop.js decides
+     photo vs vector once, rather than this page carrying its own copy of
+     that decision. */
   function preview(design, productId, color, side) {
-    const product = productById(productId);
-    if (!design || !product || !product.art) return "";
-
-    /* Same fork as showcase.js: a photo-first design (added through the admin
-       page) shows its photograph; a vector design draws on the garment. */
-    const photoKey = side === "back" ? "back" : "front";
-    const photo = design.assets && design.assets[photoKey];
-    if (photo) {
-      return '<img class="shop-photo" src="' + esc(photo) + '" ' +
-        'alt="' + esc(design.name + (side === "back" ? ", back" : "")) + '" loading="lazy" decoding="async">';
-    }
-
-    const art = CatalogService.resolveArtwork(design, color);
-    const layers = art[side] || [];
-    const area = (typeof printAreaFor === "function")
-      ? printAreaFor(productId, side)
-      : { x: 218, y: 196, w: 164, h: 216 };
-    return '<svg class="shop-svg" viewBox="0 0 600 620" role="img" aria-label="' +
-      esc(design.name + " on a " + product.name.toLowerCase() + ", " + String(color).toLowerCase()) + '">' +
-      '<use href="#garment-' + esc(product.art[side]) + '"/>' +
-      layers.map(function (l) { return shopLayerSVG(l, area); }).join("") +
-      "</svg>";
+    if (!design) return "";
+    return shopRenderPreview(design, productId, color, side, "shop-svg", "shop-photo");
   }
+
 
   function card(design) {
     const productId = design.garments[0];

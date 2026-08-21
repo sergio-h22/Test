@@ -285,23 +285,48 @@ function shopLayerSVG(layer, area) {
 /* Full preview: garment silhouette plus the resolved design, as one SVG.
    Callers must have run ensureGarmentDefs() so the <symbol> set exists, and
    must call applyGarmentColor() on the wrapping element to tint the cloth. */
-function shopPreviewSVG(designId, productId, garmentColor, side) {
-  const entry = shopDesign(designId);
-  if (!entry) return "";
+/* The single renderer both the homepage strip and the shop page draw
+ * designs with. It replaces two earlier near-duplicates (one in each
+ * caller) and the id-lookup version this file used to export, which
+ * stopped being called once both pages started reading through
+ * CatalogService and is deleted here rather than left to rot.
+ *
+ * A design that carries a real photo for a side (design.assets.front /
+ * .back, set by the admin tool once Supabase is connected) shows that
+ * photo. Everything else falls back to drawing the design's vector layers
+ * onto the garment SVG, which is how the 18 hand-built designs render
+ * today and will keep working exactly as before. Both paths return markup
+ * sized by the same CSS classes, so a caller does not need to know which
+ * one it got.
+ */
+function shopRenderPreview(design, productId, garmentColor, side, svgClass, photoClass) {
   const product = (typeof PRODUCTS !== "undefined")
     ? PRODUCTS.filter(function (p) { return p.id === productId; })[0] : null;
   if (!product || !product.art) return "";
 
   const useSide = side || "front";
-  const resolved = shopDesignFor(designId, garmentColor);
-  const layers = resolved ? (resolved[useSide] || []) : [];
+  const label = design.name + " on a " + product.name.toLowerCase().replace(/s$/, "") +
+    ", " + String(garmentColor).toLowerCase();
+
+  /* Photos and vector art size differently: a photo needs object-fit to avoid
+     distorting to a box drawn for a 600x620 viewBox, so callers pass a
+     separate class for each rather than one class trying to serve both. */
+  const photo = design.assets && design.assets[useSide];
+  if (photo) {
+    return '<img class="' + (photoClass || svgClass) + '" src="' + shopEscXML(photo) + '" alt="' + shopEscXML(label) +
+           '" loading="lazy" decoding="async">';
+  }
+
+  const art = (typeof CatalogService !== "undefined")
+    ? CatalogService.resolveArtwork(design, garmentColor)
+    : { front: [], back: [] };
+  const layers = art[useSide] || [];
   const area = (typeof printAreaFor === "function")
     ? printAreaFor(productId, useSide)
     : { x: 218, y: 196, w: 164, h: 216 };
 
-  return '<svg class="shop-svg" viewBox="0 0 ' + SHOP_CANVAS.w + " " + SHOP_CANVAS.h + '" ' +
-         'role="img" aria-label="' + shopEscXML(entry.name + " on a " + product.name.toLowerCase().replace(/s$/, "") +
-         ", " + garmentColor.toLowerCase()) + '">' +
+  return '<svg class="' + svgClass + '" viewBox="0 0 ' + SHOP_CANVAS.w + " " + SHOP_CANVAS.h + '" ' +
+         'role="img" aria-label="' + shopEscXML(label) + '">' +
          '<use href="#garment-' + shopEscXML(product.art[useSide]) + '"/>' +
          layers.map(function (l) { return shopLayerSVG(l, area); }).join("") +
          "</svg>";
