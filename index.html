@@ -744,6 +744,12 @@
 <script src="assets/js/shop.js"></script>
 <script src="assets/js/collection.js"></script>
 <script src="assets/js/services/catalog.js"></script>
+<!-- Supabase, optional. Loads only the vendored client; the adapter below
+     no-ops until services/supabase-config.js carries real values, so the
+     page reads collection.js exactly as before until then. -->
+<script src="assets/vendor/supabase/supabase.min.js"></script>
+<script src="assets/js/services/supabase-config.js"></script>
+<script src="assets/js/services/supabase-adapter.js"></script>
 <script src="assets/js/showcase.js"></script>
 <!-- The press run: artwork, then the controller that swaps it. Home page
      only — no other page has a .press section for it to bind to. -->

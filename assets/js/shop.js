@@ -299,6 +299,14 @@ function shopLayerSVG(layer, area) {
  * sized by the same CSS classes, so a caller does not need to know which
  * one it got.
  */
+/* Prices are stored in cents (see docs/supabase-setup.sql) so nothing ever
+   does fractional currency math; this is the one place that turns a cents
+   integer into a string a customer reads. */
+function shopFormatPrice(cents) {
+  if (cents == null) return null;
+  return "$" + (cents / 100).toFixed(2);
+}
+
 function shopRenderPreview(design, productId, garmentColor, side, svgClass, photoClass) {
   const product = (typeof PRODUCTS !== "undefined")
     ? PRODUCTS.filter(function (p) { return p.id === productId; })[0] : null;

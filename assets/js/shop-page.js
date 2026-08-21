@@ -193,11 +193,15 @@
                    "&shop=" + encodeURIComponent(d.id) +
                    "&color=" + encodeURIComponent(sel.color);
 
-    /* No prices have been set for the shop. Saying so plainly beats printing a
-       number nobody agreed to. */
-    el.price.textContent = d.price == null
-      ? "Price confirmed with your quote, based on garment and quantity."
-      : d.price;
+    /* Most designs have no price yet; that is said plainly rather than
+       printing a number nobody agreed to. Where the admin tool has set one,
+       it is read live through the same catalogue everything else uses. */
+    CatalogService.getPrice(d, sel.product, sel.color).then(function (cents) {
+      const formatted = (typeof shopFormatPrice === "function") ? shopFormatPrice(cents) : cents;
+      el.price.textContent = formatted == null
+        ? "Price confirmed with your quote, based on garment and quantity."
+        : formatted;
+    });
   }
 
   function openDialog(designId) {

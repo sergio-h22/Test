@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalogue admin — M-Power Print</title>
+<!-- Deliberately not indexed and not linked from the site nav. Being unlisted
+     is not the security boundary here — the Supabase auth gate and its
+     row-level security policies are — but there is no reason to invite a
+     crawler to it either. -->
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body class="admin" data-page="admin">
+
+<div class="admin__shell">
+
+  <!-- Not configured: shown instead of everything else when
+       services/supabase-config.js still has empty strings in it. -->
+  <section class="admin__notice" id="adminNotice" hidden>
+    <div class="admin__notice-card">
+      <p class="admin__eyebrow">Setup needed</p>
+      <h1 class="admin__notice-h">This admin page isn't connected yet</h1>
+      <p>Fill in <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> in
+        <code>assets/js/services/supabase-config.js</code> with the values from your
+        Supabase project's Settings &rarr; API page, after running the setup script in
+        <code>docs/supabase-setup.sql</code>.</p>
+      <p>Until then the live site keeps showing the built-in collection, exactly as it
+        does today — nothing is broken by this page existing.</p>
+    </div>
+  </section>
+
+  <!-- Sign in -->
+  <section class="admin__login" id="adminLogin" hidden>
+    <form class="admin__login-card" id="loginForm" novalidate>
+      <p class="admin__eyebrow">M-Power Print</p>
+      <h1 class="admin__login-h">Catalogue admin</h1>
+      <div class="admin__field">
+        <label for="loginEmail">Email</label>
+        <input id="loginEmail" type="email" autocomplete="username" required>
+      </div>
+      <div class="admin__field">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn btn-red admin__login-btn" id="loginBtn">Sign in</button>
+      <p class="admin__login-note" id="loginNote" role="alert" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <!-- Dashboard -->
+  <div id="adminApp" hidden>
+    <header class="admin__top">
+      <div class="admin__top-in">
+        <div>
+          <p class="admin__eyebrow">M-Power Print</p>
+          <h1 class="admin__top-h">Catalogue</h1>
+        </div>
+        <div class="admin__top-act">
+          <span class="admin__whoami" id="whoami"></span>
+          <button type="button" class="btn btn-white btn-sm" id="signOutBtn">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin__main">
+      <div class="admin__toolbar">
+        <p class="admin__count" id="designCount" role="status" aria-live="polite"></p>
+        <button type="button" class="btn btn-red" id="newDesignBtn">Add a design</button>
+      </div>
+
+      <p class="admin__status" id="listStatus" role="status" aria-live="polite"></p>
+
+      <ul class="admin__list" id="designList"></ul>
+      <p class="admin__empty" id="listEmpty" hidden>No designs yet. Add the first one.</p>
+    </main>
+  </div>
+
+  <!-- Add / edit -->
+  <dialog class="admin__modal" id="designModal" aria-labelledby="modalTitle">
+    <form id="designForm" novalidate>
+      <div class="admin__modal-head">
+        <h2 class="admin__modal-h" id="modalTitle">Add a design</h2>
+        <button type="button" class="admin__close" id="modalClose" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="admin__modal-body">
+        <div class="admin__col">
+          <div class="admin__field">
+            <label for="fName">Name</label>
+            <input id="fName" type="text" required maxlength="80">
+          </div>
+          <div class="admin__field">
+            <label for="fSlug">URL slug</label>
+            <input id="fSlug" type="text" required pattern="[a-z0-9-]+"
+                   title="Lowercase letters, numbers and hyphens only">
+            <span class="admin__hint">Generated from the name. Edit only if you need to.</span>
+          </div>
+          <div class="admin__field">
+            <label for="fDescription">Description</label>
+            <textarea id="fDescription" rows="3" maxlength="240"></textarea>
+          </div>
+          <div class="admin__field">
+            <label for="fCategory">Category</label>
+            <select id="fCategory"></select>
+          </div>
+          <div class="admin__field">
+            <label for="fTags">Tags</label>
+            <input id="fTags" type="text" placeholder="vintage, one colour, chest print">
+            <span class="admin__hint">Comma-separated.</span>
+          </div>
+
+          <fieldset class="admin__field">
+            <legend>Garments this prints on</legend>
+            <div class="admin__checks" id="fGarments"></div>
+          </fieldset>
+
+          <fieldset class="admin__field">
+            <legend>Colours</legend>
+            <div class="admin__checks" id="fColors"></div>
+          </fieldset>
+
+          <fieldset class="admin__field">
+            <legend>Price per garment</legend>
+            <div class="admin__prices" id="fPrices"></div>
+            <span class="admin__hint">Leave blank to keep "priced with your quote" for that garment.</span>
+          </fieldset>
+
+          <div class="admin__field admin__field--row">
+            <label class="admin__switch">
+              <input type="checkbox" id="fFeatured">
+              <span>Featured on the homepage</span>
+            </label>
+            <label class="admin__switch">
+              <input type="checkbox" id="fPublished">
+              <span>Published (visible to customers)</span>
+            </label>
+          </div>
+          <div class="admin__field">
+            <label for="fOrder">Display order</label>
+            <input id="fOrder" type="number" value="100" step="1" min="0">
+          </div>
+        </div>
+
+        <div class="admin__col">
+          <div class="admin__field">
+            <span class="admin__label-like">Front photo</span>
+            <div class="admin__upload" id="upFront" data-side="front">
+              <img class="admin__upload-preview" id="prevFront" hidden alt="">
+              <span class="admin__upload-hint">Click or drop an image</span>
+              <input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            </div>
+          </div>
+          <div class="admin__field">
+            <span class="admin__label-like">Back photo <span class="admin__hint">(optional)</span></span>
+            <div class="admin__upload" id="upBack" data-side="back">
+              <img class="admin__upload-preview" id="prevBack" hidden alt="">
+              <span class="admin__upload-hint">Click or drop an image</span>
+              <input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            </div>
+          </div>
+          <div class="admin__field">
+            <span class="admin__label-like">Model / lifestyle photo <span class="admin__hint">(optional)</span></span>
+            <div class="admin__upload" id="upModel" data-side="model">
+              <img class="admin__upload-preview" id="prevModel" hidden alt="">
+              <span class="admin__upload-hint">Click or drop an image</span>
+              <input type="file" accept="image/png,image/jpeg,image/webp" hidden>
+            </div>
+          </div>
+          <p class="admin__upload-status" id="uploadStatus" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+
+      <div class="admin__modal-foot">
+        <p class="admin__form-note" id="formNote" role="alert" aria-live="polite"></p>
+        <div class="admin__modal-act">
+          <button type="button" class="btn btn-white" id="deleteBtn" hidden>Delete design</button>
+          <button type="submit" class="btn btn-red" id="saveBtn">Save design</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+</div>
+
+<script src="assets/js/products.js"></script>
+<script src="assets/js/collection.js"></script>
+<script src="assets/js/services/catalog.js"></script>
+<script src="assets/vendor/supabase/supabase.min.js"></script>
+<script src="assets/js/services/supabase-config.js"></script>
+<script src="assets/js/admin/admin.js"></script>
+</body>
+</html>

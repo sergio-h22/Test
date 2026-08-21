@@ -407,6 +407,12 @@
      artwork. The service is the same seam the homepage reads through. -->
 <script src="assets/js/collection.js"></script>
 <script src="assets/js/services/catalog.js"></script>
+<!-- Same adapter as the homepage and shop page: without it, following
+     "Customize" from a Supabase-sourced design would land here and find
+     nothing, because getDesign() would only see collection.js's local array. -->
+<script src="assets/vendor/supabase/supabase.min.js"></script>
+<script src="assets/js/services/supabase-config.js"></script>
+<script src="assets/js/services/supabase-adapter.js"></script>
 <!-- PDF artwork. The heavy pdf.js library is not loaded here; this module
      fetches it on demand the first time somebody uploads a PDF. -->
 <script src="assets/js/customizer/pdf.js"></script>

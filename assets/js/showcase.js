@@ -251,9 +251,10 @@
       /* No prices are set for this collection yet. Saying so is the honest
          answer; a number made up here would be one a customer could hold the
          shop to. */
-      el.price.textContent = price == null
+      const formatted = (typeof shopFormatPrice === "function") ? shopFormatPrice(price) : price;
+      el.price.textContent = formatted == null
         ? "Priced with your quote, based on garment and quantity."
-        : price;
+        : formatted;
       el.go.href = "design.html?product=" + encodeURIComponent(sel.garment) +
                    "&color=" + encodeURIComponent(sel.color) +
                    "&collection=" + encodeURIComponent(d.id);
