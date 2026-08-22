@@ -12,7 +12,22 @@ const CONFIG = {
   email2:    "mikey@m-powerprint.com",
   address:   "Southern California",
   instagram: "",
-  hours:     ""
+  hours:     "",
+
+  /* Every quote on the site currently ships as a mailto: link: the customer's
+     browser opens their email app with the order written into the body. On
+     desktop webmail with no mail client configured, that frequently opens
+     nothing at all — no error, no email, no lead — and mailto: cannot carry
+     an attachment regardless, so uploaded artwork has to be downloaded and
+     re-attached by hand.
+
+     Fill this in with a Formspree (https://formspree.io) or Web3Forms
+     (https://web3forms.com) endpoint URL — either has a free tier — and both
+     quote paths on the site (the design customizer and the cart) switch to
+     POSTing the order with the artwork attached as a real file, no other
+     code change required. Leave it empty and both keep working exactly as
+     they do today, on mailto:. */
+  quoteEndpoint: ""
 };
 
 /* Hero video. 1280×720, 10s, 2.6 MB — H.264 MP4, which every current browser

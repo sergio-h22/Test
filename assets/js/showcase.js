@@ -110,25 +110,46 @@
 
   let drift = null;
   let held = false;
+  let lastTs = null;
 
   function halfWidth() { return root.scrollWidth / 2; }
 
-  function step() {
-    if (!held && viewport) {
-      viewport.scrollLeft += 0.5;
-      if (viewport.scrollLeft >= halfWidth()) viewport.scrollLeft -= halfWidth();
+  /* px per millisecond, not px per frame. A frame is 16.7ms at 60Hz but
+     8.3ms at 120Hz, so a fixed per-frame step drifts twice as fast on a
+     high-refresh screen than the exact same code produces on a normal one.
+     Driving the distance from the real time elapsed since the last frame
+     keeps the pace identical everywhere. 0.03px/ms reproduces the previous
+     0.5px/frame speed at 60Hz, so this is not a pacing change, only a
+     frame-rate-independent one. */
+  const DRIFT_SPEED = 0.03;
+
+  function step(ts) {
+    if (held || !viewport) {
+      /* Paused, or nothing to scroll. Clearing the baseline means the frame
+         this resumes on measures a fresh 0ms elapsed rather than however
+         long the pause lasted, so drift does not lurch forward on resume. */
+      lastTs = null;
+    } else if (lastTs === null) {
+      lastTs = ts; // first live frame: establish a baseline, do not move yet
+    } else {
+      viewport.scrollLeft += DRIFT_SPEED * (ts - lastTs);
+      lastTs = ts;
+      const half = halfWidth();
+      if (half && viewport.scrollLeft >= half) viewport.scrollLeft -= half;
     }
     drift = window.requestAnimationFrame(step);
   }
 
   function startDrift() {
     if (reduced || drift !== null) return;
+    lastTs = null;
     drift = window.requestAnimationFrame(step);
   }
   function stopDrift() {
     if (drift === null) return;
     window.cancelAnimationFrame(drift);
     drift = null;
+    lastTs = null;
   }
 
   function hold(on) { held = on; }
