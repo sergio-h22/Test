@@ -6,11 +6,20 @@
    afterwards does not change what is sitting in the cart.
 
    Nothing here places an order. The site is static and the shop quotes every
-   job individually, so the end of this flow is the same mailto the rest of
-   the site uses — with the design spec written into the body and the artwork
-   downloaded for the customer to attach. When a form backend exists, only
-   sendCart() below needs to change; see ENDPOINT_ADAPTER in
-   customizer/quote.js for the shape it would take.
+   job individually, so the end of this flow sends the cart to CONFIG.email
+   (site.js). Two ways, chosen by CONFIG.quoteEndpoint (site.js):
+
+     empty            — mailto:, with the design spec written into the body
+                         and the artwork downloaded for the customer to
+                         attach by hand. Works with no setup, cannot carry a
+                         real attachment.
+     a Formspree/etc.
+     URL               — the whole cart POSTs there with every item's artwork
+                         attached as a real file, falling back to mailto if
+                         the request fails.
+
+   Mirrors ENDPOINT_ADAPTER/MAILTO_ADAPTER in customizer/quote.js, which is
+   the same choice for a single design rather than a whole cart.
    ========================================================================== */
 
 (function () {
@@ -145,7 +154,11 @@
     a.remove();
   }
 
-  function buildBody(items) {
+  /* attached is true when the artwork is riding along as a real upload
+     (the endpoint path) and false when it had to be downloaded for the
+     customer to attach by hand (mailto) — the one line that differs between
+     the two is which of those actually happened. */
+  function buildBody(items, attached) {
     const lines = ["DESIGN REQUEST", ""];
     items.forEach(function (it, i) {
       lines.push((i + 1) + ". " + it.productName);
@@ -157,12 +170,71 @@
       lines.push("   " + describe(it));
       lines.push("");
     });
-    lines.push("Artwork for each design has been downloaded to my device.");
-    lines.push("I will attach it to this email before sending.");
+    if (attached) {
+      lines.push("Artwork for each design is attached.");
+    } else {
+      lines.push("Artwork for each design has been downloaded to my device.");
+      lines.push("I will attach it to this email before sending.");
+    }
     lines.push("");
     const home = (typeof SITE_URL === "string" ? SITE_URL : "").replace(/^https?:\/\//, "").replace(/\/$/, "");
     lines.push("— Designed at " + (home ? home + "/design.html" : "our design tool"));
     return lines.join("\n");
+  }
+
+  function subjectFor(items) {
+    return "Design request — " + items.length + (items.length === 1 ? " item" : " items");
+  }
+
+  function sendViaMailto(items) {
+    downloadPreviews(items);
+    const to = (typeof CONFIG !== "undefined" && CONFIG.email) || "";
+    window.location.href = "mailto:" + to +
+      "?subject=" + encodeURIComponent(subjectFor(items)) +
+      "&body=" + encodeURIComponent(buildBody(items, false));
+    return Promise.resolve({
+      message: "Your artwork has been downloaded and your email app should be opening. Attach the files before you send."
+    });
+  }
+
+  /* Mirrors ENDPOINT_ADAPTER in customizer/quote.js, extended to carry every
+     line in the cart rather than a single design: each item's artwork rides
+     as its own attachment (item_N_artwork), named so the shop can match a
+     file back to the line it belongs to without opening it first. */
+  function sendViaEndpoint(items) {
+    const form = new FormData();
+    form.append("subject", subjectFor(items));
+    form.append("item_count", String(items.length));
+    items.forEach(function (it, i) {
+      const n = i + 1;
+      form.append("item_" + n + "_product", it.productName);
+      if (it.color) form.append("item_" + n + "_color", it.color);
+      form.append("item_" + n + "_quantity", it.qty);
+      Object.keys(it.options || {}).forEach(function (k) {
+        if (it.options[k]) form.append("item_" + n + "_option_" + k, it.options[k]);
+      });
+      /* production is the 300 DPI print-area render the shop actually prints
+         from; preview is what the cart shows on screen. Send the one meant
+         for the press when it exists. */
+      const art = it.production || it.preview;
+      if (art) {
+        form.append("item_" + n + "_artwork", CustomizerQuote.dataUrlToBlob(art),
+                    "design-" + n + "-" + it.productId + ".png");
+      }
+    });
+    form.append("spec", buildBody(items, true));
+
+    return fetch(CONFIG.quoteEndpoint, { method: "POST", body: form, headers: { Accept: "application/json" } })
+      .then(function (r) {
+        if (!r.ok) throw new Error("Endpoint returned " + r.status);
+        return { message: "Your order is on its way. We'll be in touch with a quote." };
+      })
+      .catch(function (err) {
+        /* Never lose the customer's cart to a network failure — fall back to
+           the path that cannot fail, same as the customizer's own flow. */
+        console.error("Cart quote endpoint failed, falling back to email:", err);
+        return sendViaMailto(items);
+      });
   }
 
   /* mailto cannot carry an attachment — not in the spec, unsupported by every
@@ -203,20 +275,13 @@
     if (e.target.id === "sendCart") {
       CustomizerStore.listCart().then(function (items) {
         if (!items.length) return;
-        downloadPreviews(items);
-
-        const to = (typeof CONFIG !== "undefined" && CONFIG.email) || "";
-        const subject = "Design request — " + items.length +
-                        (items.length === 1 ? " item" : " items");
-        window.location.href = "mailto:" + to +
-          "?subject=" + encodeURIComponent(subject) +
-          "&body=" + encodeURIComponent(buildBody(items));
-
-        const note = document.getElementById("cartNote");
-        if (note) {
-          note.textContent = "Your artwork has been downloaded and your email app " +
-                             "should be opening. Attach the files before you send.";
-        }
+        const hasEndpoint = typeof CONFIG !== "undefined" && CONFIG.quoteEndpoint &&
+                             typeof CustomizerQuote !== "undefined";
+        const send = hasEndpoint ? sendViaEndpoint(items) : sendViaMailto(items);
+        send.then(function (result) {
+          const note = document.getElementById("cartNote");
+          if (note) note.textContent = result.message;
+        });
       });
     }
   });

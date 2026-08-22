@@ -12,15 +12,12 @@
    downloads, puts a complete written spec in the email body, and tells them
    to attach the file. It costs nothing and works today.
 
-   ENDPOINT_ADAPTER is the upgrade. Point QUOTE_ENDPOINT at a Formspree or
-   Web3Forms URL and real attachments go straight to the shop — no other code
-   changes. The choice is one constant, not a rewrite.
+   ENDPOINT_ADAPTER is the upgrade. Point CONFIG.quoteEndpoint (site.js) at a
+   Formspree or Web3Forms URL and real attachments go straight to the shop —
+   no other code changes. The choice is one config line, not a rewrite, and
+   it lives in site.js rather than here so the cart's own send flow reads the
+   same value — see cart.js.
    ========================================================================== */
-
-/* Set this to a form endpoint (e.g. "https://formspree.io/f/xxxxxxx") and the
-   customizer will POST designs to it with the artwork attached. Left empty,
-   the mailto path is used instead. */
-const QUOTE_ENDPOINT = "";
 
 const CustomizerQuote = (function () {
 
@@ -137,6 +134,15 @@ const CustomizerQuote = (function () {
     a.remove();
   }
 
+  /* Shared with cart.js, so a data URL only gets turned into upload bytes
+     one way on the whole site. */
+  function dataUrlToBlob(dataUrl, type) {
+    const bin = atob(dataUrl.split(",")[1]);
+    const buf = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return new Blob([buf], { type: type || "image/png" });
+  }
+
   /* ----------------------------------------------------------- adapters */
 
   const MAILTO_ADAPTER = {
@@ -182,14 +188,11 @@ const CustomizerQuote = (function () {
       form.append("design_json", JSON.stringify(state.designs));
 
       if (artworkPNG) {
-        const bin = atob(artworkPNG.split(",")[1]);
-        const buf = new Uint8Array(bin.length);
-        for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
-        form.append("artwork", new Blob([buf], { type: "image/png" }),
+        form.append("artwork", dataUrlToBlob(artworkPNG),
                     "design-" + state.product.id + ".png");
       }
 
-      return fetch(QUOTE_ENDPOINT, { method: "POST", body: form, headers: { Accept: "application/json" } })
+      return fetch(CONFIG.quoteEndpoint, { method: "POST", body: form, headers: { Accept: "application/json" } })
         .then(function (r) {
           if (!r.ok) throw new Error("Endpoint returned " + r.status);
           return { ok: true, message: "Your design is on its way. We'll be in touch with a quote." };
@@ -207,10 +210,11 @@ const CustomizerQuote = (function () {
 
   return {
     send: function (state, extra, artworkPNG) {
-      const adapter = QUOTE_ENDPOINT ? ENDPOINT_ADAPTER : MAILTO_ADAPTER;
+      const adapter = CONFIG.quoteEndpoint ? ENDPOINT_ADAPTER : MAILTO_ADAPTER;
       return adapter.send(state, extra, artworkPNG);
     },
     buildSpec: buildSpec,
-    usingEndpoint: function () { return Boolean(QUOTE_ENDPOINT); }
+    usingEndpoint: function () { return Boolean(CONFIG.quoteEndpoint); },
+    dataUrlToBlob: dataUrlToBlob
   };
 })();
