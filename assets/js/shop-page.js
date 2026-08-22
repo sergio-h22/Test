@@ -143,9 +143,23 @@
       Array.prototype.forEach.call(items, function (n) { n.classList.add("is-in"); });
       return;
     }
+    /* The stagger index is per batch, not per grid. Indexing by position in
+       the whole grid would give the thirtieth card a 1.35s delay before it
+       faded in, long after the reader had scrolled past where it landed.
+       What arrives together is what gets staggered together, and the index
+       resets on every batch. Capped at 5 so a wide row on a large screen
+       still finishes its sweep in about a fifth of a second.
+
+       Sorted into document order first: IntersectionObserver makes no
+       promise about the order of the entries it hands back, and an unsorted
+       sweep reads as cards popping in at random. */
     const io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
+      const arrived = entries.filter(function (e) { return e.isIntersecting; });
+      arrived.sort(function (a, b) {
+        return (a.target.compareDocumentPosition(b.target) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1;
+      });
+      arrived.forEach(function (e, i) {
+        e.target.style.setProperty("--reveal-i", String(Math.min(i, 5)));
         e.target.classList.add("is-in");
         io.unobserve(e.target);
       });

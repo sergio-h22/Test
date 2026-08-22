@@ -20,6 +20,29 @@
   --util-h:64px;
   --nav-h:44px;
   --shell:1400px;
+
+  /* ---- motion ----------------------------------------------------------
+     Three durations and two curves. The rule for picking one:
+
+       entering, leaving, hovering, pressing  →  --ease-out
+       moving from one on-screen place to another  →  --ease-in-out
+       looping forever (marquee, shimmer)  →  linear, no token
+
+     --ease-out starts fast and settles, so the frame the user is watching
+     for is the first one. It is the default; reach for --ease-in-out only
+     when something travels across the screen rather than appearing on it.
+     A bare `transition:color .18s` has no curve at all and silently falls
+     back to CSS's `ease`, which starts slow — the one thing UI motion
+     cannot afford. Always name a curve. */
+  --t-press:.16s;   /* press feedback: 100-160ms */
+  --t-fast:.15s;    /* hovers, colour, small state changes */
+  --t-base:.25s;    /* dropdowns, panels, anything with distance to cover */
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-in-out:cubic-bezier(.77,0,.175,1);
+  /* Kept so the rules already written against it keep working; it now
+     resolves to the same curve as everything else rather than to a sixth
+     near-identical hand-typed bezier. */
+  --ease:var(--ease-out);
 }
 
 *,*::before,*::after{box-sizing:border-box}
@@ -117,7 +140,7 @@ a{color:inherit}
 .nav-in a{
   font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;
   text-transform:uppercase;text-decoration:none;color:#B6BBC1;
-  padding:12px 16px;transition:color .18s,background .18s;
+  padding:12px 16px;transition:color var(--t-fast) var(--ease-out),background var(--t-fast) var(--ease-out);
 }
 .nav-in a:hover{color:#fff;background:#22262B}
 .nav-in a[aria-current="page"]{color:#fff;background:var(--red)}
@@ -135,7 +158,15 @@ a{color:inherit}
   text-transform:uppercase;font-weight:700;
   padding:14px 24px;border:1px solid transparent;
   text-decoration:none;cursor:pointer;white-space:nowrap;
-  transition:background .18s,color .18s,border-color .18s;
+  /* transform belongs in this list. Without it the hover lift below and the
+     press below that were being applied with no transition at all, so the
+     button jumped 1px and snapped back — the one interaction on the site
+     that happens on every page was the only one not animating. Every other
+     hoverable thing (.card, .cap, .swatch) already transitions transform. */
+  transition:background var(--t-fast) var(--ease-out),
+             color var(--t-fast) var(--ease-out),
+             border-color var(--t-fast) var(--ease-out),
+             transform var(--t-press) var(--ease-out);
 }
 .btn-red{background:var(--red);color:#fff}
 .btn-red:hover{background:var(--red-dark)}
@@ -160,7 +191,7 @@ a{color:inherit}
   cursor:pointer;list-style:none;
   padding:18px 40px 18px 0;position:relative;
   font-weight:700;color:var(--head);font-size:1.02rem;
-  transition:color .18s;
+  transition:color var(--t-fast) var(--ease-out);
 }
 .faq summary::-webkit-details-marker{display:none}
 .faq summary:hover{color:var(--red)}
@@ -168,7 +199,7 @@ a{color:inherit}
 .faq summary::after,
 .faq summary::before{
   content:"";position:absolute;right:6px;top:50%;
-  background:var(--red);transition:transform .2s,opacity .2s;
+  background:var(--red);transition:transform var(--t-base) var(--ease-out),opacity var(--t-base) var(--ease-out);
 }
 .faq summary::before{width:14px;height:2px;margin-top:-1px}
 .faq summary::after{width:2px;height:14px;right:12px;margin-top:-7px}
@@ -328,7 +359,7 @@ a{color:inherit}
   background:rgba(255,255,255,.93);backdrop-filter:blur(6px);
   padding:clamp(20px,2.2vw,30px);
   text-decoration:none;display:block;
-  transition:background .18s,transform .18s;
+  transition:background var(--t-fast) var(--ease-out),transform var(--t-press) var(--ease-out);
 }
 .cap:hover{background:#fff;transform:translateY(-3px)}
 @media (prefers-reduced-motion:reduce){.cap:hover{transform:none}}
@@ -413,7 +444,7 @@ a{color:inherit}
 .card{
   background:#fff;border:1px solid var(--line);
   text-decoration:none;display:flex;flex-direction:column;
-  transition:border-color .18s,box-shadow .18s,transform .18s;
+  transition:border-color var(--t-fast) var(--ease-out),box-shadow var(--t-fast) var(--ease-out),transform var(--t-press) var(--ease-out);
 }
 .card:hover{
   border-color:#C8CCD1;box-shadow:0 8px 22px rgba(10,10,11,.07);
@@ -446,7 +477,7 @@ a{color:inherit}
   background:none;border:0;border-bottom:1px solid var(--line);
   padding:11px 2px;text-align:left;cursor:pointer;
   font-family:var(--f-body);font-size:.9rem;color:var(--body);
-  transition:color .18s;
+  transition:color var(--t-fast) var(--ease-out);
 }
 .filter-btn:hover{color:var(--head)}
 .filter-btn[aria-pressed="true"]{color:var(--red);font-weight:700}
@@ -492,7 +523,7 @@ a{color:inherit}
   background:var(--sw,#C8CCD1);
   border:2px solid var(--line);
   box-shadow:inset 0 0 0 2px #fff;
-  transition:border-color .16s,transform .16s;
+  transition:border-color var(--t-fast) var(--ease-out),transform var(--t-press) var(--ease-out);
 }
 .swatch:hover{transform:translateY(-1px)}
 .swatch[aria-pressed="true"]{border-color:var(--red)}
@@ -543,7 +574,7 @@ a.contact-row:hover span{color:var(--red)}
 .field input,.field select,.field textarea{
   width:100%;background:#fff;color:var(--head);border:1px solid var(--line);
   padding:13px 14px;font-family:var(--f-body);font-size:.95rem;
-  border-radius:0;-webkit-appearance:none;appearance:none;transition:border-color .18s;
+  border-radius:0;-webkit-appearance:none;appearance:none;transition:border-color var(--t-fast) var(--ease-out);
 }
 .field select{
   background-image:linear-gradient(45deg,transparent 50%,var(--body) 50%),linear-gradient(135deg,var(--body) 50%,transparent 50%);
@@ -641,7 +672,7 @@ a.contact-row:hover span{color:var(--red)}
    three without any conversion. */
 .dz-garment{
   position:relative;aspect-ratio:600/620;max-width:520px;margin-inline:auto;
-  transition:transform .4s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;
+  transition:transform .4s var(--ease-in-out);transform-style:preserve-3d;
 }
 .dz-garment.is-flipping{transform:rotateY(180deg)}
 @media (prefers-reduced-motion:reduce){
@@ -669,7 +700,7 @@ a.contact-row:hover span{color:var(--red)}
   flex:0 1 140px;background:#fff;border:1px solid var(--line);cursor:pointer;
   font-family:var(--f-mono);font-size:.64rem;letter-spacing:.14em;
   text-transform:uppercase;font-weight:700;color:var(--body);padding:11px 8px;
-  transition:background .18s,color .18s;
+  transition:background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out);
 }
 .dz-side:hover{color:var(--head)}
 .dz-side[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -690,7 +721,7 @@ a.contact-row:hover span{color:var(--red)}
 .dz-product{
   background:#fff;border:1px solid var(--line);cursor:pointer;padding:8px 6px;
   display:flex;flex-direction:column;align-items:center;gap:4px;
-  transition:border-color .18s,box-shadow .18s,transform .18s;
+  transition:border-color var(--t-fast) var(--ease-out),box-shadow var(--t-fast) var(--ease-out),transform var(--t-press) var(--ease-out);
 }
 .dz-product svg{width:100%;height:auto;max-height:74px}
 .dz-product span{
@@ -707,7 +738,7 @@ a.contact-row:hover span{color:var(--red)}
   border:2px dashed var(--line);background:var(--mist);
   padding:clamp(20px,3vw,32px) 16px;text-align:center;cursor:pointer;
   display:flex;flex-direction:column;align-items:center;gap:6px;
-  transition:border-color .18s,background .18s;
+  transition:border-color var(--t-fast) var(--ease-out),background var(--t-fast) var(--ease-out);
 }
 .dz-drop svg{width:26px;height:26px;color:var(--red)}
 .dz-drop b{color:var(--head);font-size:.95rem}
@@ -723,7 +754,7 @@ a.contact-row:hover span{color:var(--red)}
 .dz-chip{
   width:38px;height:38px;background:#fff;border:1px solid var(--line);cursor:pointer;
   color:var(--body);font-size:.95rem;display:grid;place-items:center;
-  transition:border-color .18s,background .18s,color .18s;
+  transition:border-color var(--t-fast) var(--ease-out),background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out);
 }
 .dz-chip:hover{border-color:#C8CCD1;color:var(--head)}
 .dz-chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
@@ -775,7 +806,7 @@ a.contact-row:hover span{color:var(--red)}
   position:absolute;left:36%;top:32%;width:28%;height:auto;
   opacity:0;transform:translateY(-14px) scale(.86);
   mix-blend-mode:multiply;
-  transition:opacity .5s ease,transform .5s cubic-bezier(.34,1.4,.64,1);
+  transition:opacity .5s var(--ease-out),transform .5s cubic-bezier(.34,1.4,.64,1);
 }
 .herodemo.has-art .herodemo-art{opacity:.94;transform:translateY(0) scale(1)}
 
@@ -787,7 +818,7 @@ a.contact-row:hover span{color:var(--red)}
   background:none;border:1px solid var(--line);cursor:pointer;
   font-family:var(--f-mono);font-size:.54rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--body);padding:7px 10px;
-  transition:background .18s,color .18s,border-color .18s;
+  transition:background var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out),border-color var(--t-fast) var(--ease-out);
 }
 .herodemo-steps button:hover{color:var(--head);border-color:#C8CCD1}
 .herodemo-steps button[aria-pressed="true"]{
@@ -823,13 +854,13 @@ a.contact-row:hover span{color:var(--red)}
   background:#fff;border:1px solid var(--line);padding:16px 18px;
   text-decoration:none;display:grid;grid-template-columns:1fr auto;
   grid-template-rows:auto auto;gap:2px 12px;align-items:start;
-  transition:border-color .18s,box-shadow .18s,transform .18s;
+  transition:border-color var(--t-fast) var(--ease-out),box-shadow var(--t-fast) var(--ease-out),transform var(--t-press) var(--ease-out);
 }
 .idea b{color:var(--head);font-size:.98rem;grid-column:1}
 .idea span{font-size:.84rem;grid-column:1}
 .idea i{
   grid-column:2;grid-row:1/3;align-self:center;font-style:normal;
-  color:var(--red);font-size:1.1rem;transition:transform .18s;
+  color:var(--red);font-size:1.1rem;transition:transform var(--t-press) var(--ease-out);
 }
 .idea:hover{border-color:#C8CCD1;box-shadow:0 8px 22px rgba(10,10,11,.07);transform:translateY(-2px)}
 .idea:hover i{transform:translateX(4px)}
@@ -879,7 +910,7 @@ a.contact-row:hover span{color:var(--red)}
 .dz-also-item{
   background:#fff;border:1px solid var(--line);padding:12px 14px;
   text-decoration:none;display:block;
-  transition:border-color .18s,transform .18s;
+  transition:border-color var(--t-fast) var(--ease-out),transform var(--t-press) var(--ease-out);
 }
 .dz-also-item b{display:block;color:var(--head);font-size:.92rem;margin-bottom:2px}
 .dz-also-item span{font-size:.8rem;color:var(--body)}
@@ -903,7 +934,7 @@ a.contact-row:hover span{color:var(--red)}
 /* Card artwork lifts slightly out of its slot on hover — the drawing moves,
    the frame does not, which reads as depth rather than as the whole tile
    wobbling. */
-.card .slot-art svg{transition:transform .3s cubic-bezier(.2,.7,.3,1)}
+.card .slot-art svg{transition:transform var(--t-base) var(--ease-out)}
 .card:hover .slot-art svg{transform:scale(1.045)}
 
 /* Nav underline that grows from the left rather than fading in. */
@@ -911,7 +942,7 @@ a.contact-row:hover span{color:var(--red)}
 .nav-in a::after{
   content:"";position:absolute;left:16px;right:16px;bottom:6px;height:1px;
   background:currentColor;transform:scaleX(0);transform-origin:left;
-  transition:transform .22s cubic-bezier(.2,.7,.3,1);
+  transition:transform var(--t-base) var(--ease-out);
 }
 .nav-in a:hover::after{transform:scaleX(1)}
 .nav-in a[aria-current="page"]::after{display:none}
@@ -929,7 +960,7 @@ a.contact-row:hover span{color:var(--red)}
 .swatch::after{
   content:"";position:absolute;inset:-5px;border-radius:50%;
   border:1px solid var(--red);opacity:0;transform:scale(.8);
-  transition:opacity .18s,transform .18s;
+  transition:opacity var(--t-fast) var(--ease-out),transform var(--t-press) var(--ease-out);
 }
 .swatch{position:relative}
 .swatch[aria-pressed="true"]::after{opacity:1;transform:scale(1)}
@@ -940,6 +971,37 @@ a.contact-row:hover span{color:var(--red)}
   .nav-in a::after{transition:none}
   .dz-garment.just-added{animation:none}
   .swatch::after{transition:none}
+}
+
+/* --------------------------------------------------- hover on a touchscreen
+   A tap on a phone fires :hover and then leaves it applied until something
+   else is tapped. Every lift in the file was therefore sticky on touch: tap
+   a product card and its artwork stayed scaled at 1.045, tap a button and it
+   stayed lifted 1px, both until you tapped elsewhere. It reads as a rendering
+   fault rather than as feedback.
+
+   The comment above the button rules already says "hover does nothing on a
+   touchscreen, so taps need their own feedback" — the :active rules are that
+   feedback. This is the other half of the same thought: on a device that
+   cannot really hover, the hover transforms are switched off so only :active
+   speaks. Colour and border hovers are left alone; a sticky tint is harmless
+   and still marks which thing was last touched.
+
+   One block rather than a (hover:hover) wrapper around each rule, matching
+   how the file already handles prefers-reduced-motion. */
+@media (hover:none){
+  .btn-red:hover,.btn-dark:hover,
+  .cap:hover,
+  .card:hover,
+  .card:hover .slot-art svg,
+  .swatch:hover,
+  .dz-product:hover,
+  .idea:hover,
+  .idea:hover i,
+  .dz-also-item:hover,
+  .shopCard-btn:hover{transform:none}
+  .nav-in a:hover::after{transform:scaleX(0)}
+  .press-link:hover svg{transform:none}
 }
 
 /* ==========================================================================
@@ -1054,7 +1116,7 @@ a.contact-row:hover span{color:var(--red)}
 .press-scene{
   position:absolute;inset:0;
   opacity:0;
-  transition:opacity .9s cubic-bezier(.4,0,.2,1);
+  transition:opacity .9s var(--ease-in-out);
   will-change:opacity;
 }
 .press-scene.is-live{opacity:1}
@@ -1148,7 +1210,7 @@ a.contact-row:hover span{color:var(--red)}
 /* The reveal. Transform and opacity only, so it stays on the compositor. */
 .press-panel > .wrap{
   opacity:0;transform:translateY(28px);
-  transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.3,1);
+  transition:opacity .8s var(--ease-out),transform .8s var(--ease-out);
 }
 .press-panel.is-in > .wrap{opacity:1;transform:none}
 
@@ -1189,11 +1251,22 @@ a.contact-row:hover span{color:var(--red)}
   text-transform:uppercase;font-weight:700;text-decoration:none;
   color:inherit;padding-bottom:7px;
   border-bottom:1px solid currentColor;
-  transition:gap .25s ease,color .25s ease,border-color .25s ease;
+  transition:color var(--t-base) var(--ease-out),
+             border-color var(--t-base) var(--ease-out);
 }
-.press-link:hover{gap:16px;color:var(--red);border-color:var(--red)}
+.press-link:hover{color:var(--red);border-color:var(--red)}
 .press[data-tone="light"] .press-link:hover{color:var(--red)}
-.press-link svg{width:14px;height:14px;flex:none}
+/* The arrow used to slide by animating the flex `gap` from 10px to 16px.
+   gap is a layout property: every frame of that hover re-ran layout and
+   paint for the link and re-measured its line box. Translating the arrow
+   instead produces the identical 6px movement on the compositor, and the
+   text no longer shifts with it — only the arrow travels, which is what the
+   gesture was always meant to say. */
+.press-link svg{
+  width:14px;height:14px;flex:none;
+  transition:transform var(--t-base) var(--ease-out);
+}
+.press-link:hover svg{transform:translateX(6px)}
 
 /* ------------------------------------------------------------- responsive */
 @media (max-width:760px){
@@ -1216,7 +1289,10 @@ a.contact-row:hover span{color:var(--red)}
   .press-drift .press-scene.is-live img,
   .press-drift .press-scene.is-live video{animation:none}
   .press-panel > .wrap{opacity:1;transform:none;transition:none}
-  .press-link{transition:none}
+  /* The colour change stays — it is the part that tells you the link is
+     live. Only the arrow's travel is dropped. */
+  .press-link:hover svg{transform:none}
+  .press-link svg{transition:none}
 }
 
 /* ==========================================================================
@@ -1285,7 +1361,7 @@ a.contact-row:hover span{color:var(--red)}
 .dz-el{
   aspect-ratio:1;display:grid;place-items:center;cursor:pointer;
   background:#fff;border:1px solid var(--line);color:var(--head);
-  transition:border-color .15s,color .15s;
+  transition:border-color var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out);
 }
 .dz-el svg{width:20px;height:20px}
 .dz-el:hover{border-color:var(--red);color:var(--red)}
@@ -1474,7 +1550,7 @@ a.contact-row:hover span{color:var(--red)}
 .dz-template{
   padding:11px 10px;cursor:pointer;text-align:left;
   background:#fff;border:1px solid var(--line);color:var(--head);
-  font-size:.84rem;transition:border-color .15s,color .15s;
+  font-size:.84rem;transition:border-color var(--t-fast) var(--ease-out),color var(--t-fast) var(--ease-out);
 }
 .dz-template:hover{border-color:var(--red);color:var(--red)}
 @media (max-width:560px){.dz-template{min-height:46px}}
@@ -1669,8 +1745,22 @@ a.contact-row:hover span{color:var(--red)}
 .shopGrid-empty{color:var(--shop-fg-dim);margin-top:20px}
 .shopGrid-empty a{color:var(--shop-fg)}
 
-/* Entry reveal. Gated below on prefers-reduced-motion. */
-.reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+/* Entry reveal. Gated below on prefers-reduced-motion.
+
+   An entrance, so it eases out: the card should be most of the way there
+   almost immediately and then settle, rather than creeping off the mark the
+   way the bare `ease` this used to carry made it.
+
+   --reveal-i is the card's position in the row, set by shop-page.js, and
+   turns a wall of cards arriving in one block into a quick left-to-right
+   sweep. It is decorative only: the card is fully interactive from the first
+   frame regardless of its delay, and the delay is capped so nothing late in
+   a long row is left waiting. */
+.reveal{
+  opacity:0;transform:translateY(14px);
+  transition:opacity .5s var(--ease-out),transform .5s var(--ease-out);
+  transition-delay:calc(var(--reveal-i,0) * 45ms);
+}
 .reveal.is-in{opacity:1;transform:none}
 
 /* ----------------------------------------------------------------- how --- */
@@ -1816,11 +1906,11 @@ a.contact-row:hover span{color:var(--red)}
   /* Radius. Three steps only, so a fourth cannot creep in unnoticed. */
   --r-sm:2px; --r-md:4px; --r-pill:999px;
 
-  /* Motion. Two durations and one easing curve cover every transition on the
-     site; the previous eleven durations were not doing eleven jobs. */
-  --t-fast:.15s;
-  --t-base:.25s;
-  --ease:cubic-bezier(.16,1,.3,1);
+  /* Motion tokens used to live here, at the bottom of the file, which is why
+     only five rules ever picked them up — everything above was written before
+     they existed and kept typing its own numbers. They now sit in the opening
+     :root with the colour and type tokens, where the next section will
+     actually see them. */
 }
 
 /* ================================================= skeleton loading =======
@@ -1847,7 +1937,11 @@ a.contact-row:hover span{color:var(--red)}
   inset:0;
   transform:translateX(-100%);
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
-  animation:skelSweep 1.25s infinite;
+  /* linear, not the default ease: an eased loop decelerates into the end of
+     every pass and accelerates out of the next, so a shimmer that is meant to
+     read as one continuous sweep visibly hitches 48 times a minute. Constant
+     repeating motion is the one case that wants no curve at all. */
+  animation:skelSweep 1.25s linear infinite;
 }
 @keyframes skelSweep{ to{ transform:translateX(100%); } }
 
@@ -1902,7 +1996,7 @@ a.contact-row:hover span{color:var(--red)}
   font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;
   text-transform:uppercase;color:#B6BBC1;
   padding:12px 16px;
-  transition:color var(--t-fast),background var(--t-fast);
+  transition:color var(--t-fast) var(--ease-out),background var(--t-fast) var(--ease-out);
 }
 .nav-drop-btn:hover{color:#fff;background:#22262B}
 .nav-drop-btn:focus-visible{outline:2px solid var(--red);outline-offset:-2px}
@@ -1916,6 +2010,23 @@ a.contact-row:hover span{color:var(--red)}
   content:"";position:absolute;left:16px;right:16px;bottom:6px;height:2px;background:var(--red);
 }
 
+/* The chevron on the button already rotates over --t-fast. The panel it
+   belongs to was appearing with a bare display:none -> block, so half of one
+   control animated and the other half teleported.
+
+   It now scales up from its trigger's corner: transform-origin is top left
+   because that is the point the panel is pinned to, so it reads as the panel
+   coming out of the button rather than materialising over it. 0.97 and not 0
+   — nothing in the world appears from nothing, and a panel that starts at
+   zero size reads as a glitch rather than as an opening.
+
+   display has to stay in the transition list for the closing direction: it
+   is what keeps the panel rendered for the 150ms it spends fading out, and
+   allow-discrete is what lets a non-animatable property wait its turn like
+   that. @starting-style supplies the "before" for the opening direction,
+   which otherwise does not exist — the element was display:none, so it had
+   no previous style to move away from. A browser that supports neither drops
+   both and shows the panel instantly, which is exactly what it did before. */
 .nav-drop-menu{
   display:none;
   position:absolute;top:100%;left:0;z-index:60;
@@ -1924,8 +2035,29 @@ a.contact-row:hover span{color:var(--red)}
   border:1px solid #2C3037;
   border-top:0;
   box-shadow:0 14px 34px rgba(0,0,0,.4);
+  opacity:0;
+  transform:translateY(-4px) scale(.97);
+  transform-origin:top left;
+  transition:opacity var(--t-fast) var(--ease-out),
+             transform var(--t-fast) var(--ease-out),
+             display var(--t-fast);
+  transition-behavior:allow-discrete;
 }
-.nav-drop-menu.is-open{display:block}
+.nav-drop-menu.is-open{
+  display:block;
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+@starting-style{
+  .nav-drop-menu.is-open{opacity:0;transform:translateY(-4px) scale(.97)}
+}
+@media (prefers-reduced-motion:reduce){
+  /* The fade carries the state change and costs nothing; only the movement
+     goes. */
+  .nav-drop-menu{transform:none;transition:opacity var(--t-fast),display var(--t-fast)}
+  .nav-drop-menu.is-open{transform:none}
+  @starting-style{ .nav-drop-menu.is-open{transform:none} }
+}
 .nav-in .nav-drop-menu a{display:block;padding:11px 16px;white-space:nowrap}
 
 /* 760px, matching the breakpoint where .nav-toggle takes over. Picking a
@@ -1942,9 +2074,12 @@ a.contact-row:hover span{color:var(--red)}
      minimum touch target. The drawer is the primary way this site is
      navigated on a phone, so every row in it clears the bar. */
   .nav-in a{min-height:44px;display:flex;align-items:center}
+  /* Static list inside the drawer, so none of the popover's entrance applies:
+     it is always visible and has no trigger corner to grow out of. */
   .nav-drop-menu{
     display:block;position:static;min-width:0;
     border:0;box-shadow:none;background:transparent;
+    opacity:1;transform:none;transition:none;
   }
   .nav-in .nav-drop-menu a{padding-left:32px}
 }
@@ -2119,7 +2254,7 @@ a.contact-row:hover span{color:var(--red)}
   background:var(--paper);color:var(--head);
   border:1px solid var(--line);border-radius:50%;
   cursor:pointer;
-  transition:border-color var(--t-fast),background var(--t-fast);
+  transition:border-color var(--t-fast) var(--ease-out),background var(--t-fast) var(--ease-out);
 }
 .custom-print-showcase__nav:hover{border-color:var(--head);background:var(--mist)}
 .custom-print-showcase__nav:focus-visible{outline:3px solid var(--red);outline-offset:2px}
@@ -2168,7 +2303,7 @@ a.contact-row:hover span{color:var(--red)}
   background:var(--paper);color:var(--head);
   border:1px solid var(--line);border-radius:var(--r-pill);
   font:inherit;font-size:.86rem;cursor:pointer;
-  transition:border-color var(--t-fast),background var(--t-fast);
+  transition:border-color var(--t-fast) var(--ease-out),background var(--t-fast) var(--ease-out);
 }
 .custom-print-showcase__chip:hover{border-color:var(--head)}
 .custom-print-showcase__chip.is-on{background:var(--red);border-color:var(--red);color:#fff}
