@@ -1,4 +1,4 @@
-# Publishes the site to GitHub Pages on every push to the default branch.
+# Publishes the site to GitHub Pages on every push to main.
 #
 # The site is plain static files at the repo root, so there is nothing to
 # build — the whole folder is uploaded as-is. Every asset path in the HTML is
@@ -13,7 +13,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [claude/plugins-marketplace-setup-n5191p]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
